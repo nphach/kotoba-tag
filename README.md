@@ -8,11 +8,9 @@
 - [Resources](#resources)
 
 ### To Do
-- organize word bank vocab and definitions into a database:
-> **vocab**(vocab_id: int PRIMARY KEY, kanji: string, kana: string NOT NULL,
-	jlpt_level: int (1-5) NOT NULL)
-
-> **def**(def_id: int PRIMARY KEY, vocab_id: int FOREIGN KEY, def: string NOT NULL, def_lang: string (“jp” or “en”) NOT NULL)
+- implement syllable matching logic
+- flesh out api to retrieve vocab words from db
+- scrape Japanese-to-Japanese definitions
 
 ### Rules
 Based off of the word game *shiritori*, in Kotoba Tag a player will need to quickly translate Japanese vocabulary and keep the game going with their own Japanese words. Race the clock, sharpen your vocab skills and aim for a high score!
