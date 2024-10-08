@@ -23,7 +23,7 @@ When the game begins, the player is given a random **Mystery Word** from the Wor
 > example: hana (はな) → natsu (なつ)
 - if the Mystery Word ends with an "n" (ん) the Tag Word may begin with any n-syllable (な, に, ぬ, ね, の)
 > example: jikan (じかん) → niou (におう) *or* nomimono (のみもの)
-- if the Mystery Word ends with a long vowel or digraph, the Tag Word may begin with either hiragana
+- if the Mystery Word ends with *chouon* or *youon*, the Tag Word may begin with either hiragana
 > example: koohii (コーヒー) → hima (ひま) *or* iro (いろ), jitensha (じてんしゃ) → shita (した) *or* yasumi (やすみ)
 - *Dakuten* and *handakuten* may be ignored (or added)
 > example: hanabi (はなび) → hikikomori (ひきこもり) *or* bijin (びじん), naka (なか) → kamera (カメラ) *or* gakusei (がくせい)
