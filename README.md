@@ -18,13 +18,13 @@ Based off of the word game *shiritori*, in Kotoba Tag a player will need to quic
 #### How to Play
 When the game begins, the player is given a random **Mystery Word** from the Word Bank, and a 30 second timer begins. The Mystery Word will be given in Japanese. The player needs to enter the **Definition**, a correct translation of the Mystery Word in English. Once the player answers with a valid Definition, they must continue the game *shiritori*-style by entering a **Tag Word**. The Tag Word should fit the following conditions:
 
-- the Tag Word must be given in Japanese, be a noun and be at least two syllables
+- the Tag Word must be given in Japanese, be a noun and be at least two kana long
 - the first syllable of the Tag Word should correspond to the last syllable of the Mystery Word
 > example: hana (はな) → natsu (なつ)
 - if the Mystery Word ends with an "n" (ん) the Tag Word may begin with any n-syllable (な, に, ぬ, ね, の)
 > example: jikan (じかん) → niou (におう) *or* nomimono (のみもの)
 - if the Mystery Word ends with *chouon* or *youon*, the Tag Word may begin with either hiragana
-> example: koohii (コーヒー) → hima (ひま) *or* iro (いろ), jitensha (じてんしゃ) → shita (した) *or* yasumi (やすみ)
+> example: koohii (コーヒー) → hima (ひま) *or* iro (いろ), sensei (せんせい) → sekai (せかい) *or* eigo (えいご), jitensha (じてんしゃ) → shita (した) *or* yasumi (やすみ)
 - *Dakuten* and *handakuten* may be ignored (or added)
 > example: hanabi (はなび) → hikikomori (ひきこもり) *or* bijin (びじん), naka (なか) → kamera (カメラ) *or* gakusei (がくせい)
 - the Tag Word must be new (not a previous Mystery Word nor previously given Tag Word)
