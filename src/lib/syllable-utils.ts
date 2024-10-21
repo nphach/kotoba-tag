@@ -1,12 +1,12 @@
 import * as wanakana from 'wanakana'
 
-type Hiragana = string & { __brand: 'Hiragana' };
+export type Hiragana = string & { __brand: 'Hiragana' };
 
-function isHiragana(s: string): s is Hiragana {
+export function isHiragana(s: string): s is Hiragana {
     return wanakana.isHiragana(s);
 }
 
-function toHiragana(s: string): Hiragana {
+export function toHiragana(s: string): Hiragana {
     if (isHiragana(s)) {
         return s;
     }
@@ -37,46 +37,52 @@ const correspondingKana = new Map<Hiragana, Hiragana[]>(([
     .map(([key, value]) => [toHiragana(key), value.map(toHiragana)]));
 
 export function normalizeKana(h: Hiragana): Hiragana {
-    if (dakuten.has(h)) {
-        return dakuten.get(h) ?? h
-    } else if (handakuten.has(h)) {
-        return handakuten.get(h) ?? h
-    } else if (chiisaiKana.has(h)) {
-        return chiisaiKana.get(h) ?? h
-    } else {
-        return h
-    }
+    return h.split('').map((k: string): string => {
+        if (dakuten.has(k as Hiragana)) {
+            return dakuten.get(k as Hiragana) ?? k;
+        } else if (handakuten.has(k as Hiragana)) {
+            return handakuten.get(k as Hiragana) ?? k;
+        } else if (chiisaiKana.has(k as Hiragana)) {
+            return chiisaiKana.get(k as Hiragana) ?? k;
+        } else {
+            return k;
+        }
+    }).join('') as Hiragana
 }
 
+
 export function getColumn(h: Hiragana): Hiragana {
+    if (h.length > 1) {
+        throw new Error('cannot get column for >1 kana')
+    }
     let kana = normalizeKana(h)
     if ('あかさたなはまやらわ'.includes(kana)) {
-        return toHiragana('あ')
+        return 'あ' as Hiragana
     } else if ('いきしちにひみり'.includes(kana)) {
-        return toHiragana('い')
+        return 'い' as Hiragana
     } else if ('うくすつぬむゆる'.includes(kana)) {
-        return toHiragana('う')
+        return 'う' as Hiragana
     } else if ('えけせてねへめれ'.includes(kana)) {
-        return toHiragana('え')
+        return 'え' as Hiragana
     } else if ('おこそとのほもよろを'.includes(kana)) {
-        return toHiragana('お')
+        return 'お' as Hiragana
     } else {
-        return toHiragana('ん')
+        return 'ん' as Hiragana
     }
 }
 
 export function getFirst(h: Hiragana): Hiragana {
-    return toHiragana(h[0])
+    return h[0] as Hiragana
 }
 
 export function getLast(h: Hiragana): Hiragana[] {
-    let curr = toHiragana(h[h.length - 1])
-    let left = toHiragana(h[h.length - 2])
-    let nextStr = toHiragana(h.substring(0, h.length - 1))
+    let curr = h[h.length - 1] as Hiragana
+    let left = h[h.length - 2] as Hiragana
+    let nextStr = h.substring(0, h.length - 1) as Hiragana
     if (chiisaiKana.has(curr)) {
         return [chiisaiKana.get(curr) ?? curr].concat(getLast(nextStr))
     } else if (curr === 'ん') {
-        return [toHiragana('ん')]
+        return ['ん' as Hiragana]
     } else if (
         (curr === 'ー')
         || ((curr === 'あ') && ('あ'.includes(getColumn(left))))
@@ -94,7 +100,7 @@ export function getCorresponding(h: Hiragana[]): Hiragana[] {
     for (let i = 0; i < h.length; i++) {
         let curr = normalizeKana(h[i])
         if (curr === 'ん') {
-            res.concat((['な', 'に', 'ぬ', 'ね', 'の'].map(x => toHiragana(x))))
+            res.concat(['な', 'に', 'ぬ', 'ね', 'の'] as Hiragana[])
         } else if (correspondingKana.has(curr)) {
             res.concat(curr, correspondingKana.get(curr) ?? curr)
         } else {
