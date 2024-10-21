@@ -100,11 +100,11 @@ export function getCorresponding(h: Hiragana[]): Hiragana[] {
     for (let i = 0; i < h.length; i++) {
         let curr = normalizeKana(h[i])
         if (curr === 'ん') {
-            res.concat(['な', 'に', 'ぬ', 'ね', 'の'] as Hiragana[])
+            res.push(...['な', 'に', 'ぬ', 'ね', 'の'] as Hiragana[])
         } else if (correspondingKana.has(curr)) {
-            res.concat(curr, correspondingKana.get(curr) ?? curr)
+            res.push(curr, ...(correspondingKana.get(curr) ?? [curr]))
         } else {
-            res.concat(curr)
+            res.push(curr)
         }
     }
     return res
