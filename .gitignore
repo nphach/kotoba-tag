@@ -1,5 +1,6 @@
-# Local directories
+# Local files
 data/
+.env
 
 # Logs
 logs

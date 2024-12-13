@@ -8,7 +8,6 @@
 - [Resources](#resources)
 
 ### To Do
-- implement syllable matching logic
 - flesh out api to retrieve vocab words from db
 - scrape Japanese-to-Japanese definitions
 

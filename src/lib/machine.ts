@@ -1,136 +1,173 @@
-import { setup, assign } from "xstate";
+import { setup, assign, createMachine } from "xstate";
 
 export const machine = setup({
   types: {
     context: {} as {
+      error: string;
       score: number;
-      "mystery word": string;
-      "player input": string;
+      multiplier: number;
+      mysteryWord: { kana: string; definitions: string[] };
+      wordHistory: string[];
     },
-    events: {} as { type: "submit" } | { type: "key press" },
+    events: {} as { type: "submit" },
   },
   actions: {
-    "update mystery word": assign({
+    clearError: assign({
+      error: ""
+    }),
+    updateMysteryWord: assign({
       // ...
     }),
-    "clear player input": assign({
+    addMystery: assign({
       // ...
     }),
-    "increment score": assign({
+    addTagWord: assign({
       // ...
     }),
-    "update player input": assign({
+    setFetchError: assign({
+      // ...
+    }),
+    setDefError: assign({
+      // ...
+    }),
+    setTagError: assign({
+      // ...
+    }),
+    incrementScore: assign({
+      // ...
+    }),
+    decrementMultiplier: assign({
       // ...
     }),
   },
   actors: {
-    "fetch word from database": createMachine({
+    fetchWord: createMachine({
       /* ... */
     }),
-    "verify definition": createMachine({
+    verifyDef: createMachine({
       /* ... */
     }),
-    "verify tag word": createMachine({
+    verifyTagWord: createMachine({
       /* ... */
     }),
   },
 }).createMachine({
   context: {
+    error: "",
     score: 0,
-    "mystery word": "",
-    "player input": "",
+    multiplier: 5,
+    mysteryWord: { kana: "", definitions: [] },
+    wordHistory: [],
   },
   id: "playing",
-  initial: "get mystery word",
+  initial: "start",
   states: {
-    "get mystery word": {
+    start: {
+      always: {
+        target: "getMystery",
+      },
+    },
+    getMystery: {
+      entry: {
+        type: "clearError",
+      },
       invoke: {
-        id: "fetch word from database",
+        id: "fetchWord",
         input: {},
         onDone: {
-          target: "present mystery word",
+          target: "presentMystery",
+          actions: [
+            {
+              type: "updateMysteryWord",
+            },
+            {
+              type: "addMystery",
+            },
+          ],
         },
         onError: {
-          target: "end game",
+          target: "endGame",
+          actions: {
+            type: "setFetchError",
+          },
         },
-        src: "fetch word from database",
+        src: "fetchWord",
       },
     },
-    "present mystery word": {
-      initial: "part 1",
+    presentMystery: {
+      initial: "p1",
       after: {
-        "30000": {
-          target: "end game",
+        "5000": {
+          target: "presentMystery",
+          actions: {
+            type: "decrementMultiplier",
+          },
         },
-      },
-      entry: {
-        type: "update mystery word",
+        "30000": {
+          target: "endGame",
+        },
       },
       states: {
-        "part 1": {
+        p1: {
           on: {
             submit: {
-              target: "verify definition",
-            },
-            "key press": {
-              target: "part 1",
-              actions: {
-                type: "update player input",
-              },
+              target: "definitionCheck",
             },
           },
         },
-        "verify definition": {
-          exit: {
-            type: "clear player input",
-          },
+        definitionCheck: {
           invoke: {
-            id: "verify definition",
+            id: "verifyDef",
             input: {},
             onDone: {
-              target: "part 2",
+              target: "p2",
               actions: {
-                type: "increment score",
+                type: "incrementScore",
               },
             },
             onError: {
-              target: "part 1",
-            },
-            src: "verify definition",
-          },
-        },
-        "part 2": {
-          on: {
-            submit: {
-              target: "verify tag word",
-            },
-            "key press": {
-              target: "part 2",
+              target: "p1",
               actions: {
-                type: "update player input",
+                type: "setDefError",
               },
             },
+            src: "verifyDef",
           },
         },
-        "verify tag word": {
-          exit: {
-            type: "clear player input",
+        p2: {
+          on: {
+            submit: {
+              target: "tagWordCheck",
+            },
           },
+        },
+        tagWordCheck: {
           invoke: {
-            id: "verify tag word",
+            id: "verifyTagWord",
             input: {},
             onDone: {
-              target: "#playing.get mystery word",
+              target: "#playing.getMystery",
+              actions: [
+                {
+                  type: "incrementScore",
+                },
+                {
+                  type: "addTagWord",
+                },
+              ],
             },
             onError: {
-              target: "part 2",
+              target: "p2",
+              actions: {
+                type: "setTagError",
+              },
             },
-            src: "verify tag word",
+            src: "verifyTagWord",
           },
         },
       },
     },
-    "end game": {
+    endGame: {
       type: "final",
     },
   },
