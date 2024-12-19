@@ -1,4 +1,4 @@
-# 言葉タッグ！
+# コトバタッグ！
 ### **Kotoba Tag!** - *shiritori* for Japanese language learning
 
 - [To Do](#to-do)
@@ -8,8 +8,9 @@
 - [Resources](#resources)
 
 ### To Do
-- flesh out api to retrieve vocab words from db
 - scrape Japanese-to-Japanese definitions
+- implement AI definition validation (data-store.ts)
+- flesh out machine
 
 ### Rules
 Based off of the word game *shiritori*, in Kotoba Tag a player will need to quickly translate Japanese vocabulary and keep the game going with their own Japanese words. Race the clock, sharpen your vocab skills and aim for a high score!
@@ -37,7 +38,7 @@ The game ends on either of the following events:
 - Kotoba Tag cannot come up with another Mystery Word from the Word Bank, earning the player a **Complete**!
 
 #### Points System
-The player is given 10 points for each correct Definition and 2 points for each valid Tag Word. During the timer for each turn, a points multiplier will be active that increases the number of points as each answer is accepted. The multiplier begins at 5x and decreases every 5 seconds.
+The player is given 10 points for each correct Definition and 10 points for each valid Tag Word. During the timer for each turn, a points multiplier will be active that increases the number of points as each answer is accepted. The multiplier begins at 5x and decreases every 5 seconds.
 
 ### Features
 *In progress:*
