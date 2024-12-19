@@ -1,6 +1,5 @@
 import * as wanakana from 'wanakana'
-
-export type Hiragana = string & { __brand: 'Hiragana' };
+import { Hiragana } from './types.ts'
 
 export function isHiragana(s: string): s is Hiragana {
     return wanakana.isHiragana(s);
