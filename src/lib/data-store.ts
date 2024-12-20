@@ -63,6 +63,7 @@ class VocabStore {
     }
 
     validateTag(mysteryWord: GameWord, inputTag: Hiragana): boolean {
+        // for now, check if syllables correspond, will implement Jisho validation later
         const tagWord = inputTag.trim()
 
         if (!isHiragana(tagWord)) {
