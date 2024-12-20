@@ -8,9 +8,10 @@
 - [Resources](#resources)
 
 ### To Do
+- bind hiragana to input for tag word using wanakana
+- implement tag word validation (has definition, noun) using Jisho API (also tag syllable validating might be broken idk)
+- implement AI definition validation
 - scrape Japanese-to-Japanese definitions
-- implement AI definition validation (data-store.ts)
-- flesh out machine
 
 ### Rules
 Based off of the word game *shiritori*, in Kotoba Tag a player will need to quickly translate Japanese vocabulary and keep the game going with their own Japanese words. Race the clock, sharpen your vocab skills and aim for a high score!
