@@ -68,8 +68,7 @@ export const machine = setup({
 
     // fetch a random word for VocabStore based on the given tagWord and wordHistory
     fetchWordFromTag: fromPromise(
-      async ({ input }: { input: { wordHistory: GameContext["wordHistory"], tagWord: Hiragana }}) => {
-        console.log("fetching from tag...")
+      async ({ input }: { input: { wordHistory: GameContext["wordHistory"], tagWord: Hiragana } }) => {
         console.log("fetching from tag input:", input)
         const word = vocabStore.getRandomWord(input.wordHistory, input.tagWord)
         if (!word) {
@@ -84,22 +83,20 @@ export const machine = setup({
 
     verifyDef: fromPromise(
       async ({ input }: { input: { mysteryWord: GameContext["mysteryWord"], definition: string } }) => {
-        console.log("verifying def...")
-        console.log("verifying def input:", input)
+        console.log("def input:", input)
         return vocabStore.validateDefinition(input.mysteryWord, input.definition)
       }
     ),
 
     verifyTagWord: fromPromise(
-      async ({ input }: { input: { mysteryWord: GameContext["mysteryWord"], tagWord: Hiragana }}) => {
-        console.log("verifying tag...")
-        console.log("verifying tag input:", input)
+      async ({ input }: { input: { mysteryWord: GameContext["mysteryWord"], tagWord: Hiragana } }) => {
+        console.log("tag input:", input)
         return vocabStore.validateTag(input.mysteryWord, input.tagWord)
       })
   },
 
 }).createMachine({
-  /** @xstate-layout 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 */
+  /** @xstate-layout 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 */
   id: "playing",
   initial: "idle",
   context: {
@@ -142,55 +139,66 @@ export const machine = setup({
           initial: 'part1',
           states: {
             part1: {
-              on: {
-                SUBMIT: {
-                  target: 'definitionCheck'
-                }
-              }
-            },
-            definitionCheck: {
-              invoke: {
-                id: 'verifyDef',
-                src: 'verifyDef',
-                input: ({ context, event }) => ({
-                  mysteryWord: context.mysteryWord,
-                  definition: event.definition
-                }),
-                onDone: {
-                  target: 'part2',
-                  actions: 'incrementScore'
+              initial: 'start',
+              states: {
+                start: {
+                  on: {
+                    SUBMIT: {
+                      target: 'definitionCheck'
+                    }
+                  }
                 },
-                onError: {
-                  target: 'part1'
+                definitionCheck: {
+                  invoke: {
+                    id: 'verifyDef',
+                    src: 'verifyDef',
+                    input: ({ context, event }) => ({
+                      mysteryWord: context.mysteryWord,
+                      definition: event.definition
+                    }),
+                    onDone: {
+                      target: "#playing.playRound.presentMystery.part2.start",
+                      actions: 'incrementScore'
+                    },
+                    onError: {
+                      target: "start"
+                    }
+                  }
                 }
               }
             },
             part2: {
-              on: {
-                SUBMIT: {
-                  target: 'tagWordCheck'
+              states: {
+                start: {
+                  on: {
+                    SUBMIT: {
+                      target: 'tagWordCheck'
+                    }
+                  }
+                },
+                tagWordCheck: {
+                  invoke: {
+                    id: 'verifyTagWord',
+                    input: ({ context, event }) => ({
+                      mysteryWord: context.mysteryWord,
+                      tagWord: event.tagWord
+                    }),
+                    onDone: {
+                      target: '#playing.getMysteryFromTag',
+                      actions: [
+                        'incrementScore',
+                        'addTagWord'
+                      ]
+                    },
+                    onError: {
+                      target: "start"
+                    },
+                    src: 'verifyTagWord'
+                  }
                 }
-              }
-            },
-            tagWordCheck: {
-              invoke: {
-                id: 'verifyTagWord',
-                input: ({ context, event }) => ({
-                  mysteryWord: context.mysteryWord,
-                  tagWord: event.tagWord
-                }),
-                onDone: {
-                  target: '#playing.getMysteryFromTag',
-                  actions: [
-                    'incrementScore',
-                    'addTagWord'
-                  ]
-                },
-                onError: {
-                  target: 'part2'
-                },
-                src: 'verifyTagWord'
-              }
+              },
+
+              initial: "start"
             }
           }
         },

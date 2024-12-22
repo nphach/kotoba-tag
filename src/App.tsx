@@ -1,26 +1,43 @@
-import { useState } from 'react'
+import { useEffect } from 'react'
 import { useMachine } from '@xstate/react'
+import { flushSync } from 'react-dom'
 import { machine } from './lib/machine.ts'
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Hiragana } from './lib/types.ts'
+import * as wanakana from 'wanakana'
 import './App.css'
 
 function App() {
   const [state, send] = useMachine(machine)
-  const [input, setInput] = useState('')
+  let formData: FormData
 
   const { mysteryWord, score, multiplier, timer, wordHistory } = state.context;
 
-  const inDefinitionPhase = state.matches({ playRound: { presentMystery: "part1" } });
+  const inDefPhase = state.matches({ playRound: { presentMystery: "part1" } });
   const inTagPhase = state.matches({ playRound: { presentMystery: "part2" } });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    send({ type: 'SUBMIT', definition: inDefinitionPhase ? input : undefined, tagWord: inTagPhase ? input as Hiragana : undefined });
-    setInput('');
+    const form = e.target
+    if (form) formData = new FormData(form as HTMLFormElement)
+
+    flushSync(() => {
+      send({
+        type: 'SUBMIT',
+        definition: inDefPhase ? formData.get("d") : undefined,
+        tagWord: inTagPhase ? formData.get("t") as Hiragana : undefined
+      })
+    })
   };
+
+  useEffect(() => {
+    const input = document.querySelector('input');
+    if (input) {
+      input.focus();
+    }
+  }, [inDefPhase, inTagPhase]);
 
   if (state.matches('idle')) {
     return (
@@ -72,14 +89,23 @@ function App() {
           </CardContent>
         </Card>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <Input
-            value={input}
-            id="input"
-            onChange={(e) => setInput(e.target.value)}
-            placeholder={inDefinitionPhase ? "enter definition..." : "enter tag word..."}
-            className="text-lg"
-          />
+        <form onSubmit={handleSubmit} id="form" className="space-y-4">
+          {inDefPhase &&
+            <Input
+              name="d"
+              placeholder={"enter definition..."}
+              className="text-lg bg-pink-100"
+            />
+          }
+          {inTagPhase &&
+            <Input
+              name="t"
+              ref={(el) => el && wanakana.bind(el)}
+              placeholder={"enter tag word..."}
+              className="text-lg bg-blue-100"
+            />
+          }
+
           <Button type="submit" className="w-full">
             submit
           </Button>
