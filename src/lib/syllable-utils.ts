@@ -88,7 +88,7 @@ export function getLast(h: Hiragana): Hiragana[] {
         || ((curr === 'い') && ('いえ'.includes(getColumn(left))))
         || ((curr === 'う') && ('うお'.includes(getColumn(left))))
     ) {
-        return [getColumn(left)].concat(getLast(nextStr))
+        return [getColumn(left), curr].concat(getLast(nextStr))
     } else {
         return [curr]
     }

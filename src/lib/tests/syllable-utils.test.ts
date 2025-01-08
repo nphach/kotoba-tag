@@ -83,18 +83,19 @@ describe.concurrent('getFirst', () => {
 })
 
 describe.concurrent('getLast', () => {
-    it('should get last two kana for chouon syllables', () => {
+    it('should get last two kana (plus elongated vowel) for chouon syllables', () => {
         expect(syl.getLast('こーひー' as Hiragana).sort).toEqual(['い', 'ひ'].sort)
-        expect(syl.getLast('こーひー' as Hiragana).sort).toEqual(['ひ', 'い'].sort)
+        expect(syl.getLast('せんよう' as Hiragana).sort).toEqual(['よ', 'う`'].sort)
+        expect(syl.getLast('せんせい' as Hiragana).sort).toEqual(['せ', 'え', 'い'].sort)
     })
 
     it('should get last two kana for youon syllables', () => {
         expect(syl.getLast('きゃ' as Hiragana).sort).toEqual(['き', 'や'].sort)
-        expect(syl.getLast('きゃ' as Hiragana).sort).toEqual(['や', 'き'].sort)
     })
 
     it('should get all chouon and youon kana in last syllable', () => {
         expect(syl.getLast('ねこきゃー' as Hiragana).sort).toEqual(['き', 'や', 'あ'].sort)
+        expect(syl.getLast('そつぎょう' as Hiragana).sort).toEqual(['ぎ', 'よ', 'う'].sort)
     })
 
     it('should get single kana for regular syllables', () => {
@@ -110,6 +111,7 @@ describe.concurrent('getCorresponding', () => {
 
     it('should get any corresponding dakuten, handakuten for normal kana', () => {
         expect(syl.getCorresponding(['わ'] as Hiragana[])).toEqual(['わ'])
+        expect(syl.getCorresponding(['う'] as Hiragana[])).toEqual(['う'])
         expect(syl.getCorresponding(['か'] as Hiragana[]).sort).toEqual(['か', 'が'].sort)
         expect(syl.getCorresponding(['は'] as Hiragana[]).sort).toEqual(['は', 'ば', 'ぱ'].sort)
     })

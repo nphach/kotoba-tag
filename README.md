@@ -8,7 +8,6 @@
 - [Resources](#resources)
 
 ### To Do
-- bind hiragana to input for tag word using wanakana
 - implement tag word validation (has definition, noun) using Jisho API (also tag syllable validating might be broken idk)
 - implement AI definition validation
 - scrape Japanese-to-Japanese definitions
@@ -24,8 +23,8 @@ When the game begins, the player is given a random **Mystery Word** from the Wor
 > example: hana (はな) → natsu (なつ)
 - if the Mystery Word ends with an "n" (ん) the Tag Word may begin with any n-syllable (な, に, ぬ, ね, の)
 > example: jikan (じかん) → niou (におう) *or* nomimono (のみもの)
-- if the Mystery Word ends with *chouon* or *youon*, the Tag Word may begin with either hiragana
-> example: koohii (コーヒー) → hima (ひま) *or* iro (いろ), sensei (せんせい) → sekai (せかい) *or* eigo (えいご), jitensha (じてんしゃ) → shita (した) *or* yasumi (やすみ)
+- if the Mystery Word ends with *chouon* or *youon*, the Tag Word may begin with either hiragana or the 'elongated' vowel
+> example: koohii (コーヒー) → hima (ひま) *or* iro (いろ), sensei (せんせい) → sekai (せかい) *or* eigo (えいご) *or* ichigo (いちご), jitensha (じてんしゃ) → shita (した) *or* yasumi (やすみ)
 - *Dakuten* and *handakuten* may be ignored (or added)
 > example: hanabi (はなび) → hikikomori (ひきこもり) *or* bijin (びじん), naka (なか) → kamera (カメラ) *or* gakusei (がくせい)
 - the Tag Word must be new (not a previous Mystery Word nor previously given Tag Word)
