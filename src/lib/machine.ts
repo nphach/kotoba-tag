@@ -18,6 +18,13 @@ export const machine = setup({
       }
     }),
 
+    // update most recent Tag Word from submission
+    updateTagWord: assign({
+      tagWord: ({ event }) => {
+        return event.output
+      }
+    }),
+
     // add current Mystery Word hiragana to wordHistory
     addMystery: assign({
       wordHistory: ({ context }) =>
@@ -26,8 +33,8 @@ export const machine = setup({
 
     // add valid Tag Word to wordHistory
     addTagWord: assign({
-      wordHistory: ({ context, event }) =>
-        (event.type === "SUBMIT" && event.tagWord) ? [...context.wordHistory, event.tagWord] : context.wordHistory
+      wordHistory: ({ context }) =>
+        [...context.wordHistory, context.tagWord]
     }),
 
     incrementScore: assign({
@@ -46,14 +53,12 @@ export const machine = setup({
     // fetch a random word from VocabStore
     fetchWord: fromPromise(
       async () => {
-        console.log("starting fetchWord");
         const word = vocabStore.getRandomWord();
 
         if (!word) {
           throw new Error("complete - no more words available!");
         }
 
-        // Create a properly structured return object
         const wordData = {
           kana: word.kana,
           kanji: word.kanji,
@@ -61,21 +66,18 @@ export const machine = setup({
           definitions: word.definitions
         };
 
-        console.log("fetchWord returning:", wordData);
-        return wordData;  // This becomes event.data in the transition
+        return wordData;
       }
     ),
 
     // fetch a random word for VocabStore based on the given tagWord and wordHistory
     fetchWordFromTag: fromPromise(
       async ({ input }: { input: { wordHistory: GameContext["wordHistory"], tagWord: Hiragana } }) => {
-        console.log("fetching from tag input:", input)
+        console.log("fetchWordFromTag input:", input)
         const word = vocabStore.getRandomWord(input.wordHistory, input.tagWord)
         if (!word) {
           throw new Error("complete - no more words available!");
         }
-
-        console.log('fetched word from tag details:', word)
 
         return word;
       }
@@ -83,20 +85,20 @@ export const machine = setup({
 
     verifyDef: fromPromise(
       async ({ input }: { input: { mysteryWord: GameContext["mysteryWord"], definition: string } }) => {
-        console.log("def input:", input)
+        console.log("verifyDef input:", input)
         return vocabStore.validateDefinition(input.mysteryWord, input.definition)
       }
     ),
 
     verifyTagWord: fromPromise(
       async ({ input }: { input: { mysteryWord: GameContext["mysteryWord"], tagWord: Hiragana } }) => {
-        console.log("tag input:", input)
+        console.log("verifyTagWord input:", input)
         return vocabStore.validateTag(input.mysteryWord, input.tagWord)
       })
   },
 
 }).createMachine({
-  /** @xstate-layout N4IgpgJg5mDOIC5QAcA2BDAngSwHZQDpsJUwBiAZQBUBBAJSoG0AGAXURQHtZsAXbTrg4gAHogDskguIAcANmYBmACziATIrmKArDIA0ITIjkBGcQRPNJcjcoUBOTQF8nBtFjyEYvALKZYvGAATphkEIJgRLgAbpwA1pHuOPgE3n4BwZgIeLEAxuj8giysxcLI3HwCQkiiiPZqzASqMvbaynbM2sz2BkYIcjLK0swj2nKtamM2Lm4YyV5gvv6BIWTBQZxBBO68AGabALbbc56pi+krWTmc+YW4xaU15Tx3wmIIyiZDn2riir8meTMNRqXoSToERSaTQyX7KbQacQzEBJU5JOicACuuAgZBEAQKkXQuxWAApFCMRgBKMiolLorE4x5cF5VN6IFT2JqKExycQmMYyeRyMEIewmLnNFriGyAoVI1wok70uYY7EQbZBOBgXBLDIhbboIK8EwEAnGygAVQAQj4AJJMNhlCqvGrvcbaSFWf7aKHMEyWUGGRAmRT2czjcXaGXtGSB5F0wgM9Wa7W6i6ZQ3G00QMC7PCVQQAYQAFmBcnEwhEorEEgRosFsLtMAARPPMlEutlukOdOQEGSKQZx5hyMYgxSi0ODAhyVTdOwgmTqOQJ5VJ1WMjXILWwHV6y5Zk0EXP53CF3Cl8uV9abY4FfZBI4NoJN1vtp1PLuCdkIWGKSFtDGICdHDfRgwQUNlDUAc2mUZh4UcHRATXDwVSwNUcVTPd02WTNkCNXgYPNXgrVtB0O2eC9f1DBpZ2jNQ7ChL4oXEKd4NNGQF2FMx4PEZRUPme9MEw7dd33DMDQI40YN4dAoAAdU2CArwrKtcEia46xfN8qHkpSgggSjv2qUB3nUGQCDUZdlE0VR2jUQEp3EbppBsudNARWzBLRTcUx3NMD3wwjZP05TVJvIINi2HZH2fRtmz0xTlOM1kfx7SD2k9T52gpOMgNDNiIOnLkuPsH4FEBToBMVRNhNEggDkxVB+DQbBggIfgK08PECUCAhiTJLpqVpdd6q3Rrmta1B2q2Lq4k8VLqIywqAPEVplC4oCtCsZQp39GCBnkflGMciltB89CRIm-gDg6+aevxOT+sG4JSUsEa6uTLDbvu7BuvwJbXTMupXNo-kx12uRof2kxDqFPk4eg0NOkuhYgpCAAxDYDiS9TNJieJIl2RZchLAyIGxzhcfkoHuxBhA1DnKyZWh7RxUYz4TH2+QCBGQEBS+KZBjRs4McwKmaagNYorvWLDgIEneDJinJaSun0oZloB1kBRcsXQcRWK-1PV9XlgT5dQrAVWY0MIHUIAAcXQO6yDoABRah6EddgvzS0zakZuHhlaBCQX5hQir6LR+xUaHJm0UNtpkFxFVwThc3gJ512df3f0+HWgX1mxDdFBEuUjj0bBXeFReIUhc+WhmBk9IVlHsex5DaMMegg0xzEsSQmOgg7RbSPCQkb4HA5c-t6ny9n2gQmRtFFFyAMH+olCsLo51F76ICn+nA7aVuV9lEEY9UUVBwjeVBaA4FeX3vysICnDxaPzWT8cAdz8cy+dko4hl5LHbuOhELwjHC-DCE134SQnpgI8Jgv4B3dAXIU444ZMyAVOSYAEV62RRhSYEbQYHXX8uJXC+okHSWPCRVBv4XJcmYJg6GphyqwiDH0KCpoIHQn4qodQ9hyENXgdQw8dCcx5gLHcCKjCMoDFKv-bBV9gGZS0JCRwlg4YdzMKYURcCqHiyPGoBRDM4YIgIG0VhNgKT2HjpOYq+CCDhnOo-LucNDGUMCpJWhIUzRyWNOYwOoYVDcnPlYOcncjY8JUKaVQPJRwTjDPIbxb9jF+NMZ1MKhl5F+ybqEkh1j4LyA0N0Rx7FNFwh0EKBoj9FDpI1E1Fq2A2rBBCe8AMQpXEqFHIMVosIxiinqJ6OU4xfgJ3sKjWqY0D6TVae0ua-0Fr4E6SGDQc8+kDHbroSYsTezwnop0aqugWjhiaZ1bAd0gjrIQOoT0fpoIPOXAGEZkwLAI3qA89mMzbZCXmb9ZZAMoB3MkABJ5kzdD8m5sbcJvIEReQcBKNQY9ziILVvJO5AouQuUmPBEYgwhxaGco5Ky8F2YbS+BKGq-zTgO2dndO5IIuTsyHCQzQjlJA32XOS30B125qGmQqFwQA */
+  /** @xstate-layout N4IgpgJg5mDOIC5QAcA2BDAngSwHZQDpsJUwBiAZQBUBBAJSoG0AGAXURQHtZsAXbTrg4gAHogDsAVgBMBAGwBGaZPHNJc6QA4ALAoUAaEJkTbmATgIBmSwuabL08Y7UBfF4bRY8hGLwCymLC8YABOmGQQgmBEuABunADW0Z44+AS+AUGhmAh48QDG6PyCLKylwsjcfAJCSKKIZnLi8uJm2vZOCnLaNobGCNpOBJLa0krMauKaI+JuHhipPmD+gcFhZKEhnCEEnrwAZtsAtrsL3unLmWs5eZyFxbil5XWVPA-CYgiWUwRaZgqSSxyRSDcTiPqISR2AjaMwyMzMOTMbQjDRyOYgFLnFJ0TgAV1wEDIIiCRWi6H2awAFJYJnSAJRkLFpHH4wnPLhvGofRAKTQEcS2EbSMxSJwoiFfOSWAiaMxmayaBTWORmMYY5mEVkEiC7EJwMC4FZZMK7dAhXgKAiki2UACqACE-ABJJhsCpVd51T5yST8yx+zRSNSaRHgoy86SDAh8gN2QWSJRKDVnFkLXE6vUGo1XbJmi1WiBgfZ4aqCADCAAswPkEhEojF4kkCLFQth9pgACLFjmYz3c7285hdX5aTTSLSCxrWSVKSzaGM2bQacRIqbSFNeNNYDOErOwQ3G675y0EIsl3Bl3BVmt1zbbU5FQ4hE6tkLtrs990vfuCHkIKY5BhZgnDUeNxCBMxZwUNUrEsINJHUaVgWkdF3ExVMtXTNldWQfUDxzVY82Qc1eFkG1eHtJ1XV7V4r3-JQ-QFJwFXacxviDWco1kTRVWUVpbDVJVN0WR9MF3XD8MPXNTRIi1ZF4dAoAAdW2CAb1retcGiW5mzfD8qCU1SQggWjf1qUAfVghQplhQUFBRZgxlndRmAIECJhUVEQOXETsWwzM8OzI9iNIhSjLUjS7xCLYdj2Z9XzbDtDJUtSzK5P9BwQZV7GGWk9DVVi-XDfo5zc3j-nsOVAVQjd0M1MSJIII48VQfg0GwUICH4WtvGJUlggIClqShCZGQa7U9xatrsA6rqeoSbx0vorLlUUUceh0ZgA1MTRNElUMLA0CYFU6UZk3qzDGpw7rsCOebsF6-B+sUwbhtCKlbDGpkrsm3V+HunYFqW79ORWyzECVGVaXnPQgT0exJAO8x5GkE7vjGc66vmLclhCsIADEtiOFKtJ0uJEmifZlnyStjIgInOBJpTlq9CGEAnfkAVpXjpkBLoNAOuUYzXb5BnUBEzD8tIMiIwnidJ+84owA5jgIaneFp+nGeZqBWYHdmZAIVjVSkLo5WHRpJTBBc4U53Q4x56XCENCAAHF0Husg6AAUWoeg3XYH8Mos+pstXYZpjVRMNDlAF9ojAZLAsKFEMGHQA1abQ3HQ3BOCLeAXkwj0Q--ABaEVfjlFFVG4qQkcTxwgOT1idBrlFsYw3GiBIMAS-BsPfQXexbBrqReMFSV4IsLpHHsTOZFmS7u9lk1+jBtnB+6VHgXH8Ww0lcWRZ0X1pic75JGd66dX7zfPihflTps8wRgcLpJWlBdjr0Ow0faVcr5-X3NJOW68+ylyyohICT9VBwh6GMOQs4JjNBqtMBwiEIIaEAQFPcQUCL40wCeBQt8DaD2RMbb4z84Fv0QYnH+0N4KdCRGjUU2Cdw3TwSAteRDrSKQtCQzK7MmiyAcsOLo85xA9H+NBBEspGEOSVA-b4bDxIcKkoRbhclTznlLA8KKAjQ4+iNjAl+8D350JsDxG2MhIL-xUU1ThGjjxaOkAYhiME3K+l9FCKYq4QKWCQXCdyDg9o9G2gqVC9i1HBRkoQlxvDSJuNWo4WQacoxqlGAqAwdC+SpJCWCGO-w2hRMCuoghJ5wqpRMvo4OA9Phzn5F4xCIEgyi1nLSBc1gHZiNMIKEpU1WrtVQJ1EIST2Z6AjkCEUU5JFqicNbCcMY0ZfQfj0FE-TdTTSGSM26T0oBjLDkoKMVgNCihgrMlJB1RiRxgo4BUSoESWA2bdQGByfSVyhHoCcXzRitAWSI5Znk7BrMvsvUSQCAYPT2W8xATQUFiO+UoX5UFE4j3co0JosJTAsM0FfVe1wdYpRhdlbawF5zT3nDIEU2gXJMX+LoCc7QbBBmzmC84rsPb3WJTBGUgwnJQlFJLBwH9ZGmFGNITOWTrA5xcEAA */
   id: "playing",
   initial: "idle",
   context: {
@@ -104,6 +106,7 @@ export const machine = setup({
     multiplier: 5,
     timer: 30,
     mysteryWord: initialGameWord,
+    tagWord: "" as Hiragana,
     wordHistory: [],
   },
   states: {
@@ -187,6 +190,7 @@ export const machine = setup({
                       target: '#playing.getMysteryFromTag',
                       actions: [
                         'incrementScore',
+                        'updateTagWord',
                         'addTagWord'
                       ]
                     },
@@ -235,9 +239,9 @@ export const machine = setup({
     getMysteryFromTag: {
       invoke: {
         id: 'fetchWordFromTag',
-        input: ({ context, event }) => ({
+        input: ({ context }) => ({
           wordHistory: context.wordHistory,
-          tagWord: event.tagWord
+          tagWord: context.tagWord
         }),
         onDone: {
           target: 'playRound',
@@ -263,6 +267,7 @@ export const machine = setup({
             multiplier: 5,
             timer: 30,
             mysteryWord: initialGameWord,
+            tagWord: "" as Hiragana,
             wordHistory: [],
           })
         }

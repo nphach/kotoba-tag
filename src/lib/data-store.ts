@@ -22,17 +22,20 @@ class VocabStore {
     private initializeData() {
         // pull all vocab
         (vocabJson as any[]).forEach(v => {
-            this.wordBank.set(v.vocab_id, {
-                vocabId: v.vocabId,
-                kanji: v.kanji,
-                kana: v.kana,
-                definitions: []
-            });
+            // for my sanity, just consider N1 vocab for now
+            if (v.jlpt_level === 'N1') {
+                this.wordBank.set(v.vocab_id, {
+                    vocabId: v.vocabId,
+                    kanji: v.kanji,
+                    kana: v.kana,
+                    definitions: []
+                })
+            }
         });
 
         // add definitions
         (defsJson as any[]).forEach(d => {
-            this.wordBank.get(d.vocab_id)?.definitions.push(d.def)
+            this.wordBank.get(d.vocab_id)?.definitions.push(d.def.trim())
         })
     }
 
@@ -40,29 +43,29 @@ class VocabStore {
     getRandomWord(exclude: Hiragana[], tagWord: Hiragana): GameWord | null
     getRandomWord(exclude?: Hiragana[], tagWord?: Hiragana): GameWord | null {
         if (exclude && tagWord) {
+            // get word based on exclude[] and tag word
             const lastKana = getLast(tagWord)
             const validStartingKana = getCorresponding(lastKana)
 
             const availableWords = Array.from(this.wordBank.values())
-                .filter(word => !exclude.includes(word.kana)).filter(word =>
-                    validStartingKana.some(h => word.kana.startsWith(h)))
+                .filter(word => !exclude.includes(word.kana))
+                .filter(word => validStartingKana.some(h => word.kana.startsWith(h)))
 
             if (availableWords.length === 0) return null;
             return availableWords[Math.floor(Math.random() * availableWords.length)]
         } else {
+            // get any word
             const availableWords = Array.from(this.wordBank.values())
             return availableWords[Math.floor(Math.random() * availableWords.length)]
         }
     }
 
     validateDefinition(mysteryWord: GameWord, inputDef: string): boolean {
-        // for now, check if def is exact string, will implement AI matching later
-        return mysteryWord.definitions.some(
-            def => def.toLowerCase().trim() === inputDef.toLowerCase().trim()
-        )
+        // for now, just return true, will implement AI matching later
+        return true
     }
 
-    validateTag(mysteryWord: GameWord, inputTag: Hiragana): boolean {
+    validateTag(mysteryWord: GameWord, inputTag: Hiragana): Hiragana {
         // for now, check if syllables correspond, will implement Jisho validation later
         const tagWord = inputTag.trim()
 
@@ -84,7 +87,7 @@ class VocabStore {
             )
         }
 
-        return true
+        return inputTag
     }
 }
 

@@ -20,5 +20,6 @@ export type GameContext = {
   multiplier: number;
   timer: number,
   mysteryWord: GameWord;
+  tagWord: Hiragana;
   wordHistory: Hiragana[];
 };
