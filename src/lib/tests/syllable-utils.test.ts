@@ -118,6 +118,7 @@ describe.concurrent('getCorresponding', () => {
 
     it('should get any corresponding normal kana, handakuten for dakuten', () => {
         expect(syl.getCorresponding(['で'] as Hiragana[]).sort).toEqual(['で', 'て'].sort)
+        expect(syl.getCorresponding(['ど'] as Hiragana[]).sort).toEqual(['ど', 'と'].sort)
     })
 
     it('should get any corresponding normal kana, dakuten for handakuten', () => {
