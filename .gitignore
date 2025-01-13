@@ -2,6 +2,9 @@
 data/
 .env
 
+# Notes
+notes.txt
+
 # Logs
 logs
 *.log
