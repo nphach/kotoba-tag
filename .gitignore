@@ -1,6 +1,8 @@
 # Local files
 data/
+model-env
 .env
+src/lib/output/
 
 # Notes
 notes.txt
