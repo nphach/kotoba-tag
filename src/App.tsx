@@ -117,7 +117,7 @@ function App() {
             <CardTitle>word history:</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="flex flex-wrap-reverse flex-row-reverse justify-end gap-2 max-w-96">
+            <div className="flex flex-wrap gap-2 max-w-96">
               {wordHistory.map((word, index) => (
                 <span
                   key={index}

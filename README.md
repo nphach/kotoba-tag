@@ -8,7 +8,7 @@
 - [Resources](#resources)
 
 ### To Do
-- implement tag word validation (has definition, noun) using Jisho API (also tag syllable validating might be broken idk)
+- implement tag word validation (has definition, noun) using Jisho API
 - implement AI definition validation
 - scrape Japanese-to-Japanese definitions
 
@@ -58,3 +58,5 @@ The player is given 10 points for each correct Definition and 10 points for each
 - https://en.wikipedia.org/wiki/Shiritori
 - https://dictionary.goo.ne.jp (Japanese-to-Japanese dictionary)
 - https://www.kanshudo.com/collections/wikipedia_jlpt (flashcards of Wikipedia's JLPT vocab by level)
+- https://www.kaggle.com/datasets/robinpourtaud/jlpt-words-by-level (Japanese vocab by JLPT from tanos.co.uk dataset)
+- https://www.edrdg.org/wiki/index.php/Main_Page (JMdict Japanese-English dictionary database)

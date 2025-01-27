@@ -1,5 +1,5 @@
-import vocabJson from '../data/vocab.json';
-import defsJson from '../data/defs.json';
+import vocabJson from '../data/word-bank/vocab.json';
+import defsJson from '../data/word-bank/defs.json';
 import {
     getLast,
     getCorresponding,
