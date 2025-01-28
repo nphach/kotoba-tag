@@ -1,7 +1,7 @@
 # Local files
 data/
-model-env
 .env
+venv
 src/lib/output/
 
 # Notes
