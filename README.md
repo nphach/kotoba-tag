@@ -1,11 +1,13 @@
 # コトバタッグ！
 ### **Kotoba Tag!** - *shiritori* for Japanese language learning
+Based off of *shiritori* is Kotoba Tag, where a player will need to quickly translate Japanese vocabulary and keep the game going with their own Japanese words. Race the clock, sharpen your vocab skills and aim for a high score!
 
 - [To Do](#to-do)
 - [Rules](#rules)
+- [About](#about)
 - [Features](#features)
 - [Potential Problems/ Topics to Explore](#potential-problems-topics-to-explore)
-- [Resources](#resources)
+- [Resources](#more-resources)
 
 ### To Do
 - implement tag word validation (has definition, noun) using Jisho API
@@ -13,8 +15,6 @@
 - scrape Japanese-to-Japanese definitions
 
 ### Rules
-Based off of the word game *shiritori*, in Kotoba Tag a player will need to quickly translate Japanese vocabulary and keep the game going with their own Japanese words. Race the clock, sharpen your vocab skills and aim for a high score!
-
 #### How to Play
 When the game begins, the player is given a random **Mystery Word** from the Word Bank, and a 30 second timer begins. The Mystery Word will be given in Japanese. The player needs to enter the **Definition**, a correct translation of the Mystery Word in English. Once the player answers with a valid Definition, they must continue the game *shiritori*-style by entering a **Tag Word**. The Tag Word should fit the following conditions:
 
@@ -40,6 +40,20 @@ The game ends on either of the following events:
 #### Points System
 The player is given 10 points for each correct Definition and 10 points for each valid Tag Word. During the timer for each turn, a points multiplier will be active that increases the number of points as each answer is accepted. The multiplier begins at 5x and decreases every 5 seconds.
 
+### About
+#### Definition Validation Using SentenceTransformers
+Across languages, glosses may be direct translations of a word, such as ねぎ, scallions. They may also be indirect translations or explainations of the word, such as *kitsune* きつね which can be translated as: foxes that possess paranormal abilities; fox-like spirits of traditional Japanese folklore; shape-shifting fox spirit; and so on. In Japanese, different glosses may be associated with the same *kana*. To be able to recognize such glosses entered by the player, I integrated machine learning into the definition validation phase of the game. To acheive this I:
+- created a dataset of over 300,000 parallel/non-parallel glosses from the [JMDict](https://www.edrdg.org/wiki/index.php/JMdict-EDICT_Dictionary_Project) database
+- used this data to finetune CrossEncoder and SentenceTransformer models to make predictions of similarity between definitions
+- uploaded the model to [HuggingFace](https://huggingface.co/nphach/jp-parallel-gloss) to be able to loaded and used in other programs
+```
+from sentence_transformers import CrossEncoder
+from torch import nn
+
+model = CrossEncoder("nphach/jp-parallel-gloss", default_activation_function=nn.Sigmoid())
+similarity = model.predict(['translation', 'meaning of a word in another language'])
+```
+
 ### Features
 *In progress:*
 - varying difficulties reflecting each JLPT level
@@ -50,11 +64,9 @@ The player is given 10 points for each correct Definition and 10 points for each
 - play online with others (co-op against Kotoba Tag, or versus without Mystery Words)
 
 ### Potential Problems/ Topics to Explore
-- fuzzy matching - for validating Definitions
 - Japanese dictionary APIs - for validating Tag Words
-- Japanese text-processing libs - for typing in romaji, etc
 
-### Resources
+### More Resources
 - https://en.wikipedia.org/wiki/Shiritori
 - https://dictionary.goo.ne.jp (Japanese-to-Japanese dictionary)
 - https://www.kanshudo.com/collections/wikipedia_jlpt (flashcards of Wikipedia's JLPT vocab by level)
