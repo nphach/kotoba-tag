@@ -3,6 +3,8 @@ data/
 .env
 venv
 src/lib/output/
+__init__.py
+__pycache__
 
 # Notes
 notes.txt
