@@ -23,7 +23,7 @@ class VocabStore {
         // pull all vocab
         (vocabJson as any[]).forEach(v => {
             // for my sanity, just consider N1 vocab for now
-            if (v.jlpt_level === 'N1') {
+            if (v.jlpt_level === 'N5') {
                 this.wordBank.set(v.vocab_id, {
                     vocabId: v.vocabId,
                     kanji: v.kanji,
@@ -35,7 +35,7 @@ class VocabStore {
 
         // add definitions
         (defsJson as any[]).forEach(d => {
-            this.wordBank.get(d.vocab_id)?.definitions.push(d.def.trim())
+            this.wordBank.get(d.vocab_id)?.definitions.push(d.def)
         })
     }
 
@@ -60,13 +60,39 @@ class VocabStore {
         }
     }
 
-    validateDefinition(mysteryWord: GameWord, inputDef: string): boolean {
-        // for now, just return true, will implement AI matching later
-        return true
+    async validateDefinition(mysteryWord: GameWord, inputDef: string): Promise<boolean> {
+        try {
+            const response = await fetch("http://127.0.0.1:8000/analyze", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    user_def: inputDef,
+                    valid_defs: mysteryWord.definitions.flat()
+                }),
+            });
+
+            if (!response.ok) {
+                throw new Error(`http error: ${response.status}`)
+            }
+
+            const res = await response.json()
+            console.log("res", res)
+
+            const isValid = res.predictions.some((score: number) => score > 0.9)
+            console.log("def isValid", isValid)
+
+            if (!isValid) {
+                throw new Error("definition not valid")
+            }
+
+            return isValid
+        } catch (error) {
+            console.error("error", error)
+            throw error
+        }
     }
 
-    validateTag(mysteryWord: GameWord, inputTag: Hiragana): Hiragana {
-        // for now, check if syllables correspond, will implement Jisho validation later
+    async validateTag(mysteryWord: GameWord, inputTag: Hiragana): Promise<string> {
         const tagWord = inputTag.trim()
 
         if (!isHiragana(tagWord)) {
@@ -87,7 +113,37 @@ class VocabStore {
             )
         }
 
-        return inputTag
+        try {
+            const response = await fetch(`http://127.0.0.1:8000/lookup?tag=${encodeURIComponent(tagWord)}`)
+
+            if (!response.ok) {
+                throw new Error(`http error: ${response.status}`)
+            }
+
+            const res = await response.json()
+            console.log("jisho res", res)
+
+            if (res.data && res.data.length > 0) {
+                const isValid = res.data.some((entry: any) => {
+                    const readings = entry.japanese.map((j: any) => j.reading)
+                    const isExactReading = readings.includes(tagWord)
+                    const isNoun = entry.senses.some((sense: any) => sense.parts_of_speech.includes("Noun"))
+                    return isExactReading && isNoun
+                })
+    
+                if (isValid) {
+                    return tagWord
+                } else {
+                    throw new Error("tag word not valid")
+                }
+            } else {
+                throw new Error("tag word not valid")
+            }
+
+        } catch (error) {
+            console.error("error", error)
+            throw error
+        }
     }
 }
 
