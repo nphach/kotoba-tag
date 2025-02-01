@@ -21,5 +21,7 @@ export type GameContext = {
   timer: number,
   mysteryWord: GameWord;
   tagWord: Hiragana;
+  tagDefinitions: string[];
   wordHistory: Hiragana[];
+  errorMessage: string;
 };

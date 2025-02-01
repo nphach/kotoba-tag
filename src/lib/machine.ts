@@ -18,10 +18,13 @@ export const machine = setup({
       }
     }),
 
-    // update most recent Tag Word from submission
+    // update most recent Tag Word and definitions from submission
     updateTagWord: assign({
       tagWord: ({ event }) => {
-        return event.output
+        return event.output.tagWord
+      },
+      tagDefinitions: ({ event }) => {
+        return event.output.defs
       }
     }),
 
@@ -47,6 +50,14 @@ export const machine = setup({
 
     decrementTimer: assign({
       timer: ({ context }) => context.timer > 1 ? context.timer - 1 : 1
+    }),
+
+    setErrorMessage: assign({
+      errorMessage: ({ event }) => event.error.message || "error"
+    }),
+
+    clearErrorMessage: assign({
+      errorMessage: () => ""
     })
   },
   actors: {
@@ -91,9 +102,9 @@ export const machine = setup({
     ),
 
     verifyTagWord: fromPromise(
-      async ({ input }: { input: { mysteryWord: GameContext["mysteryWord"], tagWord: Hiragana } }) => {
+      async ({ input }: { input: { mysteryWord: GameContext["mysteryWord"], wordHistory: GameContext["wordHistory"], tagWord: Hiragana } }) => {
         console.log("verifyTagWord input:", input)
-        return vocabStore.validateTag(input.mysteryWord, input.tagWord)
+        return vocabStore.validateTag(input.mysteryWord, input.wordHistory, input.tagWord)
       })
   },
 
@@ -107,7 +118,9 @@ export const machine = setup({
     timer: 30,
     mysteryWord: initialGameWord,
     tagWord: "" as Hiragana,
+    tagDefinitions: [],
     wordHistory: [],
+    errorMessage: ""
   },
   states: {
     idle: {
@@ -122,11 +135,13 @@ export const machine = setup({
           target: 'playRound',
           actions: [
             'updateMysteryWord',
-            'addMystery'
+            'addMystery',
+            'clearErrorMessage'
           ]
         },
         onError: {
-          target: 'endGame'
+          target: 'endGame',
+          actions: 'setErrorMessage'
         }
       }
     },
@@ -148,6 +163,9 @@ export const machine = setup({
                   on: {
                     SUBMIT: {
                       target: 'definitionCheck'
+                    },
+                    SKIP: {
+                      target: '#playing.playRound.presentMystery.part2.start'
                     }
                   }
                 },
@@ -161,10 +179,14 @@ export const machine = setup({
                     }),
                     onDone: {
                       target: "#playing.playRound.presentMystery.part2.start",
-                      actions: 'incrementScore'
+                      actions: [
+                        'incrementScore',
+                        'clearErrorMessage'
+                      ]
                     },
                     onError: {
-                      target: "start"
+                      target: "start",
+                      actions: 'setErrorMessage'
                     }
                   }
                 }
@@ -184,6 +206,7 @@ export const machine = setup({
                     id: 'verifyTagWord',
                     input: ({ context, event }) => ({
                       mysteryWord: context.mysteryWord,
+                      wordHistory: context.wordHistory,
                       tagWord: event.tagWord
                     }),
                     onDone: {
@@ -191,11 +214,13 @@ export const machine = setup({
                       actions: [
                         'incrementScore',
                         'updateTagWord',
-                        'addTagWord'
+                        'addTagWord',
+                        'clearErrorMessage'
                       ]
                     },
                     onError: {
-                      target: "start"
+                      target: "start",
+                      actions: 'setErrorMessage'
                     },
                     src: 'verifyTagWord'
                   }
@@ -249,11 +274,13 @@ export const machine = setup({
             'updateMysteryWord',
             'addMystery',
             assign({ multiplier: 5 }),
-            assign({ timer: 30 })
+            assign({ timer: 30 }),
+            'clearErrorMessage'
           ]
         },
         onError: {
-          target: 'endGame'
+          target: 'endGame',
+          actions: 'setErrorMessage'
         },
         src: 'fetchWordFromTag'
       }
@@ -268,7 +295,9 @@ export const machine = setup({
             timer: 30,
             mysteryWord: initialGameWord,
             tagWord: "" as Hiragana,
+            tagDefinitions: [],
             wordHistory: [],
+            errorMessage: ""
           })
         }
       }

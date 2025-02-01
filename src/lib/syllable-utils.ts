@@ -2,14 +2,16 @@ import * as wanakana from 'wanakana'
 import { Hiragana } from './types.ts'
 
 export function isHiragana(s: string): s is Hiragana {
-    return wanakana.isHiragana(s);
+    return wanakana.isHiragana(s) || wanakana.isKatakana(s)
 }
 
 export function toHiragana(s: string): Hiragana {
     if (isHiragana(s)) {
-        return s;
+        return wanakana.toHiragana(s) as Hiragana
+    } if (wanakana.isKatakana(s)) {
+        return wanakana.toHiragana(s) as Hiragana
     }
-    throw new Error('invalid Hiragana string');
+    throw new Error('invalid Hiragana string')
 }
 
 const dakuten = new Map<Hiragana, Hiragana>([
@@ -49,7 +51,6 @@ export function normalizeKana(h: Hiragana): Hiragana {
         }
     }).join('') as Hiragana
 }
-
 
 export function getColumn(h: Hiragana): Hiragana {
     if (h.length > 1) {
