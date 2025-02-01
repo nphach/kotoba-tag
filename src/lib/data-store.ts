@@ -22,7 +22,7 @@ class VocabStore {
     private initializeData() {
         // pull all vocab
         (vocabJson as any[]).forEach(v => {
-            // for my sanity, just consider N1 vocab for now
+            // for my sanity, just consider N5 vocab for now
             if (v.jlpt_level === 'N5') {
                 this.wordBank.set(v.vocab_id, {
                     vocabId: v.vocabId,
@@ -61,6 +61,10 @@ class VocabStore {
     }
 
     async validateDefinition(mysteryWord: GameWord, inputDef: string): Promise<boolean> {
+        if (inputDef === "") {
+            throw new Error("must enter a definition")
+        }
+
         try {
             const response = await fetch("http://127.0.0.1:8000/analyze", {
                 method: "POST",
@@ -82,7 +86,7 @@ class VocabStore {
             console.log("def isValid", isValid)
 
             if (!isValid) {
-                throw new Error("definition not valid")
+                throw new Error("incorrect definition")
             }
 
             return isValid
@@ -96,11 +100,11 @@ class VocabStore {
         const tagWord = inputTag.trim()
 
         if (!isHiragana(tagWord)) {
-            throw new Error("word must be hiragana")
+            throw new Error("must enter hiragana only")
         }
 
         if (tagWord.length < 2) {
-            throw new Error("word must be at least 2 kana long")
+            throw new Error("must be two or more kana")
         }
 
         const mysteryLastKana = getLast(toHiragana(mysteryWord.kana))
@@ -108,9 +112,7 @@ class VocabStore {
         const tagFirstKana = toHiragana(tagWord[0]);
 
         if (!validStartingKana.includes(tagFirstKana)) {
-            throw new Error(
-                "not a valid tag word"
-            )
+            throw new Error(`must start with one of: ${validStartingKana.join(", ")}`)
         }
 
         try {
@@ -124,20 +126,17 @@ class VocabStore {
             console.log("jisho res", res)
 
             if (res.data && res.data.length > 0) {
-                const isValid = res.data.some((entry: any) => {
+                res.data.some((entry: any) => {
                     const readings = entry.japanese.map((j: any) => j.reading)
-                    const isExactReading = readings.includes(tagWord)
-                    const isNoun = entry.senses.some((sense: any) => sense.parts_of_speech.includes("Noun"))
-                    return isExactReading && isNoun
-                })
+                    if (!readings.includes(tagWord)) {
+                        throw new Error("could not find word")
+                    } else if (!entry.senses.some((sense: any) => sense.parts_of_speech.includes("Noun")))
+                        throw new Error("not a noun")
+                    })
     
-                if (isValid) {
-                    return tagWord
-                } else {
-                    throw new Error("tag word not valid")
-                }
+                return tagWord
             } else {
-                throw new Error("tag word not valid")
+                throw new Error("could not find word")
             }
 
         } catch (error) {
