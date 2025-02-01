@@ -18,6 +18,14 @@ def get_antonyms(word):
                 antonyms.add(antonym.name())
     return list(antonyms)
 
+def get_synonyms(word):
+    synonym = set()
+    for syn in wn.synsets(word):
+        for lemma in syn.lemmas():
+            for synonym in lemma.similar_tos():
+                synonym.add(synonym.name())
+    return list(synonym)
+
 def is_simple(gloss):
     return len(gloss.split()) == 1
 
@@ -41,7 +49,7 @@ for e in soup.find_all('entry'):
                 saved_gloss = None
         elif (len(g) > 1):
             for i in range(len(g) - 1):
-                for j in range(i + 1, len(g)):
+                for j in range(i, len(g)):
                     out.append([[g[i], g[j]], True])
 
 for gloss in all_glosses:
@@ -49,6 +57,10 @@ for gloss in all_glosses:
         antonyms = get_antonyms(gloss)
         for antonym in antonyms:
             out.append([[gloss, antonym], False])
+        synonyms = get_synonyms(gloss)
+        for synonym in synonyms:
+            print([gloss, synonym])
+            out.append([[gloss, synonym], True])
 
 random.shuffle(out)
 l = len(out)
