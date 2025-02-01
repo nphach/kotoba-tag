@@ -32,7 +32,11 @@ app.add_middleware(
 @app.post("/analyze")
 def verify_def(request: AnalyzeRequest):
     try:
+        print(f"received request - user_def: {request.user_def}, valid_defs: {request.valid_defs}")
+        if model is None:
+            raise HTTPException(status_code=500, detail="model is not loaded")
         predictions = model.predict([[request.user_def, d] for d in request.valid_defs])
+        print(predictions.tolist())
         return {"predictions": predictions.tolist()}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
