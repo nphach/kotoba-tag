@@ -96,11 +96,11 @@ class VocabStore {
         }
     }
 
-    async validateTag(mysteryWord: GameWord, inputTag: Hiragana): Promise<string> {
+    async validateTag(mysteryWord: GameWord, wordHistory: string[], inputTag: Hiragana): Promise<{ tagWord: Hiragana, defs: string[] }> {
         const tagWord = inputTag.trim()
 
         if (!isHiragana(tagWord)) {
-            throw new Error("must enter hiragana only")
+            throw new Error("must enter hiragana")
         }
 
         if (tagWord.length < 2) {
@@ -115,6 +115,10 @@ class VocabStore {
             throw new Error(`must start with one of: ${validStartingKana.join(", ")}`)
         }
 
+        if (wordHistory.map((x) => toHiragana(x)).includes(tagWord)) {
+            throw new Error("word already encountered")
+        }
+
         try {
             const response = await fetch(`http://127.0.0.1:8000/lookup?tag=${encodeURIComponent(tagWord)}`)
 
@@ -126,17 +130,30 @@ class VocabStore {
             console.log("jisho res", res)
 
             if (res.data && res.data.length > 0) {
-                res.data.some((entry: any) => {
+                let wordFound = false
+                const validDefs: string[] = [];
+                
+                res.data.forEach((entry: any) => {
                     const readings = entry.japanese.map((j: any) => j.reading)
-                    if (!readings.includes(tagWord)) {
-                        throw new Error("could not find word")
-                    } else if (!entry.senses.some((sense: any) => sense.parts_of_speech.includes("Noun")))
-                        throw new Error("not a noun")
-                    })
-    
-                return tagWord
+                    if (readings.includes(tagWord)) {
+                        wordFound = true
+                        entry.senses.forEach((sense: any) => {
+                            if (sense.parts_of_speech.includes("Noun")) {
+                                validDefs.push(...sense.english_definitions)
+                            }
+                        })
+                    }
+                })
+
+                if (!wordFound) {
+                    throw new Error("could not find word")
+                } else if (validDefs.length === 0) {
+                    throw new Error("not a noun")
+                }
+
+                return { tagWord: tagWord, defs: validDefs }
             } else {
-                throw new Error("could not find word")
+                throw new Error("could not find word, try again")
             }
 
         } catch (error) {
