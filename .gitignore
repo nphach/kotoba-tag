@@ -1,6 +1,7 @@
 # Local files
 data/
 .env
+etc
 venv
 src/lib/output/
 __init__.py
