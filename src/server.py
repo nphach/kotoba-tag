@@ -15,7 +15,9 @@ model = None
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     global model
+    print("loading model...")
     model = CrossEncoder("nphach/jp-parallel-gloss", default_activation_function=Sigmoid())
+    print("model loaded!")
     yield
 
 app = FastAPI(lifespan=lifespan)
