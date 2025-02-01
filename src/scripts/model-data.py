@@ -6,9 +6,9 @@ import html
 from nltk.corpus import wordnet as wn
 
 jmd_fp = "/Users/nikki/Desktop/kotoba tag/src/data/model/JMdict_e"
-train_fp = "train_2.json"
-cv_fp = "cv_2.json"
-test_fp = "test_2.json"
+train_fp = "src/data/model/train.json"
+cv_fp = "src/data/model/cv.json"
+test_fp = "src/data/model/test.json"
 
 def get_antonyms(word):
     antonyms = set()
@@ -25,6 +25,7 @@ with open(jmd_fp, 'r') as f:
     soup = BeautifulSoup(f, 'lxml-xml')
 
 out = []
+saved_gloss = None
 all_glosses = []
 
 for e in soup.find_all('entry'):
@@ -32,7 +33,13 @@ for e in soup.find_all('entry'):
         g = [html.unescape(x.string.strip()) for x in s.find_all('gloss')]
         all_glosses.extend(g)
 
-        if (len(g) > 1):
+        if (len(g) == 1):
+            if (saved_gloss == None):
+                saved_gloss = g
+            elif (g != saved_gloss):
+                out.append([saved_gloss + g, False])
+                saved_gloss = None
+        elif (len(g) > 1):
             for i in range(len(g) - 1):
                 for j in range(i + 1, len(g)):
                     out.append([[g[i], g[j]], True])
@@ -45,9 +52,9 @@ for gloss in all_glosses:
 
 random.shuffle(out)
 l = len(out)
-train = out[0:math.floor(l * 0.6)]
-cv = out[math.floor(l * 0.6): math.floor(l * 0.8)]
-test = out[math.floor(l * 0.8):l]
+train = out[0:math.floor(l * 0.8)]
+cv = out[math.floor(l * 0.8): math.floor(l * 0.9)]
+test = out[math.floor(l * 0.9):l]
 
 with open(train_fp, "w") as f:
     json.dump(train, f, ensure_ascii=False, indent=2)
