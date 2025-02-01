@@ -4,7 +4,7 @@ import {
   initialGameWord,
   Hiragana
 } from './types.ts'
-import { vocabStore } from "src/lib/data-store.ts";
+import { vocabStore } from "./data-store.ts";
 
 export const machine = setup({
   types: {

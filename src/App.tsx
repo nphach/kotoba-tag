@@ -1,13 +1,13 @@
 import { useEffect } from 'react'
 import { useMachine } from '@xstate/react'
 import { flushSync } from 'react-dom'
-import { machine } from './lib/machine.ts'
+import { machine } from '@/lib/machine.ts'
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
-import { Hiragana } from 'src/lib/types.ts'
+import { Hiragana } from '@/lib/types.ts'
 import * as wanakana from 'wanakana'
-import 'src/App.css'
+import './App.css'
 
 function App() {
   const [state, send] = useMachine(machine)
