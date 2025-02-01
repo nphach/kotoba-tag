@@ -11,17 +11,16 @@ import './App.css'
 
 function App() {
   const [state, send] = useMachine(machine)
-  let formData: FormData
 
-  const { mysteryWord, score, multiplier, timer, wordHistory } = state.context;
+  const { mysteryWord, score, multiplier, timer, wordHistory, tagWord, tagDefinitions, errorMessage } = state.context;
 
   const inDefPhase = state.matches({ playRound: { presentMystery: "part1" } });
   const inTagPhase = state.matches({ playRound: { presentMystery: "part2" } });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const form = e.target
-    if (form) formData = new FormData(form as HTMLFormElement)
+    const form = e.target as HTMLFormElement
+    const formData = new FormData(form)
 
     flushSync(() => {
       send({
@@ -59,15 +58,15 @@ function App() {
             <p className="text-2xl">final score: {score}</p>
           </CardContent>
         </Card>
-        <Button onClick={() => send({ type: 'RESTART' })} className="w-">restart!</Button>
+        <Button onClick={() => send({ type: 'RESTART' })}>restart!</Button>
       </div>
 
     );
   }
 
   return (
-    <div className='h-full w-full flex content-start'>
-      <div className="space-y-6 w-72 md:w-96 my-0 py-20 overflow-y-auto px-2">
+    <div className='h-full w-full flex flex-col content-start'>
+      <div className="space-y-5 w-72 md:w-96 my-0 py-20 overflow-y-auto px-2">
         <p className="w-full text-4xl font-kosugi">Kotoba Tag!</p>
 
         <div className="flex justify-between items-center">
@@ -79,37 +78,74 @@ function App() {
         </div>
 
         {/* mystery word card */}
-        <Card className="w-full h-44">
+        <Card className="w-full h-min-44 ">
           <CardHeader>
             <CardTitle>mystery word:</CardTitle>
           </CardHeader>
           <CardContent className="space-y-2 flex flex-col">
             {mysteryWord.kanji && <span className="text-4xl font-extrabold">{mysteryWord.kanji}</span>}
             {mysteryWord.kanji ? <span className="text-xl font-bold">{mysteryWord.kana}</span> : <span className="text-4xl font-extrabold">{mysteryWord.kana}</span>}
+            {inTagPhase &&
+              <span className="text-sm text-gray-600">
+                {mysteryWord.definitions.flat().join(", ")}
+              </span>
+            }
           </CardContent>
         </Card>
 
-        <form onSubmit={handleSubmit} id="form" className="space-y-4">
-          {inDefPhase &&
-            <Input
-              name="d"
-              placeholder={"enter definition..."}
-              className="text-lg bg-pink-100"
-            />
-          }
-          {inTagPhase &&
-            <Input
-              name="t"
-              ref={(el) => el && wanakana.bind(el)}
-              placeholder={"enter tag word..."}
-              className="text-lg bg-blue-100"
-            />
-          }
+        {errorMessage && (
+            <div className="text-red-500 text-xs font-bold">
+              {errorMessage}
+            </div>
+          )}
 
-          <Button type="submit" className="w-full">
-            submit
-          </Button>
-        </form>
+        <div className="flex-y space-y-3">
+          <form onSubmit={handleSubmit} id="form" className="space-y-4">
+            {inDefPhase &&
+              <Input
+                name="d"
+                placeholder={"enter definition..."}
+                className="text-lg bg-pink-100"
+              />
+            }
+
+            {inTagPhase &&
+              <Input
+                name="t"
+                ref={(el) => el && wanakana.bind(el)}
+                placeholder={"enter tag word..."}
+                className="text-lg bg-blue-100"
+              />
+            }
+
+            <div className="flex gap-2">
+              <Button type="submit" className="w-full">
+                submit
+              </Button>
+
+              {inDefPhase &&
+                <Button
+                  type="button"
+                  onClick={() => send({ type: 'SKIP' })}
+                  className="w-full"
+                >
+                  skip
+                </Button>
+              }
+            </div>
+          </form>
+        </div>
+
+        {/* tag word card */}
+        {tagWord &&
+        <Card className="w-full h-min-44 ">
+          <CardContent className="space-y-2 flex flex-col p-4">
+            <span className="text-xl font-bold">{tagWord}</span>
+            <span className="text-sm text-gray-600">
+              {tagDefinitions.flat().join(", ")}
+            </span>
+          </CardContent>
+        </Card>}
 
         {/* word history */}
         <Card>
