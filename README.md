@@ -43,7 +43,7 @@ The player is given 10 points for each correct Definition and 10 points for each
 ### About
 #### Definition Validation Using SentenceTransformers
 Across languages, glosses may be direct translations of a word, such as ねぎ, scallions. They may also be indirect translations or explainations of the word, such as *kitsune* きつね which can be translated as: foxes that possess paranormal abilities; fox-like spirits of traditional Japanese folklore; shape-shifting fox spirit; and so on. In Japanese, different glosses may be associated with the same *kana*. To be able to recognize such glosses entered by the player, I integrated machine learning into the definition validation phase of the game. To acheive this I:
-- created a dataset of over 300,000 parallel/non-parallel glosses from the [JMDict](https://www.edrdg.org/wiki/index.php/JMdict-EDICT_Dictionary_Project) database and antonym/synonym pairs from [WordNet](https://wordnet.princeton.edu/)
+- created a dataset of over 580,000 parallel/non-parallel glosses from the [JMDict](https://www.edrdg.org/wiki/index.php/JMdict-EDICT_Dictionary_Project) database and antonym/synonym pairs from [WordNet](https://wordnet.princeton.edu/)
 - used this data to finetune CrossEncoder and SentenceTransformer models to make predictions of similarity between definitions
 - uploaded the model to [HuggingFace](https://huggingface.co/nphach/jp-parallel-gloss) to be able to loaded and used in other programs
 ```
