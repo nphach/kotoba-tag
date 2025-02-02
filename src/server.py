@@ -72,14 +72,7 @@ def debug_env():
 def test_numpy():
     try:
         array = np.array([1, 2, 3])
-        blas_info = np.__config__.get_info("blas_opt")
-        lapack_info = np.__config__.get_info("lapack_opt")
-        return {
-            "message": "numpy is available",
-            "array": array.tolist(),
-            "blas_info": blas_info,
-            "lapack_info": lapack_info,
-        }
+        return {"message": "NumPy is available!", "array": array.tolist()}
     except Exception as e:
         return {"error": str(e)}
 
