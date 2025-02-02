@@ -4,6 +4,7 @@ from pydantic import BaseModel
 from contextlib import asynccontextmanager
 from sentence_transformers import CrossEncoder
 from torch.nn import Sigmoid
+import numpy as np
 import httpx
 import sys
 import pkg_resources
@@ -63,6 +64,21 @@ def debug_env():
         return {
             "python_path": python_path,
             "installed_packages": installed_packages,
+        }
+    except Exception as e:
+        return {"error": str(e)}
+    
+@app.get("/test-numpy")
+def test_numpy():
+    try:
+        array = np.array([1, 2, 3])
+        blas_info = np.__config__.get_info("blas_opt")
+        lapack_info = np.__config__.get_info("lapack_opt")
+        return {
+            "message": "numpy is available",
+            "array": array.tolist(),
+            "blas_info": blas_info,
+            "lapack_info": lapack_info,
         }
     except Exception as e:
         return {"error": str(e)}
