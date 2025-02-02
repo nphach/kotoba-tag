@@ -5,6 +5,8 @@ from contextlib import asynccontextmanager
 from sentence_transformers import CrossEncoder
 from torch.nn import Sigmoid
 import httpx
+import sys
+import pkg_resources
 
 class AnalyzeRequest(BaseModel):
     user_def: str
@@ -52,6 +54,19 @@ async def jisho_proxy(tag: str):
         raise HTTPException(status_code=e.response.status_code, detail="Jisho API request failed")
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+    
+@app.get("/debug-env")
+def debug_env():
+    try:
+        python_path = sys.path
+        installed_packages = [pkg.key for pkg in pkg_resources.working_set]
+        return {
+            "python_path": python_path,
+            "installed_packages": installed_packages,
+        }
+    except Exception as e:
+        return {"error": str(e)}
+
 
 if __name__ == "__main__":
     import uvicorn
