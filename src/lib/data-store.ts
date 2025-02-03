@@ -82,7 +82,7 @@ class VocabStore {
             const res = await response.json()
             console.log("res", res)
 
-            const isValid = res.predictions.some((score: number) => score > 0.985)
+            const isValid = res.predictions.some((score: number) => score > 0.935)
             console.log("def isValid", isValid)
 
             if (!isValid) {

@@ -6,6 +6,7 @@ venv
 src/lib/output/
 __init__.py
 __pycache__
+server-env
 
 # Notes
 notes.txt

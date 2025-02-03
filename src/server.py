@@ -3,11 +3,10 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from contextlib import asynccontextmanager
 from sentence_transformers import CrossEncoder
-from torch.nn import Sigmoid
-import numpy as np
+from torch.nn import Sigmoid, Linear
+from torch.quantization import quantize_dynamic
+from torch import qint8
 import httpx
-import sys
-import pkg_resources
 
 class AnalyzeRequest(BaseModel):
     user_def: str
@@ -20,7 +19,12 @@ async def lifespan(app: FastAPI):
     global model
     try:
         print("loading model...")
-        model = CrossEncoder("nphach/jp-parallel-gloss", default_activation_function=Sigmoid())
+        model = CrossEncoder('nphach/jp-parallel-gloss', default_activation_function=Sigmoid())
+        model.model = quantize_dynamic(
+            model.model,
+            {Linear},
+            dtype=qint8
+        )
         print("model loaded!")
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
@@ -29,7 +33,7 @@ async def lifespan(app: FastAPI):
 app = FastAPI(lifespan=lifespan)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=["https://kotoba-tag-app.onrender.com", "https://kotoba-tag.com"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -41,9 +45,9 @@ def verify_def(request: AnalyzeRequest):
         print(f"received request - user_def: {request.user_def}, valid_defs: {request.valid_defs}")
         if model is None:
             raise HTTPException(status_code=500, detail="model is not loaded")
-        predictions = model.predict([[request.user_def, d] for d in request.valid_defs])
-        print(predictions.tolist())
-        return {"predictions": predictions.tolist()}
+        predictions = [float(x['score']) for x in model.rank(query=request.user_def, documents=request.valid_defs)]
+        print(predictions)
+        return {"predictions": predictions}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -58,26 +62,6 @@ async def jisho_proxy(tag: str):
         raise HTTPException(status_code=e.response.status_code, detail="Jisho API request failed")
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
-    
-@app.get("/debug-env")
-def debug_env():
-    try:
-        python_path = sys.path
-        installed_packages = [pkg.key for pkg in pkg_resources.working_set]
-        return {
-            "python_path": python_path,
-            "installed_packages": installed_packages,
-        }
-    except Exception as e:
-        return {"error": str(e)}
-    
-@app.get("/test-numpy")
-def test_numpy():
-    try:
-        array = np.array([1, 2, 3])
-        return {"message": "NumPy is available!", "array": array.tolist()}
-    except Exception as e:
-        return {"error": str(e)}
 
 if __name__ == "__main__":
     import uvicorn
