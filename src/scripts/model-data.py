@@ -36,6 +36,7 @@ out = []
 saved_gloss = None
 all_glosses = []
 
+# parallel glosses
 for e in soup.find_all('entry'):
     for s in e.find_all('sense'):
         g = [html.unescape(x.string.strip()) for x in s.find_all('gloss')]
@@ -52,6 +53,7 @@ for e in soup.find_all('entry'):
                 for j in range(i, len(g)):
                     out.append([[g[i], g[j]], True])
 
+# antonym/ synonym pairs
 for gloss in all_glosses:
     if is_simple(gloss):
         antonyms = get_antonyms(gloss)
@@ -61,6 +63,12 @@ for gloss in all_glosses:
         for synonym in synonyms:
             print([gloss, synonym])
             out.append([[gloss, synonym], True])
+
+# random negatives
+for gloss in all_glosses:
+    rand = random.choice(all_glosses)
+    if gloss != rand:
+        out.append([[gloss, rand], False])
 
 random.shuffle(out)
 l = len(out)
