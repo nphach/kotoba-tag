@@ -7,6 +7,7 @@ src/lib/output/
 __init__.py
 __pycache__
 server-env
+src/model/final
 
 # Notes
 notes.txt

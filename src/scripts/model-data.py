@@ -30,7 +30,7 @@ if __name__ == "__main__":
         return list(synonyms)
 
     def is_simple(gloss):
-        return len(gloss.split()) == 1
+        return len(gloss.split(" ")) == 1
 
     with open(jmd_fp, 'r') as f:
         soup = BeautifulSoup(f, 'lxml-xml')
@@ -39,38 +39,50 @@ if __name__ == "__main__":
     saved_gloss = None
     all_glosses = []
 
-    # parallel glosses
     for e in soup.find_all('entry'):
         for s in e.find_all('sense'):
             g = [html.unescape(x.string.strip()) for x in s.find_all('gloss')]
             all_glosses.extend(g)
 
             if (len(g) == 1):
+                if is_simple(g[0]):
+                    antonyms = get_antonyms(g[0])
+                    all_glosses.extend(antonyms)
+                    for antonym in antonyms:
+                        out.append([[g[0], antonym], False])
+                    synonyms = get_synonyms(g[0])
+                    all_glosses.extend(synonyms)
+                    for synonym in synonyms:
+                        out.append([[g[0], synonym], True])
                 if (saved_gloss == None):
                     saved_gloss = g
                 elif (g != saved_gloss):
                     out.append([saved_gloss + g, False])
                     saved_gloss = None
             elif (len(g) > 1):
+                antonyms = []
+                synonyms = []
+                for x in g:
+                    if is_simple(x):
+                        antonyms.extend(get_antonyms(x))
+                        synonyms.extend(get_synonyms(x))
+                all_glosses.extend(antonyms)
+                all_glosses.extend(synonyms)
                 for i in range(len(g) - 1):
+                    for antonym in antonyms:
+                        out.append([[g[i], antonym], False])
+                    for synonym in synonyms:
+                        out.append([[g[i], synonym], True])
                     for j in range(i, len(g)):
                         out.append([[g[i], g[j]], True])
 
-    # antonym/ synonym pairs
-    for gloss in all_glosses:
-        if is_simple(gloss):
-            antonyms = get_antonyms(gloss)
-            for antonym in antonyms:
-                out.append([[gloss, antonym], False])
-            synonyms = get_synonyms(gloss)
-            for synonym in synonyms:
-                out.append([[gloss, synonym], True])
-
+    num_random_negatives = 10
     # random negatives
     for gloss in all_glosses:
-        rand = random.choice(all_glosses)
-        if gloss != rand:
-            out.append([[gloss, rand], False])
+        for _ in range(num_random_negatives):
+            rand = random.choice(all_glosses)
+            if gloss != rand and rand not in get_synonyms(gloss):
+                out.append([[gloss, rand], False])
 
     random.shuffle(out)
     l = len(out)
