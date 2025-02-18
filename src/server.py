@@ -3,8 +3,11 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import requests
 import os
+from dotenv import load_dotenv
 # from contextlib import asynccontextmanager
 # from sentence_transformers import SentenceTransformer
+
+load_dotenv()
 
 class DefinitionRequest(BaseModel):
     user_def: str
