@@ -105,7 +105,7 @@ function App() {
               <Input
                 name="d"
                 placeholder={"enter definition..."}
-                className="text-lg bg-pink-100"
+                className="text-lg border-purple-500"
               />
             }
 
@@ -114,7 +114,7 @@ function App() {
                 name="t"
                 ref={(el) => el && wanakana.bind(el)}
                 placeholder={"enter tag word..."}
-                className="text-lg bg-blue-100"
+                className="text-lg border-blue-500"
               />
             }
 

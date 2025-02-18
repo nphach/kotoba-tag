@@ -66,7 +66,7 @@ class VocabStore {
         }
 
         try {
-            const response = await fetch("https://kotoba-tag-server.onrender.com/analyze", {
+            const response = await fetch("https://kotoba-tag-server.onrender.com/definition", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
@@ -82,7 +82,7 @@ class VocabStore {
             const res = await response.json()
             console.log("res", res)
 
-            const isValid = res.predictions.some((score: number) => score > 0.935)
+            const isValid = res["predictions"].some((score: number) => score > 0.55)
             console.log("def isValid", isValid)
 
             if (!isValid) {
@@ -120,7 +120,7 @@ class VocabStore {
         }
 
         try {
-            const response = await fetch(`https://kotoba-tag-server.onrender.com/lookup?tag=${encodeURIComponent(tagWord)}`)
+            const response = await fetch(`https://kotoba-tag-server.onrender.com/tag-word?req=${encodeURIComponent(tagWord)}`)
 
             if (!response.ok) {
                 throw new Error(`http error: ${response.status}`)
@@ -129,11 +129,11 @@ class VocabStore {
             const res = await response.json()
             console.log("jisho res", res)
 
-            if (res.data && res.data.length > 0) {
+            if (res["jisho"].data && res["jisho"].data.length > 0) {
                 let wordFound = false
                 const validDefs: string[] = [];
                 
-                res.data.forEach((entry: any) => {
+                res["jisho"].data.forEach((entry: any) => {
                     const readings = entry.japanese.map((j: any) => j.reading)
                     if (readings.includes(tagWord)) {
                         wordFound = true
