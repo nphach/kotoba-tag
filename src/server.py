@@ -21,11 +21,11 @@ app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["https://kotoba-tag.com/", "https://kotoba-tag-app.onrender.com/"],
+    allow_origins=["https://kotoba-tag.com", "https://kotoba-tag-app.onrender.com"],
     # allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["GET", "POST"],
-    allow_headers=["*"],
+    allow_headers=["*"]
 )
 
 @app.post("/definition")
