@@ -67,6 +67,7 @@ class VocabStore {
 
         try {
             const response = await fetch("https://kotoba-tag-server.onrender.com/definition", {
+            // const response = await fetch("http://127.0.0.1:8000/definition", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
@@ -121,6 +122,7 @@ class VocabStore {
 
         try {
             const response = await fetch(`https://kotoba-tag-server.onrender.com/tag-word?req=${encodeURIComponent(tagWord)}`)
+            // const response = await fetch(`http://127.0.0.1:8000/tag-word?req=${encodeURIComponent(tagWord)}`)
 
             if (!response.ok) {
                 throw new Error(`http error: ${response.status}`)

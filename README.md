@@ -10,9 +10,9 @@ Based off of *shiritori* is Kotoba Tag, where a player will need to quickly tran
 - [Resources](#more-resources)
 
 ### To Do
-- implement tag word validation (has definition, noun) using Jisho API
-- implement AI definition validation
-- scrape Japanese-to-Japanese definitions
+- scrape Japanese-to-Japanese definitions (Japanese WordNet?)
+- verbose error handling
+- settings UI
 
 ### Rules
 #### How to Play
@@ -43,16 +43,26 @@ The player is given 10 points for each correct Definition and 10 points for each
 ### About
 #### Definition Validation Using SentenceTransformers
 Across languages, glosses may be direct translations of a word, such as ねぎ, scallions. They may also be indirect translations or explainations of the word, such as *kitsune* きつね which can be translated as: foxes that possess paranormal abilities; fox-like spirits of traditional Japanese folklore; shape-shifting fox spirit; and so on. In Japanese, different glosses may be associated with the same *kana*. To be able to recognize such glosses entered by the player, I integrated machine learning into the definition validation phase of the game. To acheive this I:
-- created a dataset of over 580,000 parallel/non-parallel glosses from the [JMDict](https://www.edrdg.org/wiki/index.php/JMdict-EDICT_Dictionary_Project) database and antonym/synonym pairs from [WordNet](https://wordnet.princeton.edu/)
+- created a dataset of over 4M+ parallel/non-parallel glosses from the [JMDict](https://www.edrdg.org/wiki/index.php/JMdict-EDICT_Dictionary_Project) database and antonym/synonym pairs from [WordNet](https://wordnet.princeton.edu/)
 - used this data to finetune CrossEncoder and SentenceTransformer models to make predictions of similarity between definitions
 - uploaded the model to [HuggingFace](https://huggingface.co/nphach/jp-parallel-gloss) to be able to loaded and used in other programs
 ```
-from sentence_transformers import CrossEncoder
-from torch import nn
+from sentence_transformers import SentenceTransformer
 
-model = CrossEncoder("nphach/jp-parallel-gloss", default_activation_function=nn.Sigmoid())
-similarity = model.predict(['translation', 'meaning of a word in another language'])
+model = SentenceTransformer("nphach/jp-parallel-gloss", device="mps" if torch.backends.mps.is_available() else "cpu")
+sentences1 = model.encode("hi")
+sentences2 = model.encode(["hello", "world"])
+similarity = model.predict(sentences1, sentences2)
 ```
+
+#### Rate Limits
+The game server behind Kotoba Tag is a simple, free-tier web service deployed on Render. I'm GPU poor and can't afford to run a dedicated server powerful enough to load the model and make predictions. Luckily, HuggingFace offers the [Serverless Inference API](https://huggingface.co/docs/api-inference/index) as an option for offloading model prediction. kotoba-tag.com makes requests to the Inference API using *my personal access token*, which is subject to rate limiting. If you're looking to play more than once, I strongly encourage you to [**run the game locally**](#running-the-game-locally) to minimize the amount of requests using my token.
+
+#### Running the Game Locally
+You can run the game locally by building the React app and running the server in src/server.py. You'll need to change the HTTP requests in the validateDefinition and validateTag functions in **data-store.ts**. In the server.py file, you'll need to update the middleware to accept requests from localhost. There are two options for running predictions on the server:
+- using your own HF token
+- loading the model on startup and running it on your machine (recommended)
+I've commented out the relevant code in **data-store.ts** and **server.py**. The server dependencies can be found in server-requirements.txt. Have fun gaming!
 
 ### Features
 *In progress:*
@@ -72,3 +82,5 @@ similarity = model.predict(['translation', 'meaning of a word in another languag
 - https://www.kanshudo.com/collections/wikipedia_jlpt (flashcards of Wikipedia's JLPT vocab by level)
 - https://www.kaggle.com/datasets/robinpourtaud/jlpt-words-by-level (Japanese vocab by JLPT from tanos.co.uk dataset)
 - https://www.edrdg.org/wiki/index.php/Main_Page (JMdict Japanese-English dictionary database)
+- https://wordnet.princeton.edu/ (WordNet, lexical database)
+- https://huggingface.co/docs/api-inference/index (HuggingFace's Inference API)

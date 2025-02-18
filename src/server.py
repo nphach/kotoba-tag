@@ -1,20 +1,28 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
-from dotenv import load_dotenv
 import requests
 import os
-
-load_dotenv()
+# from contextlib import asynccontextmanager
+# from sentence_transformers import SentenceTransformer
 
 class DefinitionRequest(BaseModel):
     user_def: str
     valid_defs: list[str]
 
+# @asynccontextmanager
+# async def lifespan(app: FastAPI):
+#     global model
+#     model = SentenceTransformer("nphach/jp-parallel-gloss", device="mps" if torch.backends.mps.is_available() else "cpu")
+#     yield
+
 app = FastAPI()
+# app = FastAPI(lifespan=lifespan)
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["https://kotoba-tag.com/", "https://kotoba-tag-app.onrender.com/"],
+    # allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["GET", "POST"],
     allow_headers=["*"],
@@ -25,7 +33,8 @@ def get_prediction(req: DefinitionRequest):
     response = requests.post(
         "https://api-inference.huggingface.co/pipeline/sentence-similarity/nphach/jp-parallel-gloss",
         headers = {
-            "Authorization": f"Bearer {os.getenv('HUGGINGFACE_TOKEN')}"
+            # you can use your own HF token here
+            "Authorization": f"Bearer {os.environ.get('HUGGINGFACE_TOKEN')}"
         },
         json = {
             "inputs": {
@@ -36,6 +45,14 @@ def get_prediction(req: DefinitionRequest):
     )
 
     return {"predictions": response.json()}
+
+# @app.post("/definition")
+# def get_prediction(req: DefinitionRequest):
+#     embed1 = model.encode(req.user_def)
+#     embed2 = model.encode(req.valid_defs)
+#     res = model.similarity(embed1, embed2)
+
+#     return {"predictions": res.numpy().flatten()}
 
 @app.get("/tag-word")
 def get_jisho(req: str):
