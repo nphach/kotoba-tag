@@ -46,8 +46,8 @@ def get_prediction(req: DefinitionRequest):
             }
         }
     )
-    if response.json()["error"]:
-        raise HTTPException(status_code=500, detail=response.json()["error"])
+    if response.json()["estimated time"]:
+        raise HTTPException(status_code=500, detail="model loading, try again in 60 seconds!")
 
     return {"predictions": response.json()}
 
