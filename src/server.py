@@ -47,10 +47,10 @@ def get_prediction(req: DefinitionRequest):
         }
     )
     data = response.json()
-    if "estimated time" in data:
+    if "estimated_time" in data:
         raise HTTPException(status_code=500, detail="model loading, try again in 60 seconds!")
 
-    return {"predictions": response.json()}
+    return {"predictions": data}
 
 # @app.post("/definition")
 # def get_prediction(req: DefinitionRequest):
