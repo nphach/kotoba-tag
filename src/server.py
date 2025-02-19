@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import requests
@@ -46,6 +46,8 @@ def get_prediction(req: DefinitionRequest):
             }
         }
     )
+    if response.json()["error"]:
+        raise HTTPException(status_code=500, detail=response.json()["error"])
 
     return {"predictions": response.json()}
 
