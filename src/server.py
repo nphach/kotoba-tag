@@ -27,7 +27,7 @@ app.add_middleware(
     allow_origins=["https://kotoba-tag.com", "https://kotoba-tag-app.onrender.com"],
     # allow_origins=["*"],
     allow_credentials=True,
-    allow_methods=["GET", "POST"],
+    allow_methods=["*"],
     allow_headers=["*"]
 )
 
@@ -46,7 +46,8 @@ def get_prediction(req: DefinitionRequest):
             }
         }
     )
-    if response.json()["estimated time"]:
+    data = response.json()
+    if "estimated time" in data:
         raise HTTPException(status_code=500, detail="model loading, try again in 60 seconds!")
 
     return {"predictions": response.json()}
