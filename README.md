@@ -16,7 +16,7 @@ Based off of *shiritori* is Kotoba Tag, where a player will need to quickly tran
 
 ### Rules
 #### How to Play
-When the game begins, the player is given a random **Mystery Word** from the Word Bank, and a 30 second timer begins. The Mystery Word will be given in Japanese. The player needs to enter the **Definition**, a correct translation of the Mystery Word in English. Once the player answers with a valid Definition, they must continue the game *shiritori*-style by entering a **Tag Word**. The Tag Word should fit the following conditions:
+When the game begins, the player is given a random **Mystery Word** from the Word Bank, and a 30 second timer begins. The Mystery Word will be given in Japanese. The player needs to enter the **Definition**, a correct translation of the Mystery Word in English. The player can keep submitting answers until the timer has elapsed, or they may skip. Once the player answers with a valid Definition, they must continue the game *shiritori*-style by entering a **Tag Word**. The Tag Word should fit the following conditions:
 
 - the Tag Word must be given in Japanese, be a noun and be at least two kana long
 - the first syllable of the Tag Word should correspond to the last syllable of the Mystery Word
