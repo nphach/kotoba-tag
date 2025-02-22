@@ -40,16 +40,20 @@ function App() {
 
   if (state.matches('idle')) {
     return (
-      <div className="space-y-6 w-72 md:w-96 px-2">
+      <div className="flex flex-col space-y-6 w-72 md:w-96 px-2">
         <p className="text-4xl font-kosugi">Kotoba Tag!</p>
-        <Button onClick={() => send({ type: 'START' })} className="w-">start!</Button>
+        <Button onClick={() => send({ type: 'START' })}>start!</Button>
+        <a href="https://github.com/nphach/kotoba-tag/tree/main?tab=readme-ov-file#rules">
+          view rules on github ‣
+        </a>
+        <a href="https://nphach.github.io" className="text-xs font-kosugi font-bold">made by nphach</a>
       </div>
     );
   }
 
   if (state.matches('endGame')) {
     return (
-      <div className="space-y-6 w-72 md:w-96 px-2">
+      <div className="flex flex-col space-y-6 w-72 md:w-96 px-2">
         <Card className="w-full max-w-2xl mx-auto">
           <CardHeader>
             <CardTitle>game over!</CardTitle>
@@ -59,8 +63,8 @@ function App() {
           </CardContent>
         </Card>
         <Button onClick={() => send({ type: 'RESTART' })}>restart!</Button>
+        <a href="https://nphach.github.io" className="text-xs font-kosugi font-bold">made by nphach</a>
       </div>
-
     );
   }
 
@@ -94,10 +98,10 @@ function App() {
         </Card>
 
         {errorMessage && (
-            <div className="text-red-500 text-xs font-bold">
-              {errorMessage}
-            </div>
-          )}
+          <div className="text-red-500 text-xs font-bold">
+            {errorMessage}
+          </div>
+        )}
 
         <div className="flex-y space-y-3">
           <form onSubmit={handleSubmit} id="form" className="space-y-4">
@@ -138,14 +142,14 @@ function App() {
 
         {/* tag word card */}
         {tagWord &&
-        <Card className="w-full h-min-44 ">
-          <CardContent className="space-y-2 flex flex-col p-4">
-            <span className="text-xl font-bold">{tagWord}</span>
-            <span className="text-sm text-gray-600">
-              {tagDefinitions.flat().join(", ")}
-            </span>
-          </CardContent>
-        </Card>}
+          <Card className="w-full h-min-44 ">
+            <CardContent className="space-y-2 flex flex-col p-4">
+              <span className="text-xl font-bold">{tagWord}</span>
+              <span className="text-sm text-gray-600">
+                {tagDefinitions.flat().join(", ")}
+              </span>
+            </CardContent>
+          </Card>}
 
         {/* word history */}
         <Card>
