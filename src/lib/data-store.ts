@@ -77,13 +77,13 @@ class VocabStore {
             });
 
             if (!response.ok) {
-                throw new Error(`http error: ${response.status}`)
+                throw new Error(`http error: ${response.statusText}`)
             }
 
             const res = await response.json()
             console.log("res", res)
 
-            const isValid = res["predictions"].some((score: number) => score > 0.55)
+            const isValid = res["predictions"].some((score: number) => score > 0.8)
             console.log("def isValid", isValid)
 
             if (!isValid) {
@@ -125,7 +125,7 @@ class VocabStore {
             // const response = await fetch(`http://127.0.0.1:8000/tag-word?req=${encodeURIComponent(tagWord)}`)
 
             if (!response.ok) {
-                throw new Error(`http error: ${response.status}`)
+                throw new Error(`http error: ${response.statusText}`)
             }
 
             const res = await response.json()
@@ -136,7 +136,7 @@ class VocabStore {
                 const validDefs: string[] = [];
                 
                 res["jisho"].data.forEach((entry: any) => {
-                    const readings = entry.japanese.map((j: any) => j.reading)
+                    const readings = entry.japanese.map((j: any) => j.reading as Hiragana)
                     if (readings.includes(tagWord)) {
                         wordFound = true
                         entry.senses.forEach((sense: any) => {

@@ -33,24 +33,27 @@ app.add_middleware(
 
 @app.post("/definition")
 def get_prediction(req: DefinitionRequest):
-    response = requests.post(
-        "https://api-inference.huggingface.co/pipeline/sentence-similarity/nphach/jp-parallel-gloss",
-        headers = {
-            # you can use your own HF token here
-            "Authorization": f"Bearer {os.environ.get('HUGGINGFACE_TOKEN')}"
-        },
-        json = {
-            "inputs": {
-                "source_sentence": req.user_def,
-                "sentences": req.valid_defs
+    try:
+        response = requests.post(
+            "https://api-inference.huggingface.co/pipeline/sentence-similarity/nphach/jp-parallel-gloss",
+            headers = {
+                # you can use your own HF token here
+                "Authorization": f"Bearer {os.environ.get('HUGGINGFACE_TOKEN')}"
+            },
+            json = {
+                "inputs": {
+                    "source_sentence": req.user_def,
+                    "sentences": req.valid_defs
+                }
             }
-        }
-    )
-    data = response.json()
-    if "estimated_time" in data:
-        raise HTTPException(status_code=500, detail="model loading, try again in 60 seconds!")
+        )
+        data = response.json()
 
-    return {"predictions": data}
+        return {"predictions": data}
+    except Exception as e:
+        if "estimated_time" in e:
+            raise HTTPException(status_code=503, detail="model loading, try again in 60 seconds!")
+        raise HTTPException(status_code=500, detail="error fetching from HuggingFace")
 
 # @app.post("/definition")
 # def get_prediction(req: DefinitionRequest):
@@ -62,5 +65,8 @@ def get_prediction(req: DefinitionRequest):
 
 @app.get("/tag-word")
 def get_jisho(req: str):
-    response = requests.get(f"https://jisho.org/api/v1/search/words?keyword={req}")
-    return {"jisho": response.json()}
+    try:
+        response = requests.get(f"https://jisho.org/api/v1/search/words?keyword={req}")
+        return {"jisho": response.json()}
+    except:
+        raise HTTPException(status_code=500, detail="error fetching from Jisho")
