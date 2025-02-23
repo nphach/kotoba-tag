@@ -131,11 +131,11 @@ class VocabStore {
                 throw new Error(`${res.detail}`)
             }
 
-            if (res["jisho"].data && res["jisho"].data.length > 0) {
+            if (res.data && res.data.length > 0) {
                 let wordFound = false
                 const validDefs: string[] = [];
                 
-                res["jisho"].data.forEach((entry: any) => {
+                res.data.forEach((entry: any) => {
                     const readings = entry.japanese.map((j: any) => j.reading as Hiragana)
                     if (readings.includes(tagWord)) {
                         wordFound = true
