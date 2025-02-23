@@ -55,15 +55,6 @@ sentences2 = model.encode(["hello", "world"])
 similarity = model.predict(sentences1, sentences2)
 ```
 
-#### Rate Limits
-The game server behind Kotoba Tag is a simple, free-tier web service deployed on Render. I'm GPU poor and can't afford to run a dedicated server powerful enough to load the model and make predictions. Luckily, HuggingFace offers the [Serverless Inference API](https://huggingface.co/docs/api-inference/index) as an option for offloading model prediction. kotoba-tag.com makes requests to the Inference API using *my personal access token*, which is subject to rate limiting. If you're looking to play more than once, I strongly encourage you to [**run the game locally**](#running-the-game-locally) to minimize the amount of requests using my token.
-
-#### Running the Game Locally
-You can run the game locally by building the React app and running the server in src/server.py. You'll need to change the HTTP requests in the validateDefinition and validateTag functions in **data-store.ts**. In the server.py file, you'll need to update the middleware to accept requests from localhost. There are two options for running predictions on the server:
-- using your own HF token
-- loading the model on startup and running it on your machine (recommended)
-I've commented out the relevant code in **data-store.ts** and **server.py**. The server dependencies can be found in server-requirements.txt. Have fun gaming!
-
 ### Features
 *In progress:*
 - varying difficulties reflecting each JLPT level

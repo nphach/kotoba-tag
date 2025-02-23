@@ -76,14 +76,14 @@ class VocabStore {
                 }),
             });
 
-            if (!response.ok) {
-                throw new Error(`http error: ${response.statusText}`)
-            }
-
             const res = await response.json()
             console.log("res", res)
 
-            const isValid = res["predictions"].some((score: number) => score > 0.8)
+            if (!response.ok) {
+                throw new Error(`${res.detail}`)
+            }
+
+            const isValid = res["predictions"].some((score: number) => score > 0.6)
             console.log("def isValid", isValid)
 
             if (!isValid) {
@@ -123,13 +123,13 @@ class VocabStore {
         try {
             const response = await fetch(`https://kotoba-tag-server.onrender.com/tag-word?req=${encodeURIComponent(tagWord)}`)
             // const response = await fetch(`http://127.0.0.1:8000/tag-word?req=${encodeURIComponent(tagWord)}`)
-
-            if (!response.ok) {
-                throw new Error(`http error: ${response.statusText}`)
-            }
-
+            
             const res = await response.json()
             console.log("jisho res", res)
+
+            if (!response.ok) {
+                throw new Error(`${res.detail}`)
+            }
 
             if (res["jisho"].data && res["jisho"].data.length > 0) {
                 let wordFound = false
