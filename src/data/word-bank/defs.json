@@ -5247,7 +5247,8 @@
     "def_id": 587,
     "vocab_id": 417,
     "def": [
-      "radio-cassette player"
+      "radio-cassette player",
+      "radio cassette player"
     ],
     "def_lang": "EN"
   },
@@ -5302,6 +5303,7 @@
     "vocab_id": 422,
     "def": [
       "radio-cassette",
+      "radio cassette",
       "tape recorder"
     ],
     "def_lang": "EN"
@@ -7020,7 +7022,9 @@
     "def_id": 775,
     "vocab_id": 550,
     "def": [
-      "futon (quilted Japanese-style mattress laid out on the floor)"
+      "futon (quilted Japanese-style mattress laid out on the floor)",
+      "quilted Japanese-style mattress laid out on the floor",
+      "futon"
     ],
     "def_lang": "EN"
   },
@@ -7028,7 +7032,8 @@
     "def_id": 776,
     "vocab_id": 550,
     "def": [
-      "round cushion used for Zen meditation (traditionally made of woven bulrush leaves)"
+      "round cushion used for Zen meditation (traditionally made of woven bulrush leaves)",
+      "round cushion"
     ],
     "def_lang": "EN"
   },
@@ -8387,7 +8392,8 @@
     "vocab_id": 654,
     "def": [
       "hand-writing",
-      "penmanship"
+      "penmanship",
+      "handwriting"
     ],
     "def_lang": "EN"
   },
