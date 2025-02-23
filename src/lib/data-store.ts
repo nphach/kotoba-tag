@@ -23,7 +23,7 @@ class VocabStore {
         // pull all vocab
         (vocabJson as any[]).forEach(v => {
             // for my sanity, just consider N5 and N4 vocab for now
-            if (['N5', 'N4'].includes(v.jlpt_level)) {
+            if (['N5'].includes(v.jlpt_level)) {
                 this.wordBank.set(v.vocab_id, {
                     vocabId: v.vocabId,
                     kanji: v.kanji,
