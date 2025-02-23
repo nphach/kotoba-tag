@@ -44,6 +44,10 @@ export const machine = setup({
       score: ({ context }) => context.score + (10 * context.multiplier)
     }),
 
+    addScoreBonus: assign({
+      score: ({ context }) => context.score * 10
+    }),
+
     decrementMultiplier: assign({
       multiplier: ({ context }) => context.multiplier > 1 ? context.multiplier - 1 : 1
     }),
@@ -109,7 +113,7 @@ export const machine = setup({
   },
 
 }).createMachine({
-  /** @xstate-layout N4IgpgJg5mDOIC5QAcA2BDAngSwHZQDpsJUwBiAZQBUBBAJSoG0AGAXURQHtZsAXbTrg4gAHogDsAVgBMBAGwBGaZPHNJc6QA4ALAoUAaEJkTbmATgIBmSwuabL08Y7UBfF4bRY8hGLwCymLC8YABOmGQQgmBEuABunADW0Z44+AS+AUGhmAh48QDG6PyCLKylwsjcfAJCSKKIZnLi8uJm2vZOCnLaNobGCNpOBJLa0krMauKaI+JuHhipPmD+gcFhZKEhnCEEnrwAZtsAtrsL3unLmWs5eZyFxbil5XWVPA-CYgiWUwRaZgqSSxyRSDcTiPqISR2AjaMwyMzMOTMbQjDRyOYgFLnFJ0TgAV1wEDIIiCRWi6H2awAFJYJhMAJRkLFpHH4wnPLhvGofRBAuQwrTiBTtFF2JQQhCqbQEf6qOHSbQoyQKWbuTFnFkLXEEiC7EJwMC4FZZMK7dAhXgKAiki2UACqACE-ABJJhsCpVd51T5ySSaKx+zRSNSaRHgoyIJSDAgKexQoMApRKDHMwisnV6g1Gq7ZM0Wq0QMD7PDVQQAYQAFmB8gkIlEYvEkgRYqFsPtMAARIsczGe7neyPMLq-LSaaSChSNawSpSWaUKGzaDTiJFTaQpjVprVs3XIfWwQ3G655y0EQvF3Cl3CV6u1zbbU5FQ4hE4tkJtzvd90vPuCHmSzR+VMJw1DsMEgTMGdJ1kawg0kdQ5D5aR0TVVNH0wbVCUzA9s1WXNkHNXhZBtXh7SdV0e1eK9-yUP0CDBaQzDnUMmKmcN+ijWRALMZRWlsHjNAUDcvE1LBMN3fdDxzU0CItWReHQKAAHVtggG8azrXBoluJs3w-KhFJUkIIEo39alAH0eJjKZYSFYUoTGGd1GYAhmFUSZUTcpdhMWdDxOwqS8Jkwj5MM1T1LvEIth2PZn1fVt2wM5TVNMrk-wHBAF3sYZaT0HimJRIMZ2kWkCG42NLE0OEHA0HzsW3DMjjxVB+DQbBQgIfga28YlSWCAgKWpKEGSZTc-J3Agmpa7A2o6rqEm8VLqIyhdFBHHodGYSwRjsTQJRY+RpAmVixlGZNULG9MsP4I45uwbr8F6hT+sG0IqVsEa0Ku3Ubruh6oCWr0LMQQTLCsLbdFWvQ4328xDuO75TrGdcLpEpYj2yAAxLYjiSzTtLiRJon2ZZ8grIyIGxzhccUwH+2BhBx39AFaUA6ZAS6DR9qqmNV2+QZ1ARMw6rSDIgswKmaagDYoofWLjgIEneDJinJaSun0oZmQZTnOQzCkLoqqHRoJTBaV5S0XRtq2uwRcIQ0IAAcXQW6yDoABRah6DddgfzS8z6kyldhmmHjlQ0KqAT2iMBksCwoXgwYdG21ptDcNVcE4Qt4BeTcPX9-9zd1-Xw6Nyc5AlXL5Ajrb-ljKZLDtogSDAfPloZ31pXsWwUTBP0mgMGPKosLpHHsFOZFVeY0YuDGwjboHA+BaU0SaP0BbDCUBd5nRfWmZgSqkJvvoX+nA-jHWhTlEYHC6CVEJXo7zFDJdAPg4+Gqwvcszn-pOXb8+6hL4qnMDfMYFcY4fWaICUcsZRhAiBB-MSE1v44V-ieBQp9NZL2RMA6+PRwFQS2lYSqDF1BAmFEgjCKDJK4RNJgDB1oFIWiwQHH0QxhRDi6HOcQPR-hQQRGVUhwpBLxm+FQ-yqDAr0MYeeEsDwIqsP-L6WQrEQFwgIXfSBNguJmxkBBdoU91Qz2+gFOhx5ZJESUStScLlfS+ihGxPmM5QGuQcGOUwTFx5p1Rr5UxUjzH4RCkwwi1iGZKCGInBUPFRhMUHhxWMsgYFBgNnrScPjp5+M-hJH+0kGGWNCslYyii-YAM+LOf09j4JuSDM47RuDrBWy4cBISvj6rIMas1VqqB2ohDCYHPQwcgSMSFPrWEjhpCm3HDGJ+cJNA6GFNYCRE0prdN6Z1e6C18D9PKeOaUwz9aTl4TxJw+1Rgh2gq0SqtjG5tNEtQjMv0+mlMXj6RiwwuHjj0AqRwkEY5OFkOMUB8zdA9FuZk9pDzrrYFujsea3gdmICaNAz5YxOKtH2jYVyjQmiwlMEdMwmgm5i3oWrRSiLMrENMHOYec4ZCMW0E5Oi-xdB7O7kGDJxjfIO2drdClk4waDAPlCfWQsHD30EaYUYJUVBxKWenIAA */
+  /** @xstate-layout N4IgpgJg5mDOIC5QAcA2BDAngSwHZQDpsJUwBiAZQBUBBAJSoG0AGAXURQHtZsAXbTrg4gAHogDsAVgBMBAGwBGaZPHNJc6QA4ALAoUAaEJkTbmATgIBmSwuabL08Y7UBfF4bRY8hGLwCymLC8YABOmGQQgmBEuABunADW0Z44+AS+AUGhmAh48QDG6PyCLKylwsjcfAJCSKKIZnLi8uJm2vZOCnLaNobGCNpOBJLa0krMauKaI+JuHhipPmD+gcFhZKEhnCEEnrwAZtsAtrsL3unLmWs5eZyFxbil5XWVPA-CYgiWms3icj9tZgKMwOSQ-PqIGTNBxaORmTSObTaMySOYgFLnFJ0TgAV1wEDIIiCRWi6H2awAFJYJhMAJRkDFpLG4-HPLhvGofRCWSQWMytTTmNrSZR6cQQhCaJQEAUihSaaYqBxoxmEZl4iC7EJwMC4FZZMK7dAhXgKAjEk2UACqACE-ABJJhsCpVd51T5yMFWME-SRqQVNCVKQYEeU8uziBSSJRKFVnJkLbEarU6vVXbJGk1mi28SgAaXtAAU2ejXZz3YhNHJmKHJCpdJZBj0zAYjIg9EirN8pOo5JY5Bo5HGvAmsEn8SnYLr9ddM6aCBAwPs8NVBABhAAWYHyCQiURi8SSBFioWw+0wABElyXXqvaqBPrYugQRQrX5HGtYg9JG6GbNoND+ZgpmkYdFlOMcWU1ZBtSnNNVgzZBjXnRdl1wO9N23XdNm2CCDmOY9T3PK99hvMtBC5BApjkAhTCcNQI3EfszCDYFZGsX1e37QcwMxRMoMnad00NJCTVkHNrTtR0yI5CiKwQJQvXEJwQXacxLCmcU2wU6RRgIKszGUVpbEMqVeNHTBx2g2ChIQkTkNkXh0CgAB1bYIEwnc91waJbiPE8QjPTAqGctyQggGS70ouFZAUKZkUjBRtD9MYg3UGtgImFQRmrcQAPMtV+OTGDUxnRCHIIJzXPczzsJCLYdj2Q4QhOAKgpC6rwsit0H3bb5LGGak9EM1SwS0-olGpfS4TDTQUQcDQCogyyBKOHFUH4NBsFCSrsB3bxCWJYICDJSk-TpBl40KyDkzWjbsC2nb+H2-BuvLXqFP7M0RR6HRmB5UwFQlQULA0CYQU6UZY3cdEruWqzdqOJ69oSA6iSc47TtCClbAu1V4YE-gkZ2Z7Ude50XnI+96klBQBupRs9C+sNJGB8x5GkcGNLGKHQJh-GMjszAADEtiODrvN8uJEmifZlnyDcwogUXOHF5y3rkj6f20YZkWYJprH-OtLFY59hvhdSpRbJbBYNEWxYlnDGowfCWoIOXeAVpWVbVqANepz5DMG3TqzUn9QQlfkzT+b55ThaMeT5+YR0IXUIAAcXQJGyDoABRah6CddhKdkgPEEcAbdHBn9JGpdRWe0pFmk5lQdHaVQ2lmfm4fyVW0GWcg84Lhh-coumLCRRpQ5Gf7qU0CUm5fSYIZREFPTcGHcE4Rd4BeK6XVLyjO1rkPmDD6xlG0CVqVkfWzCBKYQT0OsluIUgD6i+TPR1+xbGS5SwRNFbP0b4FguiOHsDyKQjgbaXCFh-HqNMBw60HE0MEgw-SBkblIUM-wAJghShpVE3cU4Ew1Ag96NM-SaAIBDOK5gRgOC6BKPskhaILXUv2AMmglrqgnCVOCZUwgUM1lQ9QtCNL0JRD0MYcggwTBoY2WuT8HDUnaLwoq-CbLwTtnOBQIiy4IFDhIyMHdGGyNYv9GUk8nAaEcH8YhydwJ8OsqVYSmA9HmiciaAx0UhhJSBF0RseVLAtlYvffS3YkpSmoRpDRN0tFuKFp41CK4Hi1V8V-GQJipHmOYdpOm0ofh5RkMxdu8SVrFW0UIjxoleDSEyR9YaNZPSej9JpXKJsCkMPYS2HkDgAJKCTrDUhLjBI6NnHU8S3jeCNJpkoIYdZRjIl0tIJ+rEETB2KdGGabQKkIwEbZXRUzKqhRqluHcczHw-hoa0uswEfidKDGorsDZAl0QUPs1a61NqoG2iEK57Y4o0X7Gsj8eVDJOAlE4WQMhWFRjWR2L5t0fkPT+cjF6UBAU6V0lYDQUd+QrKhdpHQsKraOBBFbf6yKJxE1CNi-FwxAlymDBS6FIphjSHhTIFsSUaWajpSTFG3gGXKSZXoFlqzWjAxsAQcwA4IWmE5vCWBNSfYdWxWKOV6hnCOBkMwLQ0ggx0VDECaMQJGbJTMEtNOmckbYq4dY0pExNLtBBNC4C8gFRmp+IMR+S1e5HH7sETVuhQw-jsNSNQjgfrAwHFYA1YJuJIg3i4IAA */
   id: "playing",
   initial: "idle",
   context: {
@@ -128,6 +132,7 @@ export const machine = setup({
         START: "getMystery"
       }
     },
+
     getMystery: {
       invoke: {
         src: 'fetchWord',
@@ -145,6 +150,7 @@ export const machine = setup({
         }
       }
     },
+
     playRound: {
       type: 'parallel',
       after: {
@@ -261,6 +267,7 @@ export const machine = setup({
         },
       }
     },
+
     getMysteryFromTag: {
       invoke: {
         id: 'fetchWordFromTag',
@@ -279,13 +286,33 @@ export const machine = setup({
           ]
         },
         onError: {
-          target: 'endGame',
-          actions: 'setErrorMessage'
+          target: 'complete',
+          actions: 'addScoreBonus',
+          reenter: true
         },
         src: 'fetchWordFromTag'
       }
     },
+
     endGame: {
+      on: {
+        RESTART: {
+          target: 'getMystery',
+          actions: assign({
+            score: 0,
+            multiplier: 5,
+            timer: 30,
+            mysteryWord: initialGameWord,
+            tagWord: "" as Hiragana,
+            tagDefinitions: [],
+            wordHistory: [],
+            errorMessage: ""
+          })
+        }
+      }
+    },
+
+    complete: {
       on: {
         RESTART: {
           target: 'getMystery',

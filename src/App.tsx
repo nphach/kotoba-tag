@@ -51,6 +51,26 @@ function App() {
     );
   }
 
+  if (state.matches('complete')) {
+    return (
+      <div className="flex flex-col space-y-6 w-72 md:w-96 px-2">
+        <Card className="w-full max-w-2xl mx-auto">
+          <CardHeader>
+            <CardTitle>nice!</CardTitle>
+          </CardHeader>
+          <CardContent className='space-y-4 text-sm text-balance'>
+            <p>there are no corresponding words in the word bank</p>
+            <p>you've earned a bonus 10x multiplier</p>
+            <p className="font-kosugi">日本語が上手ですね ww</p>
+            <p className="text-2xl">final score: {score}</p>
+          </CardContent>
+        </Card>
+        <Button onClick={() => send({ type: 'RESTART' })}>restart!</Button>
+        <a href="https://nphach.github.io" className="text-xs font-kosugi font-bold">made by nphach</a>
+      </div>
+    );
+  }
+
   if (state.matches('endGame')) {
     return (
       <div className="flex flex-col space-y-6 w-72 md:w-96 px-2">

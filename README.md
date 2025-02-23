@@ -65,7 +65,6 @@ similarity = model.predict(sentences1, sentences2)
 - play online with others (co-op against Kotoba Tag, or versus without Mystery Words)
 
 ### Potential Problems/ Topics to Explore
-- Japanese dictionary APIs - for validating Tag Words
 
 ### More Resources
 - https://en.wikipedia.org/wiki/Shiritori
