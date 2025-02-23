@@ -48,11 +48,12 @@ def get_prediction(req: DefinitionRequest):
             }
         )
         data = response.json()
-        if "estimated_time" in data:
-            raise HTTPException(status_code=503, detail="model loading, try again in 60 seconds!")
+
         return {"predictions": data}
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=e)
+    except Exception:
+        if "estimated_time" in response.json():
+            raise HTTPException(status_code=503, detail="model loading, try again in 60 seconds!")
+        raise HTTPException(status_code=500, detail="error fetching from HuggingFace")
 
 # @app.post("/definition")
 # def get_prediction(req: DefinitionRequest):

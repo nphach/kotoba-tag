@@ -93,7 +93,7 @@ class VocabStore {
             return isValid
         } catch (error) {
             console.error("error", error)
-            throw "failed to fetch"
+            throw error
         }
     }
 
@@ -160,7 +160,7 @@ class VocabStore {
 
         } catch (error) {
             console.error("error", error)
-            throw "failed to fetch"
+            throw error
         }
     }
 }
