@@ -83,7 +83,7 @@ class VocabStore {
                 throw new Error(`${res.detail}`)
             }
 
-            const isValid = res["predictions"].some((score: number) => score > 0.6)
+            const isValid = res["predictions"].some((score: number) => score > 0.85)
             console.log("def isValid", isValid)
 
             if (!isValid) {
