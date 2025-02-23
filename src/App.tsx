@@ -70,7 +70,7 @@ function App() {
 
   return (
     <div className='h-full w-full flex flex-col content-start'>
-      <div className="space-y-5 w-72 md:w-96 my-0 py-20 overflow-y-auto px-2">
+      <div className="space-y-5 w-72 md:w-96 my-0 py-5 overflow-y-auto px-2">
         <p className="w-full text-4xl font-kosugi">Kotoba Tag!</p>
 
         <div className="flex justify-between items-center">
