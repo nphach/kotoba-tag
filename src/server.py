@@ -39,7 +39,7 @@ async def get_prediction(req: DefinitionRequest):
                 }
             )
             response.raise_for_status()
-            return response.json()
+            return {"predictions": response.json()}
     except httpx.HTTPStatusError as e:
         if e.response.status_code == 503:
             raise HTTPException(
