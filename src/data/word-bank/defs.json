@@ -3235,7 +3235,9 @@
         "def_id": 359,
         "vocab_id": 250,
         "def": [
-            "myriad"
+            "ten thousand",
+            "10000",
+            "10,000"
         ],
         "def_lang": "EN"
     },
@@ -48615,7 +48617,8 @@
         "def_id": 5163,
         "vocab_id": 3983,
         "def": [
-            "ten thousand people"
+            "ten thousand people",
+            "10000 people"
         ],
         "def_lang": "EN"
     },
