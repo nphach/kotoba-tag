@@ -22,8 +22,8 @@ class VocabStore {
     private initializeData() {
         // pull all vocab
         (vocabJson as any[]).forEach(v => {
-            // for my sanity, just consider N5 vocab for now
-            if (v.jlpt_level === 'N5') {
+            // for my sanity, just consider N5 and N4 vocab for now
+            if (v.jlpt_level in ['N5', 'N4']) {
                 this.wordBank.set(v.vocab_id, {
                     vocabId: v.vocabId,
                     kanji: v.kanji,
