@@ -3,6 +3,7 @@ src/data/model/
 .env
 etc
 venv
+.venv
 src/lib/output/
 __init__.py
 __pycache__
