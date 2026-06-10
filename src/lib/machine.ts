@@ -4,6 +4,7 @@ import {
   initialGameWord,
   Hiragana
 } from './types.ts'
+import { ensureModelReady } from "./api.ts";
 import { vocabStore } from "./data-store.ts";
 
 export const machine = setup({
@@ -53,7 +54,7 @@ export const machine = setup({
     }),
 
     decrementTimer: assign({
-      timer: ({ context }) => context.timer > 1 ? context.timer - 1 : 1
+      timer: ({ context }) => Math.max(0, context.timer - 1)
     }),
 
     setErrorMessage: assign({
@@ -64,7 +65,17 @@ export const machine = setup({
       errorMessage: () => ""
     })
   },
+  guards: {
+    isCompleteError: ({ event }) => {
+      const error = event.error
+      return error instanceof Error && error.message.includes('complete')
+    }
+  },
   actors: {
+    warmupModel: fromPromise(async () => {
+      await ensureModelReady()
+    }),
+
     // fetch a random word from VocabStore
     fetchWord: fromPromise(
       async () => {
@@ -88,7 +99,6 @@ export const machine = setup({
     // fetch a random word for VocabStore based on the given tagWord and wordHistory
     fetchWordFromTag: fromPromise(
       async ({ input }: { input: { wordHistory: GameContext["wordHistory"], tagWord: Hiragana } }) => {
-        console.log("fetchWordFromTag input:", input)
         const word = vocabStore.getRandomWord(input.wordHistory, input.tagWord)
         if (!word) {
           throw new Error("complete - no more words available!");
@@ -100,14 +110,12 @@ export const machine = setup({
 
     verifyDef: fromPromise(
       async ({ input }: { input: { mysteryWord: GameContext["mysteryWord"], definition: string } }) => {
-        console.log("verifyDef input:", input)
         return vocabStore.validateDefinition(input.mysteryWord, input.definition)
       }
     ),
 
     verifyTagWord: fromPromise(
       async ({ input }: { input: { mysteryWord: GameContext["mysteryWord"], wordHistory: GameContext["wordHistory"], tagWord: Hiragana } }) => {
-        console.log("verifyTagWord input:", input)
         return vocabStore.validateTag(input.mysteryWord, input.wordHistory, input.tagWord)
       })
   },
@@ -129,7 +137,21 @@ export const machine = setup({
   states: {
     idle: {
       on: {
-        START: "getMystery"
+        START: "prepareGame"
+      }
+    },
+
+    prepareGame: {
+      invoke: {
+        src: 'warmupModel',
+        onDone: {
+          target: 'getMystery',
+          actions: 'clearErrorMessage'
+        },
+        onError: {
+          target: 'idle',
+          actions: 'setErrorMessage'
+        }
       }
     },
 
@@ -144,10 +166,17 @@ export const machine = setup({
             'clearErrorMessage'
           ]
         },
-        onError: {
-          target: 'endGame',
-          actions: 'setErrorMessage'
-        }
+        onError: [
+          {
+            guard: 'isCompleteError',
+            target: 'complete',
+            actions: 'addScoreBonus'
+          },
+          {
+            target: 'endGame',
+            actions: 'setErrorMessage'
+          }
+        ]
       }
     },
 
@@ -297,7 +326,7 @@ export const machine = setup({
     endGame: {
       on: {
         RESTART: {
-          target: 'getMystery',
+          target: 'prepareGame',
           actions: assign({
             score: 0,
             multiplier: 5,
@@ -315,7 +344,7 @@ export const machine = setup({
     complete: {
       on: {
         RESTART: {
-          target: 'getMystery',
+          target: 'prepareGame',
           actions: assign({
             score: 0,
             multiplier: 5,

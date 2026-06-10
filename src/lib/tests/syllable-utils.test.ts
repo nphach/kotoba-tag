@@ -55,12 +55,6 @@ describe.concurrent('normalizeKana', () => {
         expect(syl.normalizeKana('わ' as Hiragana)).toBe('わ')
         expect(syl.normalizeKana('ん' as Hiragana)).toBe('ん')
     })
-
-    it('should do nothing to normal hiragana', () => {
-        expect(syl.normalizeKana('あ' as Hiragana)).toBe('あ')
-        expect(syl.normalizeKana('わ' as Hiragana)).toBe('わ')
-        expect(syl.normalizeKana('ん' as Hiragana)).toBe('ん')
-    })
 })
 
 describe.concurrent('getColumn', () => {
@@ -85,7 +79,7 @@ describe.concurrent('getFirst', () => {
 describe.concurrent('getLast', () => {
     it('should get last two kana (plus elongated vowel) for chouon syllables', () => {
         expect(syl.getLast('こーひー' as Hiragana).sort).toEqual(['い', 'ひ'].sort)
-        expect(syl.getLast('せんよう' as Hiragana).sort).toEqual(['よ', 'う`'].sort)
+        expect(syl.getLast('せんよう' as Hiragana).sort).toEqual(['よ', 'う'].sort)
         expect(syl.getLast('せんせい' as Hiragana).sort).toEqual(['せ', 'え', 'い'].sort)
     })
 
@@ -101,6 +95,29 @@ describe.concurrent('getLast', () => {
     it('should get single kana for regular syllables', () => {
         expect(syl.getLast('でも' as Hiragana)).toEqual(['も'])
         expect(syl.getLast('じかん' as Hiragana)).toEqual(['ん'])
+    })
+})
+
+describe.concurrent('getLeading', () => {
+    it('should get first kana for regular syllables', () => {
+        expect(syl.getLeading('ひらがな' as Hiragana)).toEqual(['ひ'])
+        expect(syl.getLeading('でも' as Hiragana)).toEqual(['で'])
+    })
+
+    it('should get youon options for leading syllables', () => {
+        expect(syl.getLeading('きゃく' as Hiragana).sort).toEqual(['き', 'や'].sort)
+    })
+})
+
+describe.concurrent('matchesShiritoriLink', () => {
+    it('should accept valid shiritori chains', () => {
+        expect(syl.matchesShiritoriLink('はな' as Hiragana, 'なつ' as Hiragana)).toBe(true)
+        expect(syl.matchesShiritoriLink('しゃしん' as Hiragana, 'にほん' as Hiragana)).toBe(true)
+    })
+
+    it('should reject invalid shiritori chains', () => {
+        expect(syl.matchesShiritoriLink('みゃく' as Hiragana, 'しゃしん' as Hiragana)).toBe(false)
+        expect(syl.matchesShiritoriLink('はな' as Hiragana, 'はる' as Hiragana)).toBe(false)
     })
 })
 

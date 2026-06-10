@@ -2,14 +2,12 @@ import * as wanakana from 'wanakana'
 import { Hiragana } from './types.ts'
 
 export function isHiragana(s: string): s is Hiragana {
-    return wanakana.isHiragana(s) || wanakana.isKatakana(s)
+    return wanakana.isHiragana(s)
 }
 
 export function toHiragana(s: string): Hiragana {
-    if (isHiragana(s)) {
-        return wanakana.toHiragana(s) as Hiragana
-    } if (wanakana.isKatakana(s)) {
-        return wanakana.toHiragana(s) as Hiragana
+    if (wanakana.isHiragana(s)) {
+        return s as Hiragana
     }
     throw new Error('invalid Hiragana string')
 }
@@ -74,6 +72,33 @@ export function getColumn(h: Hiragana): Hiragana {
 
 export function getFirst(h: Hiragana): Hiragana {
     return h[0] as Hiragana
+}
+
+export function getLeading(h: Hiragana): Hiragana[] {
+    if (h.length === 0) return []
+    const curr = h[0] as Hiragana
+    const right = h[1] as Hiragana
+
+    if (h.length >= 2 && chiisaiKana.has(right)) {
+        return [curr, chiisaiKana.get(right) ?? right]
+    } else if (
+        h.length >= 2 && (
+            (right === 'ー')
+            || ((right === 'あ') && ('あ'.includes(getColumn(curr))))
+            || ((right === 'い') && ('いえ'.includes(getColumn(curr))))
+            || ((right === 'う') && ('うお'.includes(getColumn(curr))))
+        )
+    ) {
+        return [curr, right]
+    }
+    return [curr]
+}
+
+export function matchesShiritoriLink(previousWord: Hiragana, nextWord: Hiragana): boolean {
+    const validStarts = getCorresponding(getLast(toHiragana(previousWord)))
+    const leading = getLeading(toHiragana(nextWord))
+    const normalizedValid = new Set(validStarts.map(normalizeKana))
+    return leading.some((k) => normalizedValid.has(normalizeKana(k)))
 }
 
 export function getLast(h: Hiragana): Hiragana[] {

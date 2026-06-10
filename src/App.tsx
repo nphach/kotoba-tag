@@ -1,6 +1,7 @@
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 import { useMachine } from '@xstate/react'
 import { flushSync } from 'react-dom'
+import { prefetchModel } from '@/lib/api.ts'
 import { machine } from '@/lib/machine.ts'
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -11,6 +12,8 @@ import './App.css'
 
 function App() {
   const [state, send] = useMachine(machine)
+  const defInputRef = useRef<HTMLInputElement>(null)
+  const tagInputRef = useRef<HTMLInputElement>(null)
 
   const { mysteryWord, score, multiplier, timer, wordHistory, tagWord, tagDefinitions, errorMessage } = state.context;
 
@@ -32,9 +35,22 @@ function App() {
   };
 
   useEffect(() => {
-    const input = document.querySelector('input');
-    if (input) {
-      input.focus();
+    prefetchModel()
+  }, [])
+
+  useEffect(() => {
+    if (inTagPhase && tagInputRef.current) {
+      const input = tagInputRef.current
+      wanakana.bind(input)
+      return () => wanakana.unbind(input)
+    }
+  }, [inTagPhase])
+
+  useEffect(() => {
+    if (inDefPhase) {
+      defInputRef.current?.focus()
+    } else if (inTagPhase) {
+      tagInputRef.current?.focus()
     }
   }, [inDefPhase, inTagPhase]);
 
@@ -43,9 +59,22 @@ function App() {
       <div className="flex flex-col space-y-6 w-72 md:w-96 px-2">
         <p className="text-4xl font-kosugi">Kotoba Tag!</p>
         <Button onClick={() => send({ type: 'START' })}>start!</Button>
+        {errorMessage && (
+          <p className="text-red-500 text-xs font-bold">{errorMessage}</p>
+        )}
         <a href="https://github.com/nphach/kotoba-tag/tree/main?tab=readme-ov-file#rules">
           view rules on github ‣
         </a>
+        <a href="https://nphach.github.io" className="text-xs font-kosugi font-bold">made by nphach</a>
+      </div>
+    );
+  }
+
+  if (state.matches('prepareGame')) {
+    return (
+      <div className="flex flex-col space-y-6 w-72 md:w-96 px-2">
+        <p className="text-4xl font-kosugi">Kotoba Tag!</p>
+        <p className="text-sm text-gray-600">preparing game...</p>
         <a href="https://nphach.github.io" className="text-xs font-kosugi font-bold">made by nphach</a>
       </div>
     );
@@ -111,7 +140,7 @@ function App() {
             {mysteryWord.kanji ? <span className="text-xl font-bold">{mysteryWord.kana}</span> : <span className="text-4xl font-extrabold">{mysteryWord.kana}</span>}
             {inTagPhase &&
               <span className="text-sm text-gray-600">
-                {mysteryWord.definitions.flat().join(", ")}
+                {mysteryWord.definitions.join(", ")}
               </span>
             }
           </CardContent>
@@ -127,6 +156,7 @@ function App() {
           <form onSubmit={handleSubmit} id="form" className="space-y-4">
             {inDefPhase &&
               <Input
+                ref={defInputRef}
                 name="d"
                 placeholder={"enter definition..."}
                 className="text-lg border-purple-500"
@@ -135,8 +165,8 @@ function App() {
 
             {inTagPhase &&
               <Input
+                ref={tagInputRef}
                 name="t"
-                ref={(el) => el && wanakana.bind(el)}
                 placeholder={"enter tag word..."}
                 className="text-lg border-blue-500"
               />
@@ -166,7 +196,7 @@ function App() {
             <CardContent className="space-y-2 flex flex-col p-4">
               <span className="text-xl font-bold">{tagWord}</span>
               <span className="text-sm text-gray-600">
-                {tagDefinitions.flat().join(", ")}
+                {tagDefinitions.join(", ")}
               </span>
             </CardContent>
           </Card>}

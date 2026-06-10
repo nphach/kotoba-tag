@@ -1,15 +1,167 @@
 import vocabJson from '@/data/word-bank/vocab.json';
 import defsJson from '@/data/word-bank/defs.json';
 import {
-    getLast,
-    getCorresponding,
+    API_BASE,
+    ensureModelReady,
+    ModelLoadingError,
+    postDefinition,
+} from './api.ts'
+import {
     isHiragana,
+    matchesShiritoriLink,
     toHiragana
 } from './syllable-utils.ts'
 import {
     GameWord,
     Hiragana
 } from './types.ts'
+
+function normalizeDefinition(value: string): string {
+    return value
+        .trim()
+        .toLowerCase()
+        .replace(/[.,;:!?]+$/g, '')
+        .replace(/[-/]/g, ' ')
+        .replace(/\b(a|an|the)\b/g, ' ')
+        .replace(/\s+/g, ' ')
+        .trim()
+}
+
+function isExactDefinitionMatch(input: string, definitions: string[]): boolean {
+    const normalized = normalizeDefinition(input)
+    return definitions.some((definition) => normalizeDefinition(definition) === normalized)
+}
+
+function damerauLevenshteinDistance(a: string, b: string): number {
+    const rows = a.length + 1
+    const columns = b.length + 1
+    const distance = Array.from({ length: rows }, () => Array<number>(columns).fill(0))
+
+    for (let i = 0; i <= a.length; i++) distance[i][0] = i
+    for (let j = 0; j <= b.length; j++) distance[0][j] = j
+
+    for (let i = 1; i <= a.length; i++) {
+        for (let j = 1; j <= b.length; j++) {
+            const cost = a[i - 1] === b[j - 1] ? 0 : 1
+            distance[i][j] = Math.min(
+                distance[i - 1][j] + 1,
+                distance[i][j - 1] + 1,
+                distance[i - 1][j - 1] + cost
+            )
+
+            if (
+                i > 1 &&
+                j > 1 &&
+                a[i - 1] === b[j - 2] &&
+                a[i - 2] === b[j - 1]
+            ) {
+                distance[i][j] = Math.min(distance[i][j], distance[i - 2][j - 2] + cost)
+            }
+        }
+    }
+
+    return distance[a.length][b.length]
+}
+
+function allowedStrictTypoDistance(length: number): number {
+    if (length <= 4) return 1
+    if (length <= 10) return 2
+    return Math.min(3, Math.floor(length * 0.15))
+}
+
+function isStrictTypoDefinitionMatch(input: string, definition: string): boolean {
+    const normalizedInput = normalizeDefinition(input)
+    const normalizedDefinition = normalizeDefinition(definition)
+    const maxLength = Math.max(normalizedInput.length, normalizedDefinition.length)
+    const maxDistance = allowedStrictTypoDistance(maxLength)
+
+    if (maxLength === 0) return false
+    if (Math.abs(normalizedInput.length - normalizedDefinition.length) > maxDistance) return false
+
+    const distance = damerauLevenshteinDistance(normalizedInput, normalizedDefinition)
+    if (distance <= maxDistance && distance / maxLength <= 0.18) {
+        return true
+    }
+
+    const compactInput = normalizedInput.replace(/\s/g, '')
+    const compactDefinition = normalizedDefinition.replace(/\s/g, '')
+    const compactMaxLength = Math.max(compactInput.length, compactDefinition.length)
+    const compactMaxDistance = allowedStrictTypoDistance(compactMaxLength)
+
+    if (compactInput === compactDefinition) return true
+    if (Math.abs(compactInput.length - compactDefinition.length) > compactMaxDistance) return false
+
+    const compactDistance = damerauLevenshteinDistance(compactInput, compactDefinition)
+
+    return (
+        compactMaxLength > 0 &&
+        compactDistance <= compactMaxDistance &&
+        compactDistance / compactMaxLength <= 0.15
+    )
+}
+
+function getDefinitionTokens(value: string): string[] {
+    const normalized = normalizeDefinition(value)
+    if (normalized === '') return []
+    return normalized.split(' ')
+}
+
+function tokenMatches(inputToken: string, definitionToken: string): boolean {
+    if (inputToken === definitionToken) return true
+
+    const maxLength = Math.max(inputToken.length, definitionToken.length)
+    if (maxLength < 5) return false
+    if (Math.abs(inputToken.length - definitionToken.length) > 1) return false
+
+    return damerauLevenshteinDistance(inputToken, definitionToken) <= 1
+}
+
+function isTokenPhraseDefinitionMatch(input: string, definition: string): boolean {
+    const inputTokens = getDefinitionTokens(input)
+    const definitionTokens = getDefinitionTokens(definition)
+
+    if (inputTokens.length < 2 && definitionTokens.length < 2) return false
+    if (Math.abs(inputTokens.length - definitionTokens.length) > 1) return false
+
+    const compactInput = inputTokens.join('')
+    const compactDefinition = definitionTokens.join('')
+    if (compactInput !== '' && compactInput === compactDefinition) return true
+
+    const unmatchedDefinitionTokens = [...definitionTokens]
+    let matches = 0
+
+    for (const inputToken of inputTokens) {
+        const matchIndex = unmatchedDefinitionTokens.findIndex((definitionToken) =>
+            tokenMatches(inputToken, definitionToken)
+        )
+
+        if (matchIndex >= 0) {
+            matches += 1
+            unmatchedDefinitionTokens.splice(matchIndex, 1)
+        }
+    }
+
+    return matches / Math.max(inputTokens.length, definitionTokens.length) >= 0.8
+}
+
+function isLocallyAcceptableDefinition(input: string, definitions: string[]): boolean {
+    return definitions.some((definition) =>
+        isStrictTypoDefinitionMatch(input, definition) ||
+        isTokenPhraseDefinitionMatch(input, definition)
+    )
+}
+
+type VocabRow = {
+    vocab_id: number
+    kanji: string | null
+    kana: string
+    jlpt_level: string
+}
+
+type DefRow = {
+    vocab_id: number
+    def: string[]
+}
 
 class VocabStore {
     private wordBank: Map<number, GameWord>;
@@ -20,22 +172,19 @@ class VocabStore {
     }
 
     private initializeData() {
-        // pull all vocab
-        (vocabJson as any[]).forEach(v => {
-            // for my sanity, just consider N5 and N4 vocab for now
-            if (['N5'].includes(v.jlpt_level)) {
+        (vocabJson as VocabRow[]).forEach(v => {
+            if (['N5', 'N4'].includes(v.jlpt_level)) {
                 this.wordBank.set(v.vocab_id, {
-                    vocabId: v.vocabId,
+                    vocabId: v.vocab_id,
                     kanji: v.kanji,
-                    kana: v.kana,
+                    kana: v.kana as Hiragana,
                     definitions: []
                 })
             }
         });
 
-        // add definitions
-        (defsJson as any[]).forEach(d => {
-            this.wordBank.get(d.vocab_id)?.definitions.push(d.def)
+        (defsJson as DefRow[]).forEach(d => {
+            this.wordBank.get(d.vocab_id)?.definitions.push(...d.def)
         })
     }
 
@@ -43,19 +192,15 @@ class VocabStore {
     getRandomWord(exclude: Hiragana[], tagWord: Hiragana): GameWord | null
     getRandomWord(exclude?: Hiragana[], tagWord?: Hiragana): GameWord | null {
         if (exclude && tagWord) {
-            // get word based on exclude[] and tag word
-            const lastKana = getLast(tagWord)
-            const validStartingKana = getCorresponding(lastKana)
-
             const availableWords = Array.from(this.wordBank.values())
                 .filter(word => !exclude.includes(word.kana))
-                .filter(word => validStartingKana.some(h => word.kana.startsWith(h)))
+                .filter(word => matchesShiritoriLink(tagWord, word.kana))
 
             if (availableWords.length === 0) return null;
             return availableWords[Math.floor(Math.random() * availableWords.length)]
         } else {
-            // get any word
             const availableWords = Array.from(this.wordBank.values())
+            if (availableWords.length === 0) return null;
             return availableWords[Math.floor(Math.random() * availableWords.length)]
         }
     }
@@ -65,26 +210,17 @@ class VocabStore {
             throw new Error("must enter a definition")
         }
 
+        if (isExactDefinitionMatch(inputDef, mysteryWord.definitions)) {
+            return true
+        }
+
+        if (isLocallyAcceptableDefinition(inputDef, mysteryWord.definitions)) {
+            return true
+        }
+
         try {
-            const response = await fetch("https://kotoba-tag-server.onrender.com/definition", {
-            // const response = await fetch("http://127.0.0.1:8000/definition", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    user_def: inputDef,
-                    valid_defs: mysteryWord.definitions.flat()
-                }),
-            });
-
-            const res = await response.json()
-            console.log("res", res)
-
-            if (!response.ok) {
-                throw new Error(`${res.detail}`)
-            }
-
-            const isValid = res["predictions"].some((score: number) => score > 0.85)
-            console.log("def isValid", isValid)
+            const predictions = await postDefinition(inputDef, mysteryWord.definitions)
+            const isValid = predictions.some((score) => score > 0.85)
 
             if (!isValid) {
                 throw new Error("incorrect definition")
@@ -92,13 +228,24 @@ class VocabStore {
 
             return isValid
         } catch (error) {
-            console.error("error", error)
+            if (error instanceof ModelLoadingError) {
+                await ensureModelReady()
+                const predictions = await postDefinition(inputDef, mysteryWord.definitions)
+                const isValid = predictions.some((score) => score > 0.85)
+
+                if (!isValid) {
+                    throw new Error("incorrect definition")
+                }
+
+                return isValid
+            }
+
             throw error
         }
     }
 
     async validateTag(mysteryWord: GameWord, wordHistory: string[], inputTag: Hiragana): Promise<{ tagWord: Hiragana, defs: string[] }> {
-        const tagWord = inputTag.trim()
+        const tagWord = inputTag.trim() as Hiragana
 
         if (!isHiragana(tagWord)) {
             throw new Error("must enter hiragana")
@@ -108,59 +255,47 @@ class VocabStore {
             throw new Error("must be two or more kana")
         }
 
-        const mysteryLastKana = getLast(toHiragana(mysteryWord.kana))
-        const validStartingKana = getCorresponding(mysteryLastKana)
-        const tagFirstKana = toHiragana(tagWord[0]);
-
-        if (!validStartingKana.includes(tagFirstKana)) {
-            throw new Error(`must start with one of: ${validStartingKana.join(", ")}`)
+        if (!matchesShiritoriLink(mysteryWord.kana, tagWord)) {
+            throw new Error("tag word must follow shiritori rules")
         }
 
         if (wordHistory.map((x) => toHiragana(x)).includes(tagWord)) {
             throw new Error("word already encountered")
         }
 
-        try {
-            const response = await fetch(`https://kotoba-tag-server.onrender.com/tag-word?req=${encodeURIComponent(tagWord)}`)
-            // const response = await fetch(`http://127.0.0.1:8000/tag-word?req=${encodeURIComponent(tagWord)}`)
-            
-            const res = await response.json()
-            console.log("jisho res", res)
+        const response = await fetch(`${API_BASE}/tag-word?req=${encodeURIComponent(tagWord)}`)
 
-            if (!response.ok) {
-                throw new Error(`${res.detail}`)
-            }
+        const res = await response.json()
 
-            if (res.data && res.data.length > 0) {
-                let wordFound = false
-                const validDefs: string[] = [];
-                
-                res.data.forEach((entry: any) => {
-                    const readings = entry.japanese.map((j: any) => j.reading as Hiragana)
-                    if (readings.includes(tagWord)) {
-                        wordFound = true
-                        entry.senses.forEach((sense: any) => {
-                            if (sense.parts_of_speech.includes("Noun")) {
-                                validDefs.push(...sense.english_definitions)
-                            }
-                        })
-                    }
-                })
+        if (!response.ok) {
+            throw new Error(`${res.detail}`)
+        }
 
-                if (!wordFound) {
-                    throw new Error("could not find word")
-                } else if (validDefs.length === 0) {
-                    throw new Error("not a noun")
+        if (res.data && res.data.length > 0) {
+            let wordFound = false
+            const validDefs: string[] = [];
+
+            res.data.forEach((entry: { japanese: { reading: string }[], senses: { parts_of_speech: string[], english_definitions: string[] }[] }) => {
+                const readings = entry.japanese.map((j) => j.reading as Hiragana)
+                if (readings.includes(tagWord)) {
+                    wordFound = true
+                    entry.senses.forEach((sense) => {
+                        if (sense.parts_of_speech.includes("Noun")) {
+                            validDefs.push(...sense.english_definitions)
+                        }
+                    })
                 }
+            })
 
-                return { tagWord: tagWord, defs: validDefs }
-            } else {
-                throw new Error("could not find word, try again")
+            if (!wordFound) {
+                throw new Error("could not find word")
+            } else if (validDefs.length === 0) {
+                throw new Error("not a noun")
             }
 
-        } catch (error) {
-            console.error("error", error)
-            throw error
+            return { tagWord: tagWord, defs: validDefs }
+        } else {
+            throw new Error("could not find word, try again")
         }
     }
 }
