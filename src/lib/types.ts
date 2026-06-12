@@ -15,6 +15,8 @@ export const initialGameWord: GameWord = {
     definitions: []
 }
 
+export type EndReason = "timeout" | "error" | null;
+
 export type GameContext = {
   score: number;
   multiplier: number;
@@ -24,4 +26,7 @@ export type GameContext = {
   tagDefinitions: string[];
   wordHistory: Hiragana[];
   errorMessage: string;
+  wordsPlayed: number;
+  correctDefinitions: number;
+  endReason: EndReason;
 };

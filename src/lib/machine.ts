@@ -57,6 +57,22 @@ export const machine = setup({
       timer: ({ context }) => Math.max(0, context.timer - 1)
     }),
 
+    incrementWordsPlayed: assign({
+      wordsPlayed: ({ context }) => (context.wordsPlayed ?? 0) + 1
+    }),
+
+    incrementCorrectDefinitions: assign({
+      correctDefinitions: ({ context }) => (context.correctDefinitions ?? 0) + 1
+    }),
+
+    setEndReasonTimeout: assign({
+      endReason: () => "timeout" as const
+    }),
+
+    setEndReasonError: assign({
+      endReason: () => "error" as const
+    }),
+
     setErrorMessage: assign({
       errorMessage: ({ event }) => event.error.message || "error"
     }),
@@ -132,7 +148,10 @@ export const machine = setup({
     tagWord: "" as Hiragana,
     tagDefinitions: [],
     wordHistory: [],
-    errorMessage: ""
+    errorMessage: "",
+    wordsPlayed: 0,
+    correctDefinitions: 0,
+    endReason: null
   },
   states: {
     idle: {
@@ -163,6 +182,7 @@ export const machine = setup({
           actions: [
             'updateMysteryWord',
             'addMystery',
+            'incrementWordsPlayed',
             'clearErrorMessage'
           ]
         },
@@ -174,7 +194,7 @@ export const machine = setup({
           },
           {
             target: 'endGame',
-            actions: 'setErrorMessage'
+            actions: ['setErrorMessage', 'setEndReasonError']
           }
         ]
       }
@@ -184,7 +204,8 @@ export const machine = setup({
       type: 'parallel',
       after: {
         '30000': {
-          target: 'endGame'
+          target: 'endGame',
+          actions: 'setEndReasonTimeout'
         }
       },
       states: {
@@ -216,6 +237,7 @@ export const machine = setup({
                       target: "#playing.playRound.presentMystery.part2.start",
                       actions: [
                         'incrementScore',
+                        'incrementCorrectDefinitions',
                         'clearErrorMessage'
                       ]
                     },
@@ -309,16 +331,23 @@ export const machine = setup({
           actions: [
             'updateMysteryWord',
             'addMystery',
+            'incrementWordsPlayed',
             assign({ multiplier: 5 }),
             assign({ timer: 30 }),
             'clearErrorMessage'
           ]
         },
-        onError: {
-          target: 'complete',
-          actions: 'addScoreBonus',
-          reenter: true
-        },
+        onError: [
+          {
+            guard: 'isCompleteError',
+            target: 'complete',
+            actions: 'addScoreBonus'
+          },
+          {
+            target: 'endGame',
+            actions: ['setErrorMessage', 'setEndReasonError']
+          }
+        ],
         src: 'fetchWordFromTag'
       }
     },
@@ -335,7 +364,10 @@ export const machine = setup({
             tagWord: "" as Hiragana,
             tagDefinitions: [],
             wordHistory: [],
-            errorMessage: ""
+            errorMessage: "",
+            wordsPlayed: 0,
+            correctDefinitions: 0,
+            endReason: null
           })
         },
         RESTART: {
@@ -348,7 +380,10 @@ export const machine = setup({
             tagWord: "" as Hiragana,
             tagDefinitions: [],
             wordHistory: [],
-            errorMessage: ""
+            errorMessage: "",
+            wordsPlayed: 0,
+            correctDefinitions: 0,
+            endReason: null
           })
         }
       }
@@ -356,6 +391,22 @@ export const machine = setup({
 
     complete: {
       on: {
+        RETURN_HOME: {
+          target: 'idle',
+          actions: assign({
+            score: 0,
+            multiplier: 5,
+            timer: 30,
+            mysteryWord: initialGameWord,
+            tagWord: "" as Hiragana,
+            tagDefinitions: [],
+            wordHistory: [],
+            errorMessage: "",
+            wordsPlayed: 0,
+            correctDefinitions: 0,
+            endReason: null
+          })
+        },
         RESTART: {
           target: 'prepareGame',
           actions: assign({
@@ -366,7 +417,10 @@ export const machine = setup({
             tagWord: "" as Hiragana,
             tagDefinitions: [],
             wordHistory: [],
-            errorMessage: ""
+            errorMessage: "",
+            wordsPlayed: 0,
+            correctDefinitions: 0,
+            endReason: null
           })
         }
       }
