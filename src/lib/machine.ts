@@ -325,6 +325,19 @@ export const machine = setup({
 
     endGame: {
       on: {
+        RETURN_HOME: {
+          target: 'idle',
+          actions: assign({
+            score: 0,
+            multiplier: 5,
+            timer: 30,
+            mysteryWord: initialGameWord,
+            tagWord: "" as Hiragana,
+            tagDefinitions: [],
+            wordHistory: [],
+            errorMessage: ""
+          })
+        },
         RESTART: {
           target: 'prepareGame',
           actions: assign({
