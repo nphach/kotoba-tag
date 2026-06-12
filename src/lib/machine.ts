@@ -4,7 +4,7 @@ import {
   initialGameWord,
   Hiragana
 } from './types.ts'
-import { ensureModelReady } from "./api.ts";
+import { ensureModelReady, SHOULD_BLOCK_ON_MODEL_WARMUP } from "./api.ts";
 import { vocabStore } from "./data-store.ts";
 
 export const machine = setup({
@@ -89,6 +89,8 @@ export const machine = setup({
   },
   actors: {
     warmupModel: fromPromise(async () => {
+      if (!SHOULD_BLOCK_ON_MODEL_WARMUP) return
+
       await ensureModelReady()
     }),
 

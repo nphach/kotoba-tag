@@ -1,6 +1,8 @@
 from contextlib import asynccontextmanager
 import asyncio
+import logging
 import os
+from pathlib import Path
 
 import httpx
 from dotenv import load_dotenv
@@ -8,17 +10,41 @@ from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
-load_dotenv()
+ROOT_DIR = Path(__file__).resolve().parent.parent
+load_dotenv(ROOT_DIR / ".env")
 
-HF_SIMILARITY_URL = (
-    "https://ldiy92o4l2nrl435.us-east-1.aws.endpoints.huggingface.cloud/similarity"
+logger = logging.getLogger(__name__)
+
+HF_SIMILARITY_URL = os.environ.get(
+    "HF_SIMILARITY_URL"
 )
-WARMUP_PAYLOAD = {
-    "inputs": {
-        "source_sentence": "warmup",
-        "sentences": ["warmup"],
-    }
-}
+
+PRODUCTION_CORS_ORIGINS = [
+    "https://kotoba-tag.com",
+    "https://www.kotoba-tag.com",
+    "https://kotoba-tag-app.onrender.com",
+]
+
+LOCAL_DEV_CORS_ORIGINS = [
+    "http://localhost:5173",
+    "http://127.0.0.1:5173",
+]
+
+
+def allow_localhost_cors() -> bool:
+    flag = os.environ.get("ALLOW_LOCALHOST_CORS", "").lower()
+    if flag in {"1", "true", "yes"}:
+        return True
+    if flag in {"0", "false", "no"}:
+        return False
+    return not os.environ.get("RENDER")
+
+
+def cors_origins() -> list[str]:
+    origins = list(PRODUCTION_CORS_ORIGINS)
+    if allow_localhost_cors():
+        origins = LOCAL_DEV_CORS_ORIGINS + origins
+    return origins
 
 
 class DefinitionRequest(BaseModel):
@@ -52,6 +78,9 @@ async def call_hf_similarity(source_sentence: str, sentences: list[str]) -> list
         if response.status_code == 503:
             raise HTTPException(status_code=503, detail="model loading")
 
+        if response.status_code == 403:
+            raise HTTPException(status_code=403, detail=HF_PERMISSION_HINT)
+
         if response.status_code != 200:
             raise HTTPException(
                 status_code=response.status_code,
@@ -62,16 +91,21 @@ async def call_hf_similarity(source_sentence: str, sentences: list[str]) -> list
 
 
 async def warmup_huggingface() -> None:
+    if os.environ.get("SKIP_HF_WARMUP", "").lower() in {"1", "true", "yes"}:
+        return
+
     try:
         await call_hf_similarity("warmup", ["warmup"])
     except HTTPException as error:
-        if error.status_code != 503:
-            raise
+        if error.status_code == 503:
+            return
+        logger.warning("HuggingFace warmup failed (%s): %s", error.status_code, error.detail)
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    asyncio.create_task(warmup_huggingface())
+    if os.environ.get("SKIP_HF_WARMUP", "").lower() not in {"1", "true", "yes"}:
+        asyncio.create_task(warmup_huggingface())
     yield
 
 
@@ -79,13 +113,7 @@ app = FastAPI(lifespan=lifespan)
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "https://kotoba-tag.com",
-        "https://www.kotoba-tag.com",
-        "https://kotoba-tag-app.onrender.com",
-        "http://localhost:5173",
-        "http://127.0.0.1:5173",
-    ],
+    allow_origins=cors_origins(),
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
