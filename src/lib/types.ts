@@ -29,4 +29,5 @@ export type GameContext = {
   wordsPlayed: number;
   correctDefinitions: number;
   endReason: EndReason;
+  countdown: number;
 };

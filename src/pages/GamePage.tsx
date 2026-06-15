@@ -209,6 +209,52 @@ function EndGameActions({
   );
 }
 
+function LoadingScreen({ message }: { message: string }) {
+  return (
+    <div className="mx-auto flex w-72 flex-col items-center space-y-6 px-2 md:w-96">
+      <p className="text-4xl font-kosugi">Kotoba Tag!</p>
+      <div
+        className="size-10 animate-spin rounded-full border-4 border-slate-200 border-t-purple-600"
+        role="status"
+        aria-label="loading"
+      />
+      <p className="text-center text-sm text-gray-600">{message}</p>
+      <a
+        href="https://nphach.github.io"
+        className="block text-center text-xs font-kosugi font-bold"
+      >
+        made by nphach
+      </a>
+    </div>
+  );
+}
+
+function CountdownScreen({ countdown }: { countdown: number }) {
+  const label = countdown === 0 ? "go!" : String(countdown);
+
+  return (
+    <div className="mx-auto flex w-72 flex-col items-center space-y-6 px-2 md:w-96">
+      <p className="text-4xl font-kosugi">Kotoba Tag!</p>
+      <p
+        className={cn(
+          "font-kosugi font-bold tabular-nums leading-none",
+          countdown === 0 ? "text-6xl text-green-600" : "text-8xl text-purple-600",
+        )}
+        aria-live="polite"
+      >
+        {label}
+      </p>
+      <p className="text-sm text-gray-600">get ready...</p>
+      <a
+        href="https://nphach.github.io"
+        className="block text-center text-xs font-kosugi font-bold"
+      >
+        made by nphach
+      </a>
+    </div>
+  );
+}
+
 function EndGameLayout({
   title,
   children,
@@ -271,6 +317,7 @@ function GamePage() {
     wordsPlayed,
     correctDefinitions,
     endReason,
+    countdown,
   } = state.context;
 
   const inDefPhase = state.matches({ playRound: { presentMystery: "part1" } });
@@ -342,19 +389,12 @@ function GamePage() {
     );
   }
 
-  if (state.matches("prepareGame")) {
-    return (
-      <div className="mx-auto flex w-72 flex-col space-y-6 px-2 md:w-96">
-        <p className="text-4xl font-kosugi">Kotoba Tag!</p>
-        <p className="text-sm text-gray-600">preparing game...</p>
-        <a
-          href="https://nphach.github.io"
-          className="block text-center text-xs font-kosugi font-bold"
-        >
-          made by nphach
-        </a>
-      </div>
-    );
+  if (state.matches({ prepareGame: "warmingUp" })) {
+    return <LoadingScreen message="warming up model..." />;
+  }
+
+  if (state.matches({ prepareGame: "countdown" })) {
+    return <CountdownScreen countdown={countdown} />;
   }
 
   if (state.matches("complete")) {

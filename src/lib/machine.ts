@@ -4,7 +4,7 @@ import {
   initialGameWord,
   Hiragana
 } from './types.ts'
-import { ensureModelReady, SHOULD_BLOCK_ON_MODEL_WARMUP } from "./api.ts";
+import { ensureModelReady } from "./api.ts";
 import { vocabStore } from "./data-store.ts";
 
 export const machine = setup({
@@ -89,8 +89,6 @@ export const machine = setup({
   },
   actors: {
     warmupModel: fromPromise(async () => {
-      if (!SHOULD_BLOCK_ON_MODEL_WARMUP) return
-
       await ensureModelReady()
     }),
 
@@ -153,7 +151,8 @@ export const machine = setup({
     errorMessage: "",
     wordsPlayed: 0,
     correctDefinitions: 0,
-    endReason: null
+    endReason: null,
+    countdown: 0
   },
   states: {
     idle: {
@@ -163,17 +162,43 @@ export const machine = setup({
     },
 
     prepareGame: {
-      invoke: {
-        src: 'warmupModel',
-        onDone: {
-          target: 'getMystery',
-          actions: 'clearErrorMessage'
+      initial: "warmingUp",
+      states: {
+        warmingUp: {
+          invoke: {
+            src: "warmupModel",
+            onDone: {
+              target: "countdown",
+              actions: "clearErrorMessage",
+            },
+            onError: {
+              target: "#playing.idle",
+              actions: "setErrorMessage",
+            },
+          },
         },
-        onError: {
-          target: 'idle',
-          actions: 'setErrorMessage'
-        }
-      }
+        countdown: {
+          initial: "three",
+          states: {
+            three: {
+              entry: assign({ countdown: 3 }),
+              after: { 1000: "two" },
+            },
+            two: {
+              entry: assign({ countdown: 2 }),
+              after: { 1000: "one" },
+            },
+            one: {
+              entry: assign({ countdown: 1 }),
+              after: { 1000: "go" },
+            },
+            go: {
+              entry: assign({ countdown: 0 }),
+              after: { 600: "#playing.getMystery" },
+            },
+          },
+        },
+      },
     },
 
     getMystery: {
@@ -369,7 +394,8 @@ export const machine = setup({
             errorMessage: "",
             wordsPlayed: 0,
             correctDefinitions: 0,
-            endReason: null
+            endReason: null,
+            countdown: 0
           })
         },
         RESTART: {
@@ -385,7 +411,8 @@ export const machine = setup({
             errorMessage: "",
             wordsPlayed: 0,
             correctDefinitions: 0,
-            endReason: null
+            endReason: null,
+            countdown: 0
           })
         }
       }
@@ -406,7 +433,8 @@ export const machine = setup({
             errorMessage: "",
             wordsPlayed: 0,
             correctDefinitions: 0,
-            endReason: null
+            endReason: null,
+            countdown: 0
           })
         },
         RESTART: {
@@ -422,7 +450,8 @@ export const machine = setup({
             errorMessage: "",
             wordsPlayed: 0,
             correctDefinitions: 0,
-            endReason: null
+            endReason: null,
+            countdown: 0
           })
         }
       }

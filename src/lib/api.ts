@@ -4,8 +4,6 @@ const LOCAL_API_BASE = "http://127.0.0.1:8000";
 export const API_BASE =
   import.meta.env.VITE_API_URL ??
   (import.meta.env.DEV ? LOCAL_API_BASE : PRODUCTION_API_BASE);
-export const SHOULD_BLOCK_ON_MODEL_WARMUP =
-  import.meta.env.VITE_BLOCK_ON_MODEL_WARMUP === "true";
 
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
