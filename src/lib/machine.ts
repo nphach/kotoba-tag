@@ -1,6 +1,7 @@
 import { assign, fromPromise, setup } from "xstate";
 import { ensureModelReady } from "./api.ts";
 import { GameCompleteError, getErrorMessage } from "./errors.ts";
+import { getSettings } from "./settings.ts";
 import { vocabStore } from "./data-store.ts";
 import { GameContext, Hiragana, initialGameWord } from "./types.ts";
 
@@ -81,6 +82,13 @@ export const machine = setup({
     clearErrorMessage: assign({
       errorMessage: () => "",
     }),
+
+    applySettings: assign({
+      timer: () => getSettings().timerSeconds,
+    }),
+  },
+  delays: {
+    ROUND_TIMER: ({ context }) => context.timer * 1000,
   },
   guards: {
     isCompleteError: ({ event }) => {
@@ -164,7 +172,7 @@ export const machine = setup({
   context: {
     score: 0,
     multiplier: 5,
-    timer: 30,
+    timer: getSettings().timerSeconds,
     mysteryWord: initialGameWord,
     tagWord: "" as Hiragana,
     tagDefinitions: [],
@@ -180,7 +188,7 @@ export const machine = setup({
       on: {
         START: {
           target: "prepareGame",
-          actions: "clearErrorMessage",
+          actions: ["clearErrorMessage", "applySettings"],
         },
       },
     },
@@ -254,7 +262,7 @@ export const machine = setup({
     playRound: {
       type: "parallel",
       after: {
-        "30000": {
+        ROUND_TIMER: {
           target: "endGame",
           actions: "setEndReasonTimeout",
         },
@@ -384,7 +392,7 @@ export const machine = setup({
             "addMystery",
             "incrementWordsPlayed",
             assign({ multiplier: 5 }),
-            assign({ timer: 30 }),
+            "applySettings",
             "clearErrorMessage",
           ],
         },
@@ -410,7 +418,7 @@ export const machine = setup({
           actions: assign({
             score: 0,
             multiplier: 5,
-            timer: 30,
+            timer: getSettings().timerSeconds,
             mysteryWord: initialGameWord,
             tagWord: "" as Hiragana,
             tagDefinitions: [],
@@ -424,20 +432,23 @@ export const machine = setup({
         },
         RESTART: {
           target: "prepareGame",
-          actions: assign({
-            score: 0,
-            multiplier: 5,
-            timer: 30,
-            mysteryWord: initialGameWord,
-            tagWord: "" as Hiragana,
-            tagDefinitions: [],
-            wordHistory: [],
-            errorMessage: "",
-            wordsPlayed: 0,
-            correctDefinitions: 0,
-            endReason: null,
-            countdown: 0,
-          }),
+          actions: [
+            assign({
+              score: 0,
+              multiplier: 5,
+              timer: getSettings().timerSeconds,
+              mysteryWord: initialGameWord,
+              tagWord: "" as Hiragana,
+              tagDefinitions: [],
+              wordHistory: [],
+              errorMessage: "",
+              wordsPlayed: 0,
+              correctDefinitions: 0,
+              endReason: null,
+              countdown: 0,
+            }),
+            "applySettings",
+          ],
         },
       },
     },
@@ -449,7 +460,7 @@ export const machine = setup({
           actions: assign({
             score: 0,
             multiplier: 5,
-            timer: 30,
+            timer: getSettings().timerSeconds,
             mysteryWord: initialGameWord,
             tagWord: "" as Hiragana,
             tagDefinitions: [],
@@ -463,20 +474,23 @@ export const machine = setup({
         },
         RESTART: {
           target: "prepareGame",
-          actions: assign({
-            score: 0,
-            multiplier: 5,
-            timer: 30,
-            mysteryWord: initialGameWord,
-            tagWord: "" as Hiragana,
-            tagDefinitions: [],
-            wordHistory: [],
-            errorMessage: "",
-            wordsPlayed: 0,
-            correctDefinitions: 0,
-            endReason: null,
-            countdown: 0,
-          }),
+          actions: [
+            assign({
+              score: 0,
+              multiplier: 5,
+              timer: getSettings().timerSeconds,
+              mysteryWord: initialGameWord,
+              tagWord: "" as Hiragana,
+              tagDefinitions: [],
+              wordHistory: [],
+              errorMessage: "",
+              wordsPlayed: 0,
+              correctDefinitions: 0,
+              endReason: null,
+              countdown: 0,
+            }),
+            "applySettings",
+          ],
         },
       },
     },

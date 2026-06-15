@@ -3,6 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { prefetchModel } from "@/lib/api.ts";
 import { machine } from "@/lib/machine.ts";
+import { useSettings } from "@/lib/settings-context.tsx";
 import { EndReason, Hiragana } from "@/lib/types.ts";
 import { cn } from "@/lib/utils";
 import { useMachine } from "@xstate/react";
@@ -10,6 +11,16 @@ import { useEffect, useRef } from "react";
 import { flushSync } from "react-dom";
 import { Link } from "react-router-dom";
 import * as wanakana from "wanakana";
+
+const { toHiragana, toRomaji } = wanakana;
+
+function RomajiReading({ kana }: { kana: string }) {
+  if (!kana) return null;
+
+  return (
+    <span className="block text-base text-muted-foreground">{toRomaji(kana)}</span>
+  );
+}
 
 function WordHistoryPanel({
   wordHistory,
@@ -40,7 +51,7 @@ function WordHistoryPanel({
             {wordHistory.map((word, index) => (
               <li
                 key={index}
-                className="flex items-center gap-3 rounded-md border border-slate-100 bg-slate-50/80 px-3 py-2"
+                className="flex items-center gap-3 rounded-md border border-border bg-muted/60 px-3 py-2"
               >
                 <span className="w-6 shrink-0 text-right text-xs tabular-nums text-muted-foreground">
                   {wordHistory.length - index}
@@ -54,7 +65,7 @@ function WordHistoryPanel({
             {wordHistory.map((word, index) => (
               <span
                 key={index}
-                className="rounded-full bg-slate-100 px-3 py-1 text-sm font-medium"
+                className="rounded-full bg-muted px-3 py-1 text-sm font-medium"
               >
                 {word}
               </span>
@@ -78,6 +89,9 @@ function GameHud({
   compact?: boolean;
 }) {
   const timerUrgent = timer <= 10;
+  const timerUrgentBoxClass =
+    "border-red-300 bg-red-50 dark:border-red-400/30 dark:bg-red-500/10";
+  const timerUrgentTextClass = "text-red-600 dark:text-red-400";
 
   if (compact) {
     return (
@@ -101,7 +115,7 @@ function GameHud({
         <div
           className={cn(
             "rounded-lg border bg-card px-2 py-2 text-center shadow-sm",
-            timerUrgent && "border-red-300 bg-red-50",
+            timerUrgent && timerUrgentBoxClass,
           )}
         >
           <p className="text-[10px] uppercase tracking-wide text-muted-foreground">
@@ -110,7 +124,7 @@ function GameHud({
           <p
             className={cn(
               "text-lg font-bold tabular-nums leading-tight",
-              timerUrgent && "text-red-600",
+              timerUrgent && timerUrgentTextClass,
             )}
           >
             {timer}s
@@ -137,7 +151,7 @@ function GameHud({
       <div
         className={cn(
           "rounded-lg border bg-card px-4 py-3 text-left shadow-sm",
-          timerUrgent && "border-red-300 bg-red-50",
+          timerUrgent && timerUrgentBoxClass,
         )}
       >
         <p className="text-xs uppercase tracking-wide text-muted-foreground">
@@ -146,7 +160,7 @@ function GameHud({
         <p
           className={cn(
             "text-2xl font-bold tabular-nums",
-            timerUrgent && "text-red-600",
+            timerUrgent && timerUrgentTextClass,
           )}
         >
           {timer}s
@@ -214,7 +228,7 @@ function EndGameActions({
         </Link>
       </Button>
       <Button variant="outline" asChild>
-        <Link to="/rules">view rules</Link>
+        <Link to="/rules">rules</Link>
       </Button>
     </>
   );
@@ -225,11 +239,11 @@ function LoadingScreen({ message }: { message: string }) {
     <div className="mx-auto flex w-72 flex-col items-center space-y-6 px-2 md:w-96">
       <p className="text-4xl font-kosugi">Kotoba Tag!</p>
       <div
-        className="size-10 animate-spin rounded-full border-4 border-slate-200 border-t-purple-600"
+        className="size-10 animate-spin rounded-full border-4 border-muted border-t-purple-600"
         role="status"
         aria-label="loading"
       />
-      <p className="text-center text-sm text-gray-600">{message}</p>
+      <p className="text-center text-sm text-muted-foreground">{message}</p>
       <a
         href="https://nphach.github.io"
         className="block text-center text-xs font-kosugi font-bold"
@@ -257,7 +271,7 @@ function CountdownScreen({ countdown }: { countdown: number }) {
       >
         {label}
       </p>
-      <p className="text-sm text-gray-600">get ready...</p>
+      <p className="text-sm text-muted-foreground">get ready...</p>
       <a
         href="https://nphach.github.io"
         className="block text-center text-xs font-kosugi font-bold"
@@ -285,12 +299,12 @@ function EndGameLayout({
         <div className="grid gap-6 lg:grid-cols-[minmax(0,1.05fr)_minmax(18rem,0.95fr)] lg:items-start">
           <div className="flex flex-col gap-5 text-left">
             <Card className="overflow-hidden">
-              <CardHeader className="border-b bg-slate-50/80 pb-4">
+              <CardHeader className="border-b bg-muted/50 pb-4">
                 <CardTitle className="text-3xl font-kosugi">{title}</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4 pt-6">{children}</CardContent>
             </Card>
-            <div className="flex flex-col items-center gap-3 sm:flex-row sm:flex-wrap sm:justify-center">
+            <div className="flex flex-row flex-wrap items-center justify-center gap-2">
               {actions}
             </div>
           </div>
@@ -315,6 +329,7 @@ function EndGameLayout({
 
 function GamePage() {
   const [state, send] = useMachine(machine);
+  const { settings } = useSettings();
   const defInputRef = useRef<HTMLInputElement>(null);
   const tagInputRef = useRef<HTMLInputElement>(null);
 
@@ -342,10 +357,15 @@ function GamePage() {
     const formData = new FormData(form);
 
     flushSync(() => {
+      const rawTag = inTagPhase ? String(formData.get("t") ?? "") : "";
       send({
         type: "SUBMIT",
         definition: inDefPhase ? formData.get("d") : undefined,
-        tagWord: inTagPhase ? (formData.get("t") as Hiragana) : undefined,
+        tagWord: inTagPhase
+          ? (settings.showRomaji
+              ? toHiragana(rawTag)
+              : rawTag) as Hiragana
+          : undefined,
       });
     });
   };
@@ -359,12 +379,12 @@ function GamePage() {
   }, []);
 
   useEffect(() => {
-    if (inTagPhase && tagInputRef.current) {
+    if (inTagPhase && tagInputRef.current && !settings.showRomaji) {
       const input = tagInputRef.current;
       wanakana.bind(input);
       return () => wanakana.unbind(input);
     }
-  }, [inTagPhase]);
+  }, [inTagPhase, settings.showRomaji]);
 
   useEffect(() => {
     if (inDefPhase) {
@@ -379,13 +399,16 @@ function GamePage() {
       <div className="mx-auto flex w-72 flex-col space-y-6 px-2 md:w-96">
         <div className="space-y-2 text-center">
           <p className="text-4xl font-kosugi">Kotoba Tag!</p>
-          <p className="text-sm text-gray-600">
+          <p className="text-sm text-muted-foreground">
             <i>shiritori</i> for Japanese vocabulary practice
           </p>
         </div>
         <Button onClick={() => send({ type: "START" })}>start!</Button>
         <Button variant="outline" asChild>
-          <Link to="/rules">view rules</Link>
+          <Link to="/rules">rules</Link>
+        </Button>
+        <Button variant="outline" asChild>
+          <Link to="/settings">settings</Link>
         </Button>
         {errorMessage && <ErrorBanner message={errorMessage} />}
         <a
@@ -498,7 +521,7 @@ function GamePage() {
             </div>
 
             <Card className="overflow-hidden">
-              <CardHeader className="border-b bg-slate-50/80 pb-4 text-center">
+              <CardHeader className="border-b bg-muted/50 pb-4 text-center">
                 <CardTitle>mystery word</CardTitle>
               </CardHeader>
               <CardContent className="space-y-3 pt-6 text-center">
@@ -515,6 +538,9 @@ function GamePage() {
                   <span className="block text-5xl font-extrabold leading-none lg:text-6xl">
                     {mysteryWord.kana}
                   </span>
+                )}
+                {settings.showRomaji && (
+                  <RomajiReading kana={mysteryWord.kana} />
                 )}
                 {inTagPhase && (
                   <p className="text-sm text-muted-foreground">
@@ -540,7 +566,11 @@ function GamePage() {
                 <Input
                   ref={tagInputRef}
                   name="t"
-                  placeholder="enter tag word..."
+                  placeholder={
+                    settings.showRomaji
+                      ? "enter tag word (romaji ok)..."
+                      : "enter tag word..."
+                  }
                   className="border-blue-500 text-lg lg:text-xl"
                 />
               )}
@@ -570,6 +600,7 @@ function GamePage() {
                 </CardHeader>
                 <CardContent className="space-y-1 pt-0 text-center">
                   <span className="text-2xl font-bold">{tagWord}</span>
+                  {settings.showRomaji && <RomajiReading kana={tagWord} />}
                   <p className="text-sm text-muted-foreground">
                     {tagDefinitions.join(", ")}
                   </p>

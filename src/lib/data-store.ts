@@ -7,6 +7,11 @@ import {
 } from "./api.ts";
 import { ModelLoadingError } from "./errors.ts";
 import {
+  getSettings,
+  isLevelWithinDifficulty,
+  type JlptLevel,
+} from "./settings.ts";
+import {
   isHiragana,
   matchesShiritoriLink,
   toHiragana,
@@ -193,22 +198,24 @@ type DefRow = {
 
 class VocabStore {
   private wordBank: Map<number, GameWord>;
+  private jlptLevels: Map<number, JlptLevel>;
 
   constructor() {
     this.wordBank = new Map();
+    this.jlptLevels = new Map();
     this.initializeData();
   }
 
   private initializeData() {
     (vocabJson as VocabRow[]).forEach((v) => {
-      if (["N5", "N4"].includes(v.jlpt_level)) {
-        this.wordBank.set(v.vocab_id, {
-          vocabId: v.vocab_id,
-          kanji: v.kanji,
-          kana: v.kana as Hiragana,
-          definitions: [],
-        });
-      }
+      const level = v.jlpt_level as JlptLevel;
+      this.jlptLevels.set(v.vocab_id, level);
+      this.wordBank.set(v.vocab_id, {
+        vocabId: v.vocab_id,
+        kanji: v.kanji,
+        kana: v.kana as Hiragana,
+        definitions: [],
+      });
     });
 
     (defsJson as DefRow[]).forEach((d) => {
@@ -216,11 +223,26 @@ class VocabStore {
     });
   }
 
+  private isWordAllowed(vocabId: number): boolean {
+    const level = this.jlptLevels.get(vocabId);
+    if (!level) return false;
+    return isLevelWithinDifficulty(level, getSettings().difficulty);
+  }
+
+  private getEligibleWords(words: GameWord[]): GameWord[] {
+    return words.filter(
+      (word) =>
+        isHiragana(word.kana) &&
+        word.definitions.length > 0 &&
+        this.isWordAllowed(word.vocabId),
+    );
+  }
+
   getRandomWord(): GameWord | null;
   getRandomWord(exclude: Hiragana[], tagWord: Hiragana): GameWord | null;
   getRandomWord(exclude?: Hiragana[], tagWord?: Hiragana): GameWord | null {
-    const hiraganaWords = Array.from(this.wordBank.values()).filter((word) =>
-      isHiragana(word.kana),
+    const hiraganaWords = this.getEligibleWords(
+      Array.from(this.wordBank.values()),
     );
 
     if (exclude && tagWord) {
