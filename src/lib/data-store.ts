@@ -3,9 +3,9 @@ import vocabJson from "@/data/word-bank/vocab.json";
 import {
   API_BASE,
   ensureModelReady,
-  ModelLoadingError,
   postDefinition,
 } from "./api.ts";
+import { ModelLoadingError } from "./errors.ts";
 import {
   isHiragana,
   matchesShiritoriLink,
@@ -241,8 +241,10 @@ class VocabStore {
     mysteryWord: GameWord,
     inputDef: string,
   ): Promise<boolean> {
+    const mismatchMessage = "that definition doesn't match — try again";
+
     if (inputDef === "") {
-      throw new Error("must enter a definition");
+      throw new Error("enter a definition to continue");
     }
 
     if (isExactDefinitionMatch(inputDef, mysteryWord.definitions)) {
@@ -253,7 +255,7 @@ class VocabStore {
       return true;
     }
 
-    try {
+    const checkDefinition = async () => {
       const predictions = await postDefinition(
         inputDef,
         mysteryWord.definitions,
@@ -261,24 +263,18 @@ class VocabStore {
       const isValid = predictions.some((score) => score > 0.85);
 
       if (!isValid) {
-        throw new Error("incorrect definition");
+        throw new Error(mismatchMessage);
       }
 
       return isValid;
+    };
+
+    try {
+      return await checkDefinition();
     } catch (error) {
       if (error instanceof ModelLoadingError) {
         await ensureModelReady();
-        const predictions = await postDefinition(
-          inputDef,
-          mysteryWord.definitions,
-        );
-        const isValid = predictions.some((score) => score > 0.85);
-
-        if (!isValid) {
-          throw new Error("incorrect definition");
-        }
-
-        return isValid;
+        return await checkDefinition();
       }
 
       throw error;
@@ -293,30 +289,42 @@ class VocabStore {
     const tagWord = inputTag.trim() as Hiragana;
 
     if (!isHiragana(tagWord)) {
-      throw new Error("must enter hiragana");
+      throw new Error("enter the word in hiragana");
     }
 
     if (tagWord.length < 2) {
-      throw new Error("must be two or more kana");
+      throw new Error("tag words need at least two kana");
     }
 
     if (!matchesShiritoriLink(mysteryWord.kana, tagWord)) {
-      throw new Error("tag word must follow shiritori rules");
+      throw new Error(
+        "your tag word must start with the last kana of the mystery word",
+      );
     }
 
     if (wordHistory.map((x) => toHiragana(x)).includes(tagWord)) {
-      throw new Error("word already encountered");
+      throw new Error("you already used that word this round");
     }
 
-    // const response = await fetch(`${API_BASE}/tag-word?req=${encodeURIComponent(tagWord)}`)
-    const response = await fetch(
-      `${API_BASE}/tag-word?req=${encodeURIComponent(tagWord)}`,
-    );
+    let response: Response;
+    try {
+      response = await fetch(
+        `${API_BASE}/tag-word?req=${encodeURIComponent(tagWord)}`,
+      );
+    } catch {
+      throw new Error(
+        "couldn't reach the dictionary — check your connection and try again",
+      );
+    }
 
-    const res = await response.json();
+    const res = await response.json().catch(() => ({}));
 
     if (!response.ok) {
-      throw new Error(`${res.detail}`);
+      const detail =
+        typeof res.detail === "string"
+          ? res.detail
+          : "dictionary lookup failed — try again";
+      throw new Error(detail);
     }
 
     if (res.data && res.data.length > 0) {
@@ -344,14 +352,14 @@ class VocabStore {
       );
 
       if (!wordFound) {
-        throw new Error("could not find word");
+        throw new Error("couldn't find that word in the dictionary");
       } else if (validDefs.length === 0) {
-        throw new Error("not a noun");
+        throw new Error("tag words must be nouns");
       }
 
       return { tagWord: tagWord, defs: validDefs };
     } else {
-      throw new Error("could not find word, try again");
+      throw new Error("couldn't find that word — try another");
     }
   }
 }

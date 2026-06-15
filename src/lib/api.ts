@@ -1,3 +1,9 @@
+import {
+  ApiError,
+  ModelLoadingError,
+  readApiErrorDetail,
+} from "./errors.ts";
+
 const PRODUCTION_API_BASE = "https://kotoba-tag-server.onrender.com";
 const LOCAL_API_BASE = "http://127.0.0.1:8000";
 
@@ -7,8 +13,17 @@ export const API_BASE =
 
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
+const WARMUP_TIMEOUT_MESSAGE =
+  "the definition model took too long to start — please try again in a moment";
+const NETWORK_MESSAGE =
+  "couldn't reach the server — check your connection and try again";
+const DEFINITION_CHECK_FAILED =
+  "couldn't check your definition — please try again";
+
 let modelReadyPromise: Promise<void> | null = null;
 let modelIsReady = false;
+
+export { ModelLoadingError } from "./errors.ts";
 
 export function markModelCold(): void {
   modelIsReady = false;
@@ -44,51 +59,90 @@ async function warmupWithRetry(
   maxAttempts = 15,
   delayMs = 4000,
 ): Promise<void> {
+  let lastError: Error | null = null;
+
   for (let attempt = 0; attempt < maxAttempts; attempt++) {
-    const response = await fetch(`${API_BASE}/warmup`);
+    try {
+      const response = await fetch(`${API_BASE}/warmup`);
 
-    if (response.ok) return;
+      if (response.ok) return;
 
-    if (response.status === 503 && attempt < maxAttempts - 1) {
-      await sleep(delayMs);
-      continue;
+      const message = await readApiErrorDetail(
+        response,
+        "couldn't prepare the definition model — please try again",
+      );
+
+      if (response.status === 503 && attempt < maxAttempts - 1) {
+        lastError = new ApiError(message, response.status);
+        await sleep(delayMs);
+        continue;
+      }
+
+      throw new ApiError(message, response.status);
+    } catch (error) {
+      if (error instanceof ApiError) {
+        lastError = error;
+        if (error.status === 503 && attempt < maxAttempts - 1) {
+          await sleep(delayMs);
+          continue;
+        }
+        throw error;
+      }
+
+      lastError =
+        error instanceof Error ? error : new Error(NETWORK_MESSAGE);
+
+      if (attempt < maxAttempts - 1) {
+        await sleep(delayMs);
+        continue;
+      }
     }
-
-    const body = await response.json().catch(() => ({}));
-    throw new Error(body.detail ?? "could not prepare model");
   }
+
+  if (lastError instanceof ApiError && lastError.status === 503) {
+    throw new Error(WARMUP_TIMEOUT_MESSAGE);
+  }
+
+  throw new Error(lastError?.message || NETWORK_MESSAGE);
 }
 
 export async function postDefinition(
   userDef: string,
   validDefs: string[],
 ): Promise<number[]> {
-  const response = await fetch(`${API_BASE}/definition`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      user_def: userDef,
-      valid_defs: validDefs,
-    }),
-  });
+  let response: Response;
 
-  const body = await response.json();
+  try {
+    response = await fetch(`${API_BASE}/definition`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        user_def: userDef,
+        valid_defs: validDefs,
+      }),
+    });
+  } catch {
+    throw new Error(NETWORK_MESSAGE);
+  }
+
+  const body = await response.json().catch(() => ({}));
 
   if (response.status === 503) {
     markModelCold();
-    throw new ModelLoadingError(body.detail ?? "model loading");
+    const message =
+      typeof body.detail === "string"
+        ? body.detail
+        : "the definition model is still starting up — try again in a moment";
+    throw new ModelLoadingError(message);
   }
 
   if (!response.ok) {
-    throw new Error(body.detail ?? "definition check failed");
+    const message =
+      typeof body.detail === "string"
+        ? body.detail
+        : DEFINITION_CHECK_FAILED;
+    throw new Error(message);
   }
 
   return body.predictions;
-}
-
-export class ModelLoadingError extends Error {
-  constructor(message: string) {
-    super(message);
-    this.name = "ModelLoadingError";
-  }
 }

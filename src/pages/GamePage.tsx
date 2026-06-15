@@ -156,14 +156,25 @@ function GameHud({
   );
 }
 
+function ErrorBanner({ message }: { message: string }) {
+  return (
+    <div
+      role="alert"
+      className="rounded-lg border border-red-200 bg-red-50 px-3 py-2.5 text-center text-sm text-red-700"
+    >
+      {message}
+    </div>
+  );
+}
+
 function getEndGameMessage(endReason: EndReason, errorMessage: string) {
   if (endReason === "timeout") {
     return "time ran out!";
   }
   if (endReason === "error") {
-    return errorMessage || "something went wrong while loading the next word.";
+    return errorMessage || "something went wrong — please try again";
   }
-  return "time ran out!";
+  return "game over!";
 }
 
 function countWordsPlayed(
@@ -238,7 +249,9 @@ function CountdownScreen({ countdown }: { countdown: number }) {
       <p
         className={cn(
           "font-kosugi font-bold tabular-nums leading-none",
-          countdown === 0 ? "text-6xl text-green-600" : "text-8xl text-purple-600",
+          countdown === 0
+            ? "text-6xl text-green-600"
+            : "text-8xl text-purple-600",
         )}
         aria-live="polite"
       >
@@ -374,11 +387,7 @@ function GamePage() {
         <Button variant="outline" asChild>
           <Link to="/rules">view rules</Link>
         </Button>
-        {errorMessage && (
-          <p className="text-center text-xs font-bold text-red-500">
-            {errorMessage}
-          </p>
-        )}
+        {errorMessage && <ErrorBanner message={errorMessage} />}
         <a
           href="https://nphach.github.io"
           className="block text-center text-xs font-kosugi font-bold"
@@ -515,11 +524,7 @@ function GamePage() {
               </CardContent>
             </Card>
 
-            {errorMessage && (
-              <p className="text-center text-xs font-bold text-red-500">
-                {errorMessage}
-              </p>
-            )}
+            {errorMessage && <ErrorBanner message={errorMessage} />}
 
             <form onSubmit={handleSubmit} id="form" className="space-y-4">
               {inDefPhase && (

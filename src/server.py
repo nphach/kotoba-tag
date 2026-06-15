@@ -19,6 +19,18 @@ HF_SIMILARITY_URL = os.environ.get(
     "HF_SIMILARITY_URL"
 )
 
+HF_PERMISSION_HINT = (
+    "the definition model isn't available right now — please try again later"
+)
+
+MODEL_STARTING_MESSAGE = (
+    "the definition model is still starting up — try again in a moment"
+)
+
+MODEL_UNREACHABLE_MESSAGE = (
+    "couldn't reach the definition model — try again in a moment"
+)
+
 PRODUCTION_CORS_ORIGINS = [
     "https://kotoba-tag.com",
     "https://www.kotoba-tag.com",
@@ -55,39 +67,58 @@ class DefinitionRequest(BaseModel):
 def get_hf_token() -> str:
     token = os.environ.get("HUGGINGFACE_TOKEN")
     if not token:
-        raise HTTPException(status_code=500, detail="missing HuggingFace credentials")
+        raise HTTPException(status_code=500, detail="server configuration error")
     return token
 
 
+def hf_error_detail(status_code: int, response_text: str) -> str:
+    if status_code == 503:
+        return MODEL_STARTING_MESSAGE
+    if status_code == 403:
+        return HF_PERMISSION_HINT
+    if status_code in {502, 504}:
+        return MODEL_UNREACHABLE_MESSAGE
+    if status_code >= 500:
+        return "the definition model had a problem — please try again later"
+    return "definition check failed — please try again"
+
+
 async def call_hf_similarity(source_sentence: str, sentences: list[str]) -> list:
-    async with httpx.AsyncClient(timeout=90.0) as client:
-        response = await client.post(
-            HF_SIMILARITY_URL,
-            headers={
-                "Authorization": f"Bearer {get_hf_token()}",
-                "Content-Type": "application/json",
-            },
-            json={
-                "inputs": {
-                    "source_sentence": source_sentence,
-                    "sentences": sentences,
-                }
-            },
+    try:
+        async with httpx.AsyncClient(timeout=90.0) as client:
+            response = await client.post(
+                HF_SIMILARITY_URL,
+                headers={
+                    "Authorization": f"Bearer {get_hf_token()}",
+                    "Content-Type": "application/json",
+                },
+                json={
+                    "inputs": {
+                        "source_sentence": source_sentence,
+                        "sentences": sentences,
+                    }
+                },
+            )
+    except httpx.RequestError as error:
+        logger.warning("HuggingFace request failed: %s", error)
+        raise HTTPException(
+            status_code=503,
+            detail=MODEL_UNREACHABLE_MESSAGE,
+        ) from error
+
+    if response.status_code == 503:
+        raise HTTPException(status_code=503, detail=MODEL_STARTING_MESSAGE)
+
+    if response.status_code == 403:
+        raise HTTPException(status_code=403, detail=HF_PERMISSION_HINT)
+
+    if response.status_code != 200:
+        raise HTTPException(
+            status_code=response.status_code,
+            detail=hf_error_detail(response.status_code, response.text),
         )
 
-        if response.status_code == 503:
-            raise HTTPException(status_code=503, detail="model loading")
-
-        if response.status_code == 403:
-            raise HTTPException(status_code=403, detail=HF_PERMISSION_HINT)
-
-        if response.status_code != 200:
-            raise HTTPException(
-                status_code=response.status_code,
-                detail=response.text,
-            )
-
-        return response.json()
+    return response.json()
 
 
 async def warmup_huggingface() -> None:
@@ -149,5 +180,10 @@ async def get_jisho(req: str):
     except httpx.HTTPStatusError as error:
         raise HTTPException(
             status_code=error.response.status_code,
-            detail="failed to fetch from Jisho",
+            detail="dictionary lookup failed — try again",
+        ) from error
+    except httpx.RequestError as error:
+        raise HTTPException(
+            status_code=503,
+            detail="couldn't reach the dictionary — check your connection and try again",
         ) from error
