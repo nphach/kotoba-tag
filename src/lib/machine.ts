@@ -27,17 +27,27 @@ export const machine = setup({
       },
     }),
 
-    // add current Mystery Word hiragana to wordHistory
+    // add current Mystery Word to wordHistory once it has been revealed
     addMystery: assign({
-      wordHistory: ({ context }) => [
-        context.mysteryWord.kana,
-        ...context.wordHistory,
-      ],
+      wordHistory: ({ context }) => {
+        const { kana, definitions } = context.mysteryWord;
+        if (!kana) return context.wordHistory;
+        if (context.wordHistory.some((entry) => entry.kana === kana)) {
+          return context.wordHistory;
+        }
+        return [{ kana, definitions }, ...context.wordHistory];
+      },
     }),
 
     // add valid Tag Word to wordHistory
     addTagWord: assign({
-      wordHistory: ({ context }) => [context.tagWord, ...context.wordHistory],
+      wordHistory: ({ context, event }) => [
+        {
+          kana: event.output.tagWord,
+          definitions: event.output.defs,
+        },
+        ...context.wordHistory,
+      ],
     }),
 
     incrementScore: assign({
@@ -240,7 +250,6 @@ export const machine = setup({
           target: "playRound",
           actions: [
             "updateMysteryWord",
-            "addMystery",
             "incrementWordsPlayed",
             "clearErrorMessage",
           ],
@@ -281,6 +290,7 @@ export const machine = setup({
                     },
                     SKIP: {
                       target: "#playing.playRound.presentMystery.part2.start",
+                      actions: "addMystery",
                     },
                   },
                 },
@@ -295,6 +305,7 @@ export const machine = setup({
                     onDone: {
                       target: "#playing.playRound.presentMystery.part2.start",
                       actions: [
+                        "addMystery",
                         "incrementScore",
                         "incrementCorrectDefinitions",
                         "clearErrorMessage",
@@ -389,7 +400,6 @@ export const machine = setup({
           target: "playRound",
           actions: [
             "updateMysteryWord",
-            "addMystery",
             "incrementWordsPlayed",
             assign({ multiplier: 5 }),
             "applySettings",
@@ -412,6 +422,7 @@ export const machine = setup({
     },
 
     endGame: {
+      entry: "addMystery",
       on: {
         RETURN_HOME: {
           target: "idle",
@@ -454,6 +465,7 @@ export const machine = setup({
     },
 
     complete: {
+      entry: "addMystery",
       on: {
         RETURN_HOME: {
           target: "idle",

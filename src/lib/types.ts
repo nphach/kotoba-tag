@@ -8,6 +8,17 @@ export type GameWord = {
     definitions: string[];
 };
 
+export type WordDetails = {
+    kanji: string | null;
+    kana: Hiragana;
+    definitions: string[];
+};
+
+export type WordHistoryEntry = {
+    kana: Hiragana;
+    definitions: string[];
+};
+
 export const initialGameWord: GameWord = {
     vocabId: 0,
     kana: "" as Hiragana,
@@ -24,7 +35,7 @@ export type GameContext = {
   mysteryWord: GameWord;
   tagWord: Hiragana;
   tagDefinitions: string[];
-  wordHistory: Hiragana[];
+  wordHistory: WordHistoryEntry[];
   errorMessage: string;
   wordsPlayed: number;
   correctDefinitions: number;

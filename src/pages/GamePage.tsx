@@ -2,12 +2,14 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { prefetchModel } from "@/lib/api.ts";
+import { vocabStore } from "@/lib/data-store.ts";
 import { machine } from "@/lib/machine.ts";
 import { useSettings } from "@/lib/settings-context.tsx";
-import { EndReason, Hiragana } from "@/lib/types.ts";
+import { EndReason, Hiragana, WordDetails, WordHistoryEntry } from "@/lib/types.ts";
 import { cn } from "@/lib/utils";
 import { useMachine } from "@xstate/react";
-import { useEffect, useRef } from "react";
+import { ChevronRight } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
 import { flushSync } from "react-dom";
 import { Link } from "react-router-dom";
 import * as wanakana from "wanakana";
@@ -22,18 +24,94 @@ function RomajiReading({ kana }: { kana: string }) {
   );
 }
 
+function formatDefinitionPreview(definitions: string[]) {
+  return definitions.join(", ");
+}
+
+function FadedDefinition({ text }: { text: string }) {
+  if (!text) return null;
+
+  return (
+    <span className="relative min-w-0 flex-1 overflow-hidden">
+      <span className="block whitespace-nowrap pr-6 text-sm text-muted-foreground">
+        {text}
+      </span>
+      <span
+        aria-hidden
+        className="pointer-events-none absolute inset-y-0 right-0 w-8 bg-gradient-to-l from-muted/60 to-transparent group-hover:from-muted"
+      />
+    </span>
+  );
+}
+
+function WordHistoryRow({
+  index,
+  entry,
+  clickable = false,
+  showArrow = false,
+  onWordClick,
+}: {
+  index: number;
+  entry: WordHistoryEntry;
+  clickable?: boolean;
+  showArrow?: boolean;
+  onWordClick?: (word: string) => void;
+}) {
+  const definitionPreview = formatDefinitionPreview(entry.definitions);
+  const itemClassName = cn(
+    "group flex min-w-0 items-center gap-2 rounded-md border border-border bg-muted/60 px-3 py-2 text-left",
+    clickable &&
+      "cursor-pointer transition-colors hover:border-purple-300 hover:bg-muted",
+  );
+  const content = (
+    <>
+      <span className="w-6 shrink-0 text-right text-xs tabular-nums text-muted-foreground">
+        {index}
+      </span>
+      <span className="shrink-0 text-base font-medium">{entry.kana}</span>
+      <FadedDefinition text={definitionPreview} />
+      {showArrow && (
+        <ChevronRight
+          className="size-4 shrink-0 text-muted-foreground"
+          aria-hidden
+        />
+      )}
+    </>
+  );
+
+  if (clickable) {
+    return (
+      <button
+        type="button"
+        onClick={() => onWordClick?.(entry.kana)}
+        className={cn("w-full", itemClassName)}
+      >
+        {content}
+      </button>
+    );
+  }
+
+  return <div className={itemClassName}>{content}</div>;
+}
+
 function WordHistoryPanel({
   wordHistory,
   className,
   sidebar = false,
+  clickable = false,
+  showArrow = false,
+  onWordClick,
 }: {
-  wordHistory: string[];
+  wordHistory: WordHistoryEntry[];
   className?: string;
   sidebar?: boolean;
+  clickable?: boolean;
+  showArrow?: boolean;
+  onWordClick?: (word: string) => void;
 }) {
   return (
-    <Card className={cn("flex flex-col", className)}>
-      <CardHeader className="pb-3">
+    <Card className={cn("flex min-h-0 flex-col", className)}>
+      <CardHeader className="shrink-0 pb-3">
         <CardTitle className="text-base">
           word history
           {wordHistory.length > 0 && (
@@ -43,31 +121,31 @@ function WordHistoryPanel({
           )}
         </CardTitle>
       </CardHeader>
-      <CardContent className="flex-1 overflow-y-auto pt-0">
+      <CardContent className="min-h-0 flex-1 overflow-y-auto pt-0">
         {wordHistory.length === 0 ? (
           <p className="text-sm text-muted-foreground">no words yet</p>
         ) : sidebar ? (
           <ol className="flex flex-col gap-1.5">
-            {wordHistory.map((word, index) => (
-              <li
-                key={index}
-                className="flex items-center gap-3 rounded-md border border-border bg-muted/60 px-3 py-2"
-              >
-                <span className="w-6 shrink-0 text-right text-xs tabular-nums text-muted-foreground">
-                  {wordHistory.length - index}
-                </span>
-                <span className="text-base font-medium">{word}</span>
+            {wordHistory.map((entry, index) => (
+              <li key={index}>
+                <WordHistoryRow
+                  index={wordHistory.length - index}
+                  entry={entry}
+                  clickable={clickable}
+                  showArrow={showArrow}
+                  onWordClick={onWordClick}
+                />
               </li>
             ))}
           </ol>
         ) : (
           <div className="flex flex-wrap gap-2">
-            {wordHistory.map((word, index) => (
+            {wordHistory.map((entry, index) => (
               <span
                 key={index}
                 className="rounded-full bg-muted px-3 py-1 text-sm font-medium"
               >
-                {word}
+                {entry.kana}
               </span>
             ))}
           </div>
@@ -75,6 +153,128 @@ function WordHistoryPanel({
       </CardContent>
     </Card>
   );
+}
+
+function WordDetailDialog({
+  kana,
+  details,
+  loading,
+  error,
+  onClose,
+}: {
+  kana: string | null;
+  details: WordDetails | null;
+  loading: boolean;
+  error: string | null;
+  onClose: () => void;
+}) {
+  if (!kana) return null;
+
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center p-4"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="word-detail-title"
+    >
+      <button
+        type="button"
+        className="absolute inset-0 bg-black/50"
+        aria-label="close"
+        onClick={onClose}
+      />
+      <Card className="relative z-10 w-full max-w-md">
+        <CardHeader className="border-b pb-4">
+          <CardTitle id="word-detail-title" className="text-xl">
+            word details
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4 pt-6">
+          {loading && (
+            <p className="text-sm text-muted-foreground">loading...</p>
+          )}
+          {error && !loading && (
+            <p className="text-sm text-red-600">{error}</p>
+          )}
+          {details && !loading && (
+            <>
+              {details.kanji ? (
+                <p className="text-4xl font-extrabold leading-none">
+                  {details.kanji}
+                </p>
+              ) : null}
+              <p
+                className={cn(
+                  "font-bold",
+                  details.kanji
+                    ? "text-2xl text-muted-foreground"
+                    : "text-4xl leading-none",
+                )}
+              >
+                {details.kana}
+              </p>
+              <p className="text-base text-muted-foreground">
+                {toRomaji(details.kana)}
+              </p>
+              <div className="space-y-1">
+                <p className="text-xs uppercase tracking-wide text-muted-foreground">
+                  definitions
+                </p>
+                <p className="text-sm">{details.definitions.join(", ")}</p>
+              </div>
+            </>
+          )}
+          <Button variant="outline" className="w-full" onClick={onClose}>
+            close
+          </Button>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
+
+function useWordDetailsDialog() {
+  const [selectedWord, setSelectedWord] = useState<string | null>(null);
+  const [wordDetails, setWordDetails] = useState<WordDetails | null>(null);
+  const [detailsLoading, setDetailsLoading] = useState(false);
+  const [detailsError, setDetailsError] = useState<string | null>(null);
+
+  const handleWordClick = async (word: string) => {
+    setSelectedWord(word);
+    setWordDetails(null);
+    setDetailsError(null);
+    setDetailsLoading(true);
+
+    try {
+      const details = await vocabStore.lookupWordDetails(word);
+      setWordDetails(details);
+    } catch (err) {
+      setDetailsError(
+        err instanceof Error ? err.message : "couldn't load word details",
+      );
+    } finally {
+      setDetailsLoading(false);
+    }
+  };
+
+  const handleCloseDetails = () => {
+    setSelectedWord(null);
+    setWordDetails(null);
+    setDetailsError(null);
+  };
+
+  return {
+    handleWordClick,
+    wordDetailDialog: (
+      <WordDetailDialog
+        kana={selectedWord}
+        details={wordDetails}
+        loading={detailsLoading}
+        error={detailsError}
+        onClose={handleCloseDetails}
+      />
+    ),
+  };
 }
 
 function GameHud({
@@ -193,7 +393,7 @@ function getEndGameMessage(endReason: EndReason, errorMessage: string) {
 
 function countWordsPlayed(
   wordsPlayed: number | undefined,
-  wordHistory: string[],
+  wordHistory: WordHistoryEntry[],
 ) {
   const played = wordsPlayed ?? 0;
   if (played > 0) return played;
@@ -291,20 +491,24 @@ function EndGameLayout({
   title: string;
   children: React.ReactNode;
   actions: React.ReactNode;
-  wordHistory: string[];
+  wordHistory: WordHistoryEntry[];
 }) {
+  const { handleWordClick, wordDetailDialog } = useWordDetailsDialog();
+
   return (
-    <main className="flex min-h-[calc(100dvh-4rem)] w-full items-center justify-center overflow-y-auto px-2 py-6 sm:px-4 lg:px-8">
-      <div className="mx-auto flex w-full max-w-5xl flex-col gap-6 xl:max-w-6xl">
-        <div className="grid gap-6 lg:grid-cols-[minmax(0,1.05fr)_minmax(18rem,0.95fr)] lg:items-start">
-          <div className="flex flex-col gap-5 text-left">
-            <Card className="overflow-hidden">
-              <CardHeader className="border-b bg-muted/50 pb-4">
+    <main className="flex min-h-[calc(100dvh-4rem)] w-full overflow-y-auto px-2 py-6 sm:px-4 lg:h-[calc(100dvh-2rem)] lg:min-h-0 lg:overflow-hidden lg:px-8">
+      <div className="mx-auto flex w-full min-h-0 max-w-5xl flex-1 flex-col gap-6 xl:max-w-6xl">
+        <div className="grid min-h-0 flex-1 gap-6 lg:grid-cols-[minmax(0,1.05fr)_minmax(18rem,0.95fr)] lg:items-stretch">
+          <div className="flex h-full min-h-0 flex-col gap-5 text-left">
+            <Card className="flex min-h-0 flex-1 flex-col overflow-hidden">
+              <CardHeader className="shrink-0 border-b bg-muted/50 pb-4">
                 <CardTitle className="text-3xl font-kosugi">{title}</CardTitle>
               </CardHeader>
-              <CardContent className="space-y-4 pt-6">{children}</CardContent>
+              <CardContent className="flex flex-1 flex-col justify-center space-y-4 pt-6">
+                {children}
+              </CardContent>
             </Card>
-            <div className="flex flex-row flex-wrap items-center justify-center gap-2">
+            <div className="flex shrink-0 flex-row flex-wrap items-center justify-center gap-2">
               {actions}
             </div>
           </div>
@@ -312,17 +516,22 @@ function EndGameLayout({
           <WordHistoryPanel
             wordHistory={wordHistory}
             sidebar
-            className="min-h-[12rem] lg:sticky lg:top-6 lg:min-h-[20rem] lg:max-h-[calc(100dvh-8rem)] lg:self-start"
+            clickable
+            showArrow
+            onWordClick={handleWordClick}
+            className="min-h-[12rem] lg:h-full lg:min-h-0"
           />
         </div>
 
         <a
           href="https://nphach.github.io"
-          className="block text-center text-xs font-kosugi font-bold"
+          className="block shrink-0 text-center text-xs font-kosugi font-bold"
         >
           made by nphach
         </a>
       </div>
+
+      {wordDetailDialog}
     </main>
   );
 }
@@ -330,6 +539,7 @@ function EndGameLayout({
 function GamePage() {
   const [state, send] = useMachine(machine);
   const { settings } = useSettings();
+  const { handleWordClick, wordDetailDialog } = useWordDetailsDialog();
   const defInputRef = useRef<HTMLInputElement>(null);
   const tagInputRef = useRef<HTMLInputElement>(null);
 
@@ -483,9 +693,9 @@ function GamePage() {
   }
 
   return (
-    <main className="flex min-h-[calc(100dvh-4rem)] w-full flex-col overflow-y-auto px-2 py-4 sm:px-4 sm:py-6 lg:px-8">
-      <div className="mx-auto flex w-full max-w-5xl flex-col gap-5 text-left lg:gap-6 xl:max-w-6xl">
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+    <main className="flex min-h-[calc(100dvh-4rem)] w-full flex-col overflow-y-auto px-2 py-4 sm:px-4 sm:py-6 lg:h-[calc(100dvh-2rem)] lg:min-h-0 lg:overflow-hidden lg:px-8">
+      <div className="mx-auto flex w-full min-h-0 max-w-5xl flex-1 flex-col gap-5 text-left lg:gap-6 xl:max-w-6xl">
+        <div className="shrink-0 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <div className="space-y-1">
             <p className="text-4xl font-kosugi">Kotoba Tag!</p>
             <p
@@ -509,8 +719,8 @@ function GamePage() {
           </div>
         </div>
 
-        <div className="grid gap-5 lg:grid-cols-[minmax(0,1.2fr)_minmax(18rem,0.8fr)] lg:gap-6">
-          <div className="flex flex-col gap-5">
+        <div className="grid min-h-0 flex-1 gap-5 lg:grid-cols-[minmax(0,1.2fr)_minmax(18rem,0.8fr)] lg:items-stretch lg:gap-6">
+          <div className="flex h-full min-h-0 flex-col gap-5 lg:overflow-y-auto">
             <div className="sm:hidden">
               <GameHud
                 score={score}
@@ -520,7 +730,7 @@ function GamePage() {
               />
             </div>
 
-            <Card className="overflow-hidden">
+            <Card className="shrink-0">
               <CardHeader className="border-b bg-muted/50 pb-4 text-center">
                 <CardTitle>mystery word</CardTitle>
               </CardHeader>
@@ -552,7 +762,7 @@ function GamePage() {
 
             {errorMessage && <ErrorBanner message={errorMessage} />}
 
-            <form onSubmit={handleSubmit} id="form" className="space-y-4">
+            <form onSubmit={handleSubmit} id="form" className="shrink-0 space-y-4">
               {inDefPhase && (
                 <Input
                   ref={defInputRef}
@@ -594,14 +804,14 @@ function GamePage() {
             </form>
 
             {tagWord && (
-              <Card>
+              <Card className="shrink-0">
                 <CardHeader className="pb-3 text-center">
                   <CardTitle className="text-base">last tag word</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-1 pt-0 text-center">
                   <span className="text-2xl font-bold">{tagWord}</span>
                   {settings.showRomaji && <RomajiReading kana={tagWord} />}
-                  <p className="text-sm text-muted-foreground">
+                  <p className="max-h-24 overflow-y-auto text-sm text-muted-foreground">
                     {tagDefinitions.join(", ")}
                   </p>
                 </CardContent>
@@ -609,7 +819,7 @@ function GamePage() {
             )}
           </div>
 
-          <aside className="flex min-h-0 flex-col gap-5 lg:sticky lg:top-6 lg:max-h-[calc(100dvh-6rem)] lg:self-start">
+          <aside className="flex h-full min-h-0 flex-col gap-5">
             <div className="hidden shrink-0 lg:block">
               <GameHud score={score} multiplier={multiplier} timer={timer} />
             </div>
@@ -617,6 +827,9 @@ function GamePage() {
             <WordHistoryPanel
               wordHistory={wordHistory}
               sidebar
+              clickable
+              showArrow
+              onWordClick={handleWordClick}
               className="min-h-[10rem] lg:min-h-0 lg:flex-1"
             />
           </aside>
@@ -624,11 +837,13 @@ function GamePage() {
 
         <a
           href="https://nphach.github.io"
-          className="block text-center text-xs font-kosugi font-bold"
+          className="block shrink-0 text-center text-xs font-kosugi font-bold"
         >
           made by nphach
         </a>
       </div>
+
+      {wordDetailDialog}
     </main>
   );
 }

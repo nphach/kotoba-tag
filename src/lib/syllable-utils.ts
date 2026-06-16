@@ -12,6 +12,11 @@ export function toHiragana(s: string): Hiragana {
     throw new Error('invalid Hiragana string')
 }
 
+/** Converts hiragana, katakana, or romaji to hiragana for dictionary lookups. */
+export function normalizeToHiragana(s: string): Hiragana {
+    return wanakana.toHiragana(s) as Hiragana
+}
+
 const dakuten = new Map<Hiragana, Hiragana>([
     ['が', 'か'], ['ぎ', 'き'], ['ぐ', 'く'], ['げ', 'け'], ['ご', 'こ'],
     ['ざ', 'さ'], ['じ', 'し'], ['ず', 'す'], ['ぜ', 'せ'], ['ぞ', 'そ'],

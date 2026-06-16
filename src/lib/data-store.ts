@@ -14,9 +14,10 @@ import {
 import {
   isHiragana,
   matchesShiritoriLink,
+  normalizeToHiragana,
   toHiragana,
 } from "./syllable-utils.ts";
-import { GameWord, Hiragana } from "./types.ts";
+import { GameWord, Hiragana, WordDetails, WordHistoryEntry } from "./types.ts";
 
 function normalizeDefinition(value: string): string {
   return value
@@ -239,14 +240,16 @@ class VocabStore {
   }
 
   getRandomWord(): GameWord | null;
-  getRandomWord(exclude: Hiragana[], tagWord: Hiragana): GameWord | null;
-  getRandomWord(exclude?: Hiragana[], tagWord?: Hiragana): GameWord | null {
+  getRandomWord(exclude: WordHistoryEntry[], tagWord: Hiragana): GameWord | null;
+  getRandomWord(exclude?: WordHistoryEntry[], tagWord?: Hiragana): GameWord | null {
     const hiraganaWords = this.getEligibleWords(
       Array.from(this.wordBank.values()),
     );
 
     if (exclude && tagWord) {
-      const normalizedExclude = new Set(exclude.map((word) => toHiragana(word)));
+      const normalizedExclude = new Set(
+        exclude.map((word) => toHiragana(word.kana)),
+      );
       const availableWords = hiraganaWords
         .filter((word) => !normalizedExclude.has(word.kana))
         .filter((word) => matchesShiritoriLink(tagWord, word.kana));
@@ -257,6 +260,76 @@ class VocabStore {
 
     if (hiraganaWords.length === 0) return null;
     return hiraganaWords[Math.floor(Math.random() * hiraganaWords.length)];
+  }
+
+  lookupByKana(kana: string): GameWord | null {
+    const normalized = normalizeToHiragana(kana);
+    for (const word of this.wordBank.values()) {
+      if (
+        normalizeToHiragana(word.kana) === normalized &&
+        word.definitions.length > 0
+      ) {
+        return word;
+      }
+    }
+    return null;
+  }
+
+  async lookupWordDetails(kana: string): Promise<WordDetails> {
+    const normalized = normalizeToHiragana(kana);
+    const local = this.lookupByKana(normalized);
+    if (local) {
+      return {
+        kanji: local.kanji,
+        kana: local.kana,
+        definitions: local.definitions,
+      };
+    }
+
+    let response: Response;
+    try {
+      response = await fetch(
+        `${API_BASE}/tag-word?req=${encodeURIComponent(normalized)}`,
+      );
+    } catch {
+      throw new Error(
+        "couldn't reach the dictionary — check your connection and try again",
+      );
+    }
+
+    const res = await response.json().catch(() => ({}));
+
+    if (!response.ok) {
+      const detail =
+        typeof res.detail === "string"
+          ? res.detail
+          : "dictionary lookup failed — try again";
+      throw new Error(detail);
+    }
+
+    if (!res.data || res.data.length === 0) {
+      throw new Error("couldn't find that word in the dictionary");
+    }
+
+    for (const entry of res.data as {
+      japanese: { word?: string; reading: string }[];
+      senses: { english_definitions: string[] }[];
+    }[]) {
+      const readings = entry.japanese.map((j) => normalizeToHiragana(j.reading));
+      if (!readings.includes(normalized)) continue;
+
+      const kanji =
+        entry.japanese.find((j) => j.word)?.word ?? null;
+      const definitions = [
+        ...new Set(
+          entry.senses.flatMap((sense) => sense.english_definitions),
+        ),
+      ];
+
+      return { kanji, kana: normalized, definitions };
+    }
+
+    throw new Error("couldn't find that word in the dictionary");
   }
 
   async validateDefinition(
@@ -305,7 +378,7 @@ class VocabStore {
 
   async validateTag(
     mysteryWord: GameWord,
-    wordHistory: string[],
+    wordHistory: WordHistoryEntry[],
     inputTag: Hiragana,
   ): Promise<{ tagWord: Hiragana; defs: string[] }> {
     const tagWord = inputTag.trim() as Hiragana;
@@ -324,7 +397,7 @@ class VocabStore {
       );
     }
 
-    if (wordHistory.map((x) => toHiragana(x)).includes(tagWord)) {
+    if (wordHistory.map((x) => toHiragana(x.kana)).includes(tagWord)) {
       throw new Error("you already used that word this round");
     }
 
