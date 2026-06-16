@@ -84,14 +84,14 @@ function WordHistoryRow({
       <button
         type="button"
         onClick={() => onWordClick?.(entry.kana)}
-        className={cn("w-full", itemClassName)}
+        className={cn("w-full min-w-0 max-w-full", itemClassName)}
       >
         {content}
       </button>
     );
   }
 
-  return <div className={itemClassName}>{content}</div>;
+  return <div className={cn("w-full min-w-0 max-w-full", itemClassName)}>{content}</div>;
 }
 
 function WordHistoryPanel({
@@ -110,7 +110,7 @@ function WordHistoryPanel({
   onWordClick?: (word: string) => void;
 }) {
   return (
-    <Card className={cn("flex min-h-0 flex-col", className)}>
+    <Card className={cn("flex max-h-[14rem] min-h-0 min-w-0 w-full max-w-full flex-col overflow-hidden sm:max-h-[16rem] lg:max-h-none", className)}>
       <CardHeader className="shrink-0 pb-3">
         <CardTitle className="text-base">
           word history
@@ -121,13 +121,13 @@ function WordHistoryPanel({
           )}
         </CardTitle>
       </CardHeader>
-      <CardContent className="min-h-0 flex-1 overflow-y-auto pt-0">
+      <CardContent className="min-h-0 flex-1 overflow-x-hidden overflow-y-auto pt-0">
         {wordHistory.length === 0 ? (
           <p className="text-sm text-muted-foreground">no words yet</p>
         ) : sidebar ? (
-          <ol className="flex flex-col gap-1.5">
+          <ol className="flex min-w-0 flex-col gap-1.5">
             {wordHistory.map((entry, index) => (
-              <li key={index}>
+              <li key={index} className="min-w-0">
                 <WordHistoryRow
                   index={wordHistory.length - index}
                   entry={entry}
@@ -411,7 +411,7 @@ function FadedOverflowText({
       <p
         ref={ref}
         className={cn(
-          "h-full leading-snug text-muted-foreground",
+          "h-full break-words leading-snug text-muted-foreground",
           textClassName ?? "text-xs",
           overflowing ? "overflow-y-auto pr-0.5" : "overflow-hidden",
         )}
@@ -441,7 +441,7 @@ function LastTagWordCard({
   const definitions = hasTagWord ? tagDefinitions.join(", ") : null;
 
   return (
-    <Card className="flex h-36 shrink-0 flex-col overflow-hidden">
+    <Card className="flex h-36 w-full min-w-0 max-w-full shrink-0 flex-col overflow-hidden">
       <CardHeader className="shrink-0 border-b bg-muted/50 py-2.5 text-center">
         <CardTitle className="text-sm">last tag word</CardTitle>
       </CardHeader>
@@ -526,50 +526,47 @@ function MysteryWordDisplay({
   showRomaji: boolean;
 }) {
   return (
-    <div className="flex h-full min-h-0 w-full flex-1 flex-col">
-      <div className="flex min-h-0 flex-[2] w-full flex-col items-center justify-end px-6 pb-0 text-center">
-        <div className="flex translate-y-0.5 flex-col items-center gap-2 lg:translate-y-1">
-          <div className="flex h-16 w-full items-center justify-center lg:h-[4.5rem]">
-            {mysteryWord.kanji ? (
-              <span className="text-5xl font-extrabold leading-none lg:text-6xl">
-                {mysteryWord.kanji}
-              </span>
-            ) : (
-              <span className="text-5xl font-extrabold leading-none lg:text-6xl">
-                {mysteryWord.kana}
-              </span>
-            )}
-          </div>
-          <div
-            className={cn(
-              "flex h-10 w-full items-center justify-center",
-              !mysteryWord.kanji && "invisible",
-            )}
-          >
-            <span className="text-2xl font-bold text-muted-foreground">
+    <div className="flex h-full min-h-0 flex-1 flex-col justify-center px-4 text-center sm:px-6">
+      <div className="flex flex-col items-center gap-1">
+        <div className="flex h-12 w-full items-center justify-center sm:h-14 lg:h-[4.5rem]">
+          {mysteryWord.kanji ? (
+            <span className="text-4xl font-extrabold leading-none sm:text-5xl lg:text-6xl">
+              {mysteryWord.kanji}
+            </span>
+          ) : (
+            <span className="text-4xl font-extrabold leading-none sm:text-5xl lg:text-6xl">
               {mysteryWord.kana}
             </span>
-          </div>
-          <div className="flex h-5 w-full items-center justify-center">
-            {showRomaji ? (
-              <RomajiReading kana={mysteryWord.kana} />
-            ) : (
-              <span className="text-base text-muted-foreground" aria-hidden>
-                {"\u00a0"}
-              </span>
-            )}
-          </div>
+          )}
+        </div>
+        <div
+          className={cn(
+            "flex h-7 w-full items-center justify-center lg:h-8",
+            !mysteryWord.kanji && "hidden",
+          )}
+        >
+          <span className="text-xl font-bold text-muted-foreground lg:text-2xl">
+            {mysteryWord.kana}
+          </span>
+        </div>
+        <div
+          className={cn(
+            "flex h-5 w-full items-center justify-center",
+            !showRomaji && "hidden",
+          )}
+        >
+          <RomajiReading kana={mysteryWord.kana} />
         </div>
       </div>
       <div
         className={cn(
-          "min-h-0 flex-1 px-6 text-center",
+          "mt-1.5 w-full min-h-[2rem] max-h-[4.5rem] lg:mt-2 lg:min-h-0 lg:max-h-none lg:flex-1",
           !showDefinitions && "invisible",
         )}
       >
         <FadedOverflowText
           text={showDefinitions ? definitions : "\u00a0"}
-          className="h-full"
+          className="h-full min-h-0"
           textClassName="text-sm"
         />
       </div>
@@ -692,19 +689,19 @@ function EndGameLayout({
   const { handleWordClick, wordDetailDialog } = useWordDetailsDialog();
 
   return (
-    <main className="flex min-h-[calc(100dvh-4rem)] w-full overflow-y-auto px-2 py-6 sm:px-4 lg:h-[calc(100dvh-2rem)] lg:min-h-0 lg:overflow-y-auto lg:px-8">
-      <div className="mx-auto flex w-full min-h-0 max-w-5xl flex-1 flex-col gap-6 xl:max-w-6xl">
-        <div className="grid min-h-0 flex-1 gap-6 lg:grid-cols-[minmax(0,1.05fr)_minmax(18rem,0.95fr)] lg:items-stretch">
-          <div className="flex h-full min-h-0 flex-col gap-5 text-left">
-            <Card className="flex min-h-0 flex-1 flex-col overflow-hidden">
+    <main className="flex min-h-[calc(100dvh-4rem)] w-full min-w-0 max-w-full flex-col overflow-x-hidden overflow-y-auto px-2 py-6 sm:px-4 lg:h-[calc(100dvh-2rem)] lg:min-h-0 lg:overflow-y-auto lg:px-8">
+      <div className="mx-auto flex w-full min-h-0 min-w-0 max-w-5xl flex-1 flex-col gap-6 xl:max-w-6xl">
+        <div className="grid min-h-0 min-w-0 max-w-full flex-1 gap-6 lg:grid-cols-[minmax(0,1.05fr)_minmax(18rem,0.95fr)] lg:items-stretch">
+          <div className="flex h-full min-h-0 min-w-0 w-full max-w-full flex-col gap-5 overflow-hidden text-left">
+            <Card className="flex min-h-0 min-w-0 w-full max-w-full flex-1 flex-col overflow-hidden">
               <CardHeader className="shrink-0 border-b bg-muted/50 pb-4">
                 <CardTitle className="text-3xl font-kosugi">{title}</CardTitle>
               </CardHeader>
-              <CardContent className="flex flex-1 flex-col justify-center space-y-4 pt-6">
+              <CardContent className="flex min-w-0 flex-1 flex-col justify-center space-y-4 overflow-hidden pt-6">
                 {children}
               </CardContent>
             </Card>
-            <div className="flex shrink-0 flex-row flex-wrap items-center justify-center gap-2">
+            <div className="flex w-full min-w-0 max-w-full shrink-0 flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center sm:justify-center">
               {actions}
             </div>
           </div>
@@ -715,7 +712,7 @@ function EndGameLayout({
             clickable
             showArrow
             onWordClick={handleWordClick}
-            className="min-h-[12rem] lg:h-full lg:min-h-0"
+            className="min-h-[12rem] min-w-0 w-full max-w-full lg:h-full lg:min-h-0"
           />
         </div>
 
@@ -901,8 +898,8 @@ function GamePage() {
   }
 
   return (
-    <main className="flex min-h-[calc(100dvh-4rem)] w-full flex-col overflow-y-auto px-2 py-4 sm:px-4 sm:py-6 lg:h-[calc(100dvh-2rem)] lg:min-h-0 lg:overflow-y-auto lg:px-8">
-      <div className="mx-auto flex w-full min-h-0 max-w-5xl flex-1 flex-col gap-5 text-left lg:gap-6 xl:max-w-6xl">
+    <main className="flex min-h-[calc(100dvh-4rem)] w-full min-w-0 max-w-full flex-col overflow-x-hidden overflow-y-auto px-2 py-4 sm:px-4 sm:py-6 lg:h-[calc(100dvh-2rem)] lg:min-h-0 lg:overflow-y-auto lg:px-8">
+      <div className="mx-auto flex w-full min-h-0 min-w-0 max-w-5xl flex-1 flex-col gap-5 text-left lg:gap-6 xl:max-w-6xl">
         <div className="shrink-0 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <div className="space-y-1">
             <p className="text-4xl font-kosugi">Kotoba Tag!</p>
@@ -927,8 +924,8 @@ function GamePage() {
           </div>
         </div>
 
-        <div className="grid min-h-0 flex-1 gap-5 lg:grid-cols-[minmax(0,1.2fr)_minmax(18rem,0.8fr)] lg:items-stretch lg:gap-6">
-          <div className="flex h-full min-h-0 min-w-0 flex-col gap-5 lg:px-1 lg:pb-1">
+        <div className="grid min-h-0 min-w-0 max-w-full flex-1 gap-5 lg:grid-cols-[minmax(0,1.2fr)_minmax(18rem,0.8fr)] lg:items-stretch lg:gap-6">
+          <div className="flex h-full min-h-0 min-w-0 w-full max-w-full flex-col gap-5 overflow-hidden lg:px-1 lg:pb-1">
             <div className="sm:hidden">
               <GameHud
                 score={score}
@@ -938,11 +935,11 @@ function GamePage() {
               />
             </div>
 
-            <Card className="flex min-h-[15rem] flex-col sm:min-h-[16rem] lg:min-h-0 lg:flex-1 lg:overflow-hidden">
-              <CardHeader className="shrink-0 border-b bg-muted/50 pb-4 text-center">
-                <CardTitle>mystery word</CardTitle>
+            <Card className="flex h-[14rem] w-full min-w-0 max-w-full flex-col overflow-hidden sm:h-[15rem] lg:h-auto lg:min-h-0 lg:flex-1">
+              <CardHeader className="shrink-0 border-b bg-muted/50 px-4 py-2.5 text-center lg:px-6 lg:py-4">
+                <CardTitle className="text-lg lg:text-xl">mystery word</CardTitle>
               </CardHeader>
-              <CardContent className="relative flex min-h-0 flex-1 flex-col pt-6">
+              <CardContent className="relative flex min-h-0 flex-1 flex-col overflow-hidden px-0 pb-2 pt-0 lg:px-6 lg:pb-0 lg:pt-4">
                 <MysteryWordDisplay
                   mysteryWord={mysteryWord}
                   definitions={mysteryWord.definitions.join(", ")}
@@ -980,8 +977,8 @@ function GamePage() {
                 />
               )}
 
-              <div className="flex min-w-0 gap-2">
-                <Button type="submit" className="flex-1">
+              <div className="flex w-full min-w-0 gap-2">
+                <Button type="submit" className="min-w-0 flex-1">
                   submit
                 </Button>
 
@@ -989,8 +986,8 @@ function GamePage() {
                   type="button"
                   onClick={() => send({ type: "SKIP" })}
                   className={cn(
-                    "flex-1",
-                    inTagPhase && "hidden lg:invisible lg:pointer-events-none",
+                    "min-w-0 flex-1",
+                    inTagPhase && "hidden lg:invisible lg:pointer-events-none lg:flex",
                   )}
                   variant="outline"
                   tabIndex={inTagPhase ? -1 : undefined}
@@ -1008,7 +1005,7 @@ function GamePage() {
             />
           </div>
 
-          <aside className="flex h-full min-h-0 flex-col gap-5">
+          <aside className="flex h-full min-h-0 min-w-0 w-full max-w-full flex-col gap-5 overflow-hidden">
             <div className="hidden shrink-0 lg:block">
               <GameHud score={score} multiplier={multiplier} timer={timer} />
             </div>
