@@ -277,6 +277,50 @@ function useWordDetailsDialog() {
   };
 }
 
+function HudStat({
+  label,
+  value,
+  compact,
+  urgent = false,
+}: {
+  label: string;
+  value: string;
+  compact: boolean;
+  urgent?: boolean;
+}) {
+  const timerUrgentBoxClass =
+    "border-red-300 bg-red-50 dark:border-red-400/30 dark:bg-red-500/10";
+  const timerUrgentTextClass = "text-red-600 dark:text-red-400";
+
+  return (
+    <div
+      className={cn(
+        "rounded-lg border bg-card shadow-sm",
+        compact ? "px-2 py-2 text-center" : "px-4 py-3 text-left",
+        urgent && timerUrgentBoxClass,
+      )}
+    >
+      <p
+        className={cn(
+          "uppercase tracking-wide text-muted-foreground",
+          compact ? "text-[10px]" : "text-xs",
+        )}
+      >
+        {label}
+      </p>
+      <p
+        className={cn(
+          "font-bold tabular-nums",
+          compact ? "text-lg leading-tight" : "text-2xl",
+          urgent && timerUrgentTextClass,
+        )}
+      >
+        {value}
+      </p>
+    </div>
+  );
+}
+
 function GameHud({
   score,
   multiplier,
@@ -289,83 +333,21 @@ function GameHud({
   compact?: boolean;
 }) {
   const timerUrgent = timer <= 10;
-  const timerUrgentBoxClass =
-    "border-red-300 bg-red-50 dark:border-red-400/30 dark:bg-red-500/10";
-  const timerUrgentTextClass = "text-red-600 dark:text-red-400";
-
-  if (compact) {
-    return (
-      <div className="grid grid-cols-3 gap-2">
-        <div className="rounded-lg border bg-card px-2 py-2 text-center shadow-sm">
-          <p className="text-[10px] uppercase tracking-wide text-muted-foreground">
-            score
-          </p>
-          <p className="text-lg font-bold tabular-nums leading-tight">
-            {score}
-          </p>
-        </div>
-        <div className="rounded-lg border bg-card px-2 py-2 text-center shadow-sm">
-          <p className="text-[10px] uppercase tracking-wide text-muted-foreground">
-            mult
-          </p>
-          <p className="text-lg font-bold tabular-nums leading-tight">
-            {multiplier}x
-          </p>
-        </div>
-        <div
-          className={cn(
-            "rounded-lg border bg-card px-2 py-2 text-center shadow-sm",
-            timerUrgent && timerUrgentBoxClass,
-          )}
-        >
-          <p className="text-[10px] uppercase tracking-wide text-muted-foreground">
-            time
-          </p>
-          <p
-            className={cn(
-              "text-lg font-bold tabular-nums leading-tight",
-              timerUrgent && timerUrgentTextClass,
-            )}
-          >
-            {timer}s
-          </p>
-        </div>
-      </div>
-    );
-  }
 
   return (
-    <div className="grid grid-cols-3 gap-3">
-      <div className="rounded-lg border bg-card px-4 py-3 text-left shadow-sm">
-        <p className="text-xs uppercase tracking-wide text-muted-foreground">
-          score
-        </p>
-        <p className="text-2xl font-bold tabular-nums">{score}</p>
-      </div>
-      <div className="rounded-lg border bg-card px-4 py-3 text-left shadow-sm">
-        <p className="text-xs uppercase tracking-wide text-muted-foreground">
-          multiplier
-        </p>
-        <p className="text-2xl font-bold tabular-nums">{multiplier}x</p>
-      </div>
-      <div
-        className={cn(
-          "rounded-lg border bg-card px-4 py-3 text-left shadow-sm",
-          timerUrgent && timerUrgentBoxClass,
-        )}
-      >
-        <p className="text-xs uppercase tracking-wide text-muted-foreground">
-          timer
-        </p>
-        <p
-          className={cn(
-            "text-2xl font-bold tabular-nums",
-            timerUrgent && timerUrgentTextClass,
-          )}
-        >
-          {timer}s
-        </p>
-      </div>
+    <div className={cn("grid grid-cols-3", compact ? "gap-2" : "gap-3")}>
+      <HudStat label="score" value={String(score)} compact={compact} />
+      <HudStat
+        label={compact ? "mult" : "multiplier"}
+        value={`${multiplier}x`}
+        compact={compact}
+      />
+      <HudStat
+        label={compact ? "time" : "timer"}
+        value={`${timer}s`}
+        compact={compact}
+        urgent={timerUrgent}
+      />
     </div>
   );
 }
