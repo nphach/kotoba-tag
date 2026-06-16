@@ -509,8 +509,8 @@ function MysteryWordDisplay({
   showRomaji: boolean;
 }) {
   return (
-    <div className="flex h-full min-h-0 flex-1 flex-col justify-center px-4 text-center sm:px-6">
-      <div className="flex flex-col items-center gap-1">
+    <div className="flex h-full min-h-0 flex-1 flex-col items-center justify-center px-4 text-center sm:px-6">
+      <div className="flex w-full flex-col items-center gap-1">
         <div className="flex h-12 w-full items-center justify-center sm:h-14 lg:h-[4.5rem]">
           {mysteryWord.kanji ? (
             <span className="text-4xl font-extrabold leading-none sm:text-5xl lg:text-6xl">
@@ -543,7 +543,7 @@ function MysteryWordDisplay({
       </div>
       <div
         className={cn(
-          "mt-1.5 w-full min-h-[2rem] max-h-[4.5rem] lg:mt-2 lg:min-h-0 lg:max-h-none lg:flex-1",
+          "mt-1.5 w-full min-h-[2rem] max-h-[4.5rem] lg:mt-2 lg:max-h-[7rem]",
           !showDefinitions && "invisible",
         )}
       >
@@ -897,7 +897,7 @@ function GamePage() {
               <CardHeader className="shrink-0 border-b bg-muted/50 px-4 py-2.5 text-center lg:px-6 lg:py-4">
                 <CardTitle className="text-lg lg:text-xl">mystery word</CardTitle>
               </CardHeader>
-              <CardContent className="relative flex min-h-0 flex-1 flex-col overflow-hidden px-0 pb-2 pt-0 lg:px-6 lg:pb-0 lg:pt-4">
+              <CardContent className="relative flex min-h-0 flex-1 flex-col justify-center overflow-hidden px-0 pb-2 pt-0 lg:px-6 lg:pb-0 lg:pt-0">
                 <MysteryWordDisplay
                   mysteryWord={mysteryWord}
                   definitions={mysteryWord.definitions.join(", ")}
@@ -943,10 +943,7 @@ function GamePage() {
                 <Button
                   type="button"
                   onClick={() => send({ type: "SKIP" })}
-                  className={cn(
-                    "min-w-0 flex-1",
-                    inTagPhase && "hidden lg:invisible lg:pointer-events-none lg:flex",
-                  )}
+                  className={cn("min-w-0 flex-1", inTagPhase && "hidden")}
                   variant="outline"
                   tabIndex={inTagPhase ? -1 : undefined}
                   aria-hidden={inTagPhase || undefined}
