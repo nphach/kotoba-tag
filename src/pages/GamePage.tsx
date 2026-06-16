@@ -370,13 +370,209 @@ function GameHud({
   );
 }
 
-function ErrorBanner({ message }: { message: string }) {
+function FadedOverflowText({
+  text,
+  className,
+  textClassName,
+}: {
+  text: string;
+  className?: string;
+  textClassName?: string;
+}) {
+  const ref = useRef<HTMLParagraphElement>(null);
+  const [overflowing, setOverflowing] = useState(false);
+  const [atBottom, setAtBottom] = useState(true);
+
+  useEffect(() => {
+    const node = ref.current;
+    if (!node) return;
+
+    const update = () => {
+      const hasOverflow = node.scrollHeight > node.clientHeight + 1;
+      setOverflowing(hasOverflow);
+      setAtBottom(
+        node.scrollHeight - node.scrollTop <= node.clientHeight + 1,
+      );
+    };
+
+    update();
+    const observer = new ResizeObserver(update);
+    observer.observe(node);
+    node.addEventListener("scroll", update, { passive: true });
+
+    return () => {
+      observer.disconnect();
+      node.removeEventListener("scroll", update);
+    };
+  }, [text]);
+
+  return (
+    <div className={cn("relative min-h-0 overflow-hidden", className)}>
+      <p
+        ref={ref}
+        className={cn(
+          "h-full leading-snug text-muted-foreground",
+          textClassName ?? "text-xs",
+          overflowing ? "overflow-y-auto pr-0.5" : "overflow-hidden",
+        )}
+      >
+        {text}
+      </p>
+      {overflowing && !atBottom && (
+        <span
+          aria-hidden
+          className="pointer-events-none absolute inset-x-0 bottom-0 h-5 bg-gradient-to-t from-card via-card/80 to-transparent"
+        />
+      )}
+    </div>
+  );
+}
+
+function LastTagWordCard({
+  tagWord,
+  tagDefinitions,
+  showRomaji,
+}: {
+  tagWord: string | null | undefined;
+  tagDefinitions: string[];
+  showRomaji: boolean;
+}) {
+  const hasTagWord = Boolean(tagWord);
+  const definitions = hasTagWord ? tagDefinitions.join(", ") : null;
+
+  return (
+    <Card className="flex h-36 shrink-0 flex-col overflow-hidden">
+      <CardHeader className="shrink-0 border-b bg-muted/50 py-2.5 text-center">
+        <CardTitle className="text-sm">last tag word</CardTitle>
+      </CardHeader>
+      <CardContent className="flex min-h-0 flex-1 flex-col px-6 pb-3 pt-2 text-center">
+        <div className="flex h-7 shrink-0 items-center justify-center text-xl font-bold leading-none">
+          {hasTagWord ? (
+            tagWord
+          ) : (
+            <span className="text-base font-normal text-muted-foreground/60">
+              none yet
+            </span>
+          )}
+        </div>
+        {showRomaji && (
+          <div className="flex h-5 shrink-0 items-center justify-center">
+            {hasTagWord ? (
+              <RomajiReading kana={tagWord as string} />
+            ) : (
+              <span className="text-base text-muted-foreground/40" aria-hidden>
+                {"\u00a0"}
+              </span>
+            )}
+          </div>
+        )}
+        <div className="mt-1 min-h-0 flex-1 border-t border-border/60 pt-1.5">
+          {definitions ? (
+            <FadedOverflowText text={definitions} className="h-full" />
+          ) : (
+            <div className="flex h-full items-center justify-center px-1">
+              <p className="text-xs leading-snug text-muted-foreground/60">
+                definition will appear here
+              </p>
+            </div>
+          )}
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
+function ErrorBanner({
+  message,
+  className,
+}: {
+  message: string;
+  className?: string;
+}) {
   return (
     <div
       role="alert"
-      className="rounded-lg border border-red-200 bg-red-50 px-3 py-2.5 text-center text-sm text-red-700"
+      className={cn(
+        "rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-center text-sm leading-snug text-red-700 dark:border-red-400/30 dark:bg-red-500/10 dark:text-red-400",
+        className,
+      )}
     >
       {message}
+    </div>
+  );
+}
+
+function MysteryWordErrorToast({ message }: { message: string }) {
+  return (
+    <div
+      role="alert"
+      aria-live="assertive"
+      className="absolute inset-x-4 bottom-4 z-10 animate-in fade-in slide-in-from-bottom-2 duration-200"
+    >
+      <ErrorBanner message={message} className="shadow-md" />
+    </div>
+  );
+}
+
+function MysteryWordDisplay({
+  mysteryWord,
+  definitions,
+  showDefinitions,
+  showRomaji,
+}: {
+  mysteryWord: { kanji?: string | null; kana: string };
+  definitions: string;
+  showDefinitions: boolean;
+  showRomaji: boolean;
+}) {
+  return (
+    <div className="flex h-full min-h-0 w-full flex-1 flex-col">
+      <div className="flex min-h-0 flex-[2] w-full flex-col items-center justify-end px-6 pb-0 text-center">
+        <div className="flex translate-y-0.5 flex-col items-center gap-2 lg:translate-y-1">
+          <div className="flex h-16 w-full items-center justify-center lg:h-[4.5rem]">
+            {mysteryWord.kanji ? (
+              <span className="text-5xl font-extrabold leading-none lg:text-6xl">
+                {mysteryWord.kanji}
+              </span>
+            ) : (
+              <span className="text-5xl font-extrabold leading-none lg:text-6xl">
+                {mysteryWord.kana}
+              </span>
+            )}
+          </div>
+          <div
+            className={cn(
+              "flex h-10 w-full items-center justify-center",
+              !mysteryWord.kanji && "invisible",
+            )}
+          >
+            <span className="text-2xl font-bold text-muted-foreground">
+              {mysteryWord.kana}
+            </span>
+          </div>
+          <div className="flex h-5 w-full items-center justify-center">
+            {showRomaji ? (
+              <RomajiReading kana={mysteryWord.kana} />
+            ) : (
+              <span className="text-base text-muted-foreground" aria-hidden>
+                {"\u00a0"}
+              </span>
+            )}
+          </div>
+        </div>
+      </div>
+      <div
+        className={cn(
+          "min-h-0 flex-1 px-6 text-center",
+          !showDefinitions && "invisible",
+        )}
+      >
+        <FadedOverflowText
+          text={showDefinitions ? definitions : "\u00a0"}
+          className="h-full"
+          textClassName="text-sm"
+        />
+      </div>
     </div>
   );
 }
@@ -496,7 +692,7 @@ function EndGameLayout({
   const { handleWordClick, wordDetailDialog } = useWordDetailsDialog();
 
   return (
-    <main className="flex min-h-[calc(100dvh-4rem)] w-full overflow-y-auto px-2 py-6 sm:px-4 lg:h-[calc(100dvh-2rem)] lg:min-h-0 lg:overflow-hidden lg:px-8">
+    <main className="flex min-h-[calc(100dvh-4rem)] w-full overflow-y-auto px-2 py-6 sm:px-4 lg:h-[calc(100dvh-2rem)] lg:min-h-0 lg:overflow-y-auto lg:px-8">
       <div className="mx-auto flex w-full min-h-0 max-w-5xl flex-1 flex-col gap-6 xl:max-w-6xl">
         <div className="grid min-h-0 flex-1 gap-6 lg:grid-cols-[minmax(0,1.05fr)_minmax(18rem,0.95fr)] lg:items-stretch">
           <div className="flex h-full min-h-0 flex-col gap-5 text-left">
@@ -542,6 +738,7 @@ function GamePage() {
   const { handleWordClick, wordDetailDialog } = useWordDetailsDialog();
   const defInputRef = useRef<HTMLInputElement>(null);
   const tagInputRef = useRef<HTMLInputElement>(null);
+  const [errorToast, setErrorToast] = useState<string | null>(null);
 
   const {
     mysteryWord,
@@ -603,6 +800,17 @@ function GamePage() {
       tagInputRef.current?.focus();
     }
   }, [inDefPhase, inTagPhase]);
+
+  useEffect(() => {
+    if (!errorMessage) {
+      setErrorToast(null);
+      return;
+    }
+
+    setErrorToast(errorMessage);
+    const timeoutId = window.setTimeout(() => setErrorToast(null), 3000);
+    return () => window.clearTimeout(timeoutId);
+  }, [errorMessage]);
 
   if (state.matches("idle")) {
     return (
@@ -693,7 +901,7 @@ function GamePage() {
   }
 
   return (
-    <main className="flex min-h-[calc(100dvh-4rem)] w-full flex-col overflow-y-auto px-2 py-4 sm:px-4 sm:py-6 lg:h-[calc(100dvh-2rem)] lg:min-h-0 lg:overflow-hidden lg:px-8">
+    <main className="flex min-h-[calc(100dvh-4rem)] w-full flex-col overflow-y-auto px-2 py-4 sm:px-4 sm:py-6 lg:h-[calc(100dvh-2rem)] lg:min-h-0 lg:overflow-y-auto lg:px-8">
       <div className="mx-auto flex w-full min-h-0 max-w-5xl flex-1 flex-col gap-5 text-left lg:gap-6 xl:max-w-6xl">
         <div className="shrink-0 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <div className="space-y-1">
@@ -720,7 +928,7 @@ function GamePage() {
         </div>
 
         <div className="grid min-h-0 flex-1 gap-5 lg:grid-cols-[minmax(0,1.2fr)_minmax(18rem,0.8fr)] lg:items-stretch lg:gap-6">
-          <div className="flex h-full min-h-0 flex-col gap-5 lg:overflow-y-auto">
+          <div className="flex h-full min-h-0 min-w-0 flex-col gap-5 lg:px-1 lg:pb-1">
             <div className="sm:hidden">
               <GameHud
                 score={score}
@@ -730,45 +938,32 @@ function GamePage() {
               />
             </div>
 
-            <Card className="shrink-0">
-              <CardHeader className="border-b bg-muted/50 pb-4 text-center">
+            <Card className="flex min-h-[15rem] flex-col sm:min-h-[16rem] lg:min-h-0 lg:flex-1 lg:overflow-hidden">
+              <CardHeader className="shrink-0 border-b bg-muted/50 pb-4 text-center">
                 <CardTitle>mystery word</CardTitle>
               </CardHeader>
-              <CardContent className="space-y-3 pt-6 text-center">
-                {mysteryWord.kanji && (
-                  <span className="block text-5xl font-extrabold leading-none lg:text-6xl">
-                    {mysteryWord.kanji}
-                  </span>
-                )}
-                {mysteryWord.kanji ? (
-                  <span className="block text-2xl font-bold text-muted-foreground">
-                    {mysteryWord.kana}
-                  </span>
-                ) : (
-                  <span className="block text-5xl font-extrabold leading-none lg:text-6xl">
-                    {mysteryWord.kana}
-                  </span>
-                )}
-                {settings.showRomaji && (
-                  <RomajiReading kana={mysteryWord.kana} />
-                )}
-                {inTagPhase && (
-                  <p className="text-sm text-muted-foreground">
-                    {mysteryWord.definitions.join(", ")}
-                  </p>
-                )}
+              <CardContent className="relative flex min-h-0 flex-1 flex-col pt-6">
+                <MysteryWordDisplay
+                  mysteryWord={mysteryWord}
+                  definitions={mysteryWord.definitions.join(", ")}
+                  showDefinitions={inTagPhase}
+                  showRomaji={settings.showRomaji}
+                />
+                {errorToast && <MysteryWordErrorToast message={errorToast} />}
               </CardContent>
             </Card>
 
-            {errorMessage && <ErrorBanner message={errorMessage} />}
-
-            <form onSubmit={handleSubmit} id="form" className="shrink-0 space-y-4">
+            <form
+              onSubmit={handleSubmit}
+              id="form"
+              className="w-full max-w-full min-w-0 shrink-0 space-y-4 px-0.5"
+            >
               {inDefPhase && (
                 <Input
                   ref={defInputRef}
                   name="d"
                   placeholder="enter definition..."
-                  className="border-purple-500 text-lg lg:text-xl"
+                  className="w-full max-w-full min-w-0 border-purple-500 text-lg focus-visible:ring-inset lg:text-xl"
                 />
               )}
 
@@ -781,42 +976,36 @@ function GamePage() {
                       ? "enter tag word (romaji ok)..."
                       : "enter tag word..."
                   }
-                  className="border-blue-500 text-lg lg:text-xl"
+                  className="w-full max-w-full min-w-0 border-blue-500 text-lg focus-visible:ring-inset lg:text-xl"
                 />
               )}
 
-              <div className="flex gap-2">
-                <Button type="submit" className="w-full">
+              <div className="flex min-w-0 gap-2">
+                <Button type="submit" className="flex-1">
                   submit
                 </Button>
 
-                {inDefPhase && (
-                  <Button
-                    type="button"
-                    onClick={() => send({ type: "SKIP" })}
-                    className="w-full"
-                    variant="outline"
-                  >
-                    skip
-                  </Button>
-                )}
+                <Button
+                  type="button"
+                  onClick={() => send({ type: "SKIP" })}
+                  className={cn(
+                    "flex-1",
+                    inTagPhase && "hidden lg:invisible lg:pointer-events-none",
+                  )}
+                  variant="outline"
+                  tabIndex={inTagPhase ? -1 : undefined}
+                  aria-hidden={inTagPhase || undefined}
+                >
+                  skip
+                </Button>
               </div>
             </form>
 
-            {tagWord && (
-              <Card className="shrink-0">
-                <CardHeader className="pb-3 text-center">
-                  <CardTitle className="text-base">last tag word</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-1 pt-0 text-center">
-                  <span className="text-2xl font-bold">{tagWord}</span>
-                  {settings.showRomaji && <RomajiReading kana={tagWord} />}
-                  <p className="max-h-24 overflow-y-auto text-sm text-muted-foreground">
-                    {tagDefinitions.join(", ")}
-                  </p>
-                </CardContent>
-              </Card>
-            )}
+            <LastTagWordCard
+              tagWord={tagWord}
+              tagDefinitions={tagDefinitions}
+              showRomaji={settings.showRomaji}
+            />
           </div>
 
           <aside className="flex h-full min-h-0 flex-col gap-5">
