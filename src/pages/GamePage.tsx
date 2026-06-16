@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { SiteBranding, SiteFooter, SiteTitle } from "@/components/site-chrome.tsx";
 import { prefetchModel } from "@/lib/api.ts";
 import { vocabStore } from "@/lib/data-store.ts";
 import { machine } from "@/lib/machine.ts";
@@ -612,19 +613,14 @@ function EndGameActions({
 function LoadingScreen({ message }: { message: string }) {
   return (
     <div className="mx-auto flex w-72 flex-col items-center space-y-6 px-2 md:w-96">
-      <p className="text-4xl font-kosugi">Kotoba Tag!</p>
+      <SiteTitle />
       <div
         className="size-10 animate-spin rounded-full border-4 border-muted border-t-purple-600"
         role="status"
         aria-label="loading"
       />
       <p className="text-center text-sm text-muted-foreground">{message}</p>
-      <a
-        href="https://nphach.github.io"
-        className="block text-center text-xs font-kosugi font-bold"
-      >
-        made by nphach
-      </a>
+      <SiteFooter />
     </div>
   );
 }
@@ -634,7 +630,7 @@ function CountdownScreen({ countdown }: { countdown: number }) {
 
   return (
     <div className="mx-auto flex w-72 flex-col items-center space-y-6 px-2 md:w-96">
-      <p className="text-4xl font-kosugi">Kotoba Tag!</p>
+      <SiteTitle />
       <p
         className={cn(
           "font-kosugi font-bold tabular-nums leading-none",
@@ -647,12 +643,7 @@ function CountdownScreen({ countdown }: { countdown: number }) {
         {label}
       </p>
       <p className="text-sm text-muted-foreground">get ready...</p>
-      <a
-        href="https://nphach.github.io"
-        className="block text-center text-xs font-kosugi font-bold"
-      >
-        made by nphach
-      </a>
+      <SiteFooter />
     </div>
   );
 }
@@ -698,12 +689,7 @@ function EndGameLayout({
           />
         </div>
 
-        <a
-          href="https://nphach.github.io"
-          className="block shrink-0 text-center text-xs font-kosugi font-bold"
-        >
-          made by nphach
-        </a>
+        <SiteFooter className="shrink-0" />
       </div>
 
       {wordDetailDialog}
@@ -794,12 +780,7 @@ function GamePage() {
   if (state.matches("idle")) {
     return (
       <div className="mx-auto flex w-72 flex-col space-y-6 px-2 md:w-96">
-        <div className="space-y-2 text-center">
-          <p className="text-4xl font-kosugi">Kotoba Tag!</p>
-          <p className="text-sm text-muted-foreground">
-            <i>shiritori</i> for Japanese vocabulary practice
-          </p>
-        </div>
+        <SiteBranding className="text-center" />
         <Button onClick={() => send({ type: "START" })}>start!</Button>
         <Button variant="outline" asChild>
           <Link to="/rules">rules</Link>
@@ -808,12 +789,7 @@ function GamePage() {
           <Link to="/settings">settings</Link>
         </Button>
         {errorMessage && <ErrorBanner message={errorMessage} />}
-        <a
-          href="https://nphach.github.io"
-          className="block text-center text-xs font-kosugi font-bold"
-        >
-          made by nphach
-        </a>
+        <SiteFooter />
       </div>
     );
   }
@@ -884,7 +860,7 @@ function GamePage() {
       <div className="mx-auto flex w-full min-h-0 min-w-0 max-w-5xl flex-1 flex-col gap-5 text-left lg:gap-6 xl:max-w-6xl">
         <div className="shrink-0 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <div className="space-y-1">
-            <p className="text-4xl font-kosugi">Kotoba Tag!</p>
+            <SiteTitle />
             <p
               className={cn(
                 "text-sm font-medium",
@@ -1003,12 +979,7 @@ function GamePage() {
           </aside>
         </div>
 
-        <a
-          href="https://nphach.github.io"
-          className="block shrink-0 text-center text-xs font-kosugi font-bold"
-        >
-          made by nphach
-        </a>
+        <SiteFooter className="shrink-0" />
       </div>
 
       {wordDetailDialog}

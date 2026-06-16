@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
+import { SiteBranding, SiteFooter } from "@/components/site-chrome.tsx";
 import {
   JLPT_LEVELS,
   levelsUpTo,
@@ -112,12 +113,7 @@ function SettingsPage() {
     <main className="flex min-h-[calc(100dvh-4rem)] w-full items-center justify-center overflow-y-auto py-4 text-left sm:px-4 sm:py-6 lg:px-8">
       <div className="mx-auto flex w-full max-w-2xl flex-col items-center gap-5">
         <div className="flex w-full flex-col gap-4 text-center sm:flex-row sm:items-end sm:justify-between sm:text-left">
-          <div className="space-y-2">
-            <p className="text-4xl font-kosugi">Kotoba Tag!</p>
-            <p className="text-sm text-muted-foreground">
-              <i>shiritori</i> for Japanese vocabulary practice
-            </p>
-          </div>
+          <SiteBranding className="text-center sm:text-left" />
           <Button variant="outline" asChild>
             <Link to="/">back to game</Link>
           </Button>
@@ -180,12 +176,7 @@ function SettingsPage() {
           </CardContent>
         </Card>
 
-        <a
-          href="https://nphach.github.io"
-          className="block text-center text-xs font-kosugi font-bold"
-        >
-          made by nphach
-        </a>
+        <SiteFooter />
       </div>
     </main>
   );
