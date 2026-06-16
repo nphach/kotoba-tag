@@ -35,6 +35,7 @@ export function isLevelWithinDifficulty(
 }
 
 export function applyTheme(theme: Theme): void {
+  if (typeof document === "undefined") return;
   document.documentElement.classList.toggle("dark", theme === "dark");
 }
 

@@ -6,7 +6,16 @@ import { prefetchModel } from "@/lib/api.ts";
 import { vocabStore } from "@/lib/data-store.ts";
 import { machine } from "@/lib/machine.ts";
 import { useSettings } from "@/lib/settings-context.tsx";
-import { EndReason, Hiragana, WordDetails, WordHistoryEntry } from "@/lib/types.ts";
+import { Hiragana, WordDetails, WordHistoryEntry } from "@/lib/types.ts";
+import {
+  countWordsPlayed,
+  formatDefinitionPreview,
+  getCountdownLabel,
+  getEndGameMessage,
+  getPhaseLabel,
+  getRoundSummary,
+  isTimerUrgent,
+} from "@/lib/game-display.ts";
 import { cn } from "@/lib/utils";
 import { useMachine } from "@xstate/react";
 import { ChevronRight } from "lucide-react";
@@ -23,10 +32,6 @@ function RomajiReading({ kana }: { kana: string }) {
   return (
     <span className="block text-base text-muted-foreground">{toRomaji(kana)}</span>
   );
-}
-
-function formatDefinitionPreview(definitions: string[]) {
-  return definitions.join(", ");
 }
 
 function FadedDefinition({ text }: { text: string }) {
@@ -333,7 +338,7 @@ function GameHud({
   timer: number;
   compact?: boolean;
 }) {
-  const timerUrgent = timer <= 10;
+  const timerUrgent = isTimerUrgent(timer);
 
   return (
     <div className={cn("grid grid-cols-3", compact ? "gap-2" : "gap-3")}>
@@ -557,37 +562,6 @@ function MysteryWordDisplay({
   );
 }
 
-function getEndGameMessage(endReason: EndReason, errorMessage: string) {
-  if (endReason === "timeout") {
-    return "time ran out!";
-  }
-  if (endReason === "error") {
-    return errorMessage || "something went wrong — please try again";
-  }
-  return "game over!";
-}
-
-function countWordsPlayed(
-  wordsPlayed: number | undefined,
-  wordHistory: WordHistoryEntry[],
-) {
-  const played = wordsPlayed ?? 0;
-  if (played > 0) return played;
-  if (wordHistory.length === 0) return 0;
-  return Math.floor((wordHistory.length + 1) / 2);
-}
-
-function getRoundSummary(
-  wordsPlayed: number | undefined,
-  correctDefinitions: number | undefined,
-) {
-  const played = wordsPlayed ?? 0;
-  const definitions = correctDefinitions ?? 0;
-  const wordLabel = played === 1 ? "word" : "words";
-  const definitionLabel = definitions === 1 ? "definition" : "definitions";
-  return `you played ${played} ${wordLabel} this round and guessed ${definitions} correct ${definitionLabel}.`;
-}
-
 function EndGameActions({
   onRestart,
   onReturnHome,
@@ -626,7 +600,7 @@ function LoadingScreen({ message }: { message: string }) {
 }
 
 function CountdownScreen({ countdown }: { countdown: number }) {
-  const label = countdown === 0 ? "go!" : String(countdown);
+  const label = getCountdownLabel(countdown);
 
   return (
     <div className="mx-auto flex w-72 flex-col items-center space-y-6 px-2 md:w-96">
@@ -867,9 +841,7 @@ function GamePage() {
                 inDefPhase ? "text-purple-600" : "text-blue-600",
               )}
             >
-              {inDefPhase
-                ? "phase 1 — enter the English definition"
-                : "phase 2 — enter a Japanese tag word"}
+              {getPhaseLabel(inDefPhase)}
             </p>
           </div>
           <div className="hidden sm:block lg:hidden">
