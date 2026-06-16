@@ -1,7 +1,6 @@
 import defsJson from "@/data/word-bank/defs.json";
 import vocabJson from "@/data/word-bank/vocab.json";
 import {
-  API_BASE,
   ensureModelReady,
   postDefinition,
 } from "./api.ts";
@@ -15,6 +14,7 @@ import {
   isExactDefinitionMatch,
   isLocallyAcceptableDefinition,
 } from "./definition-match.ts";
+import { fetchJisho } from "./jisho-api.ts";
 import {
   isHiragana,
   matchesShiritoriLink,
@@ -124,40 +124,17 @@ class VocabStore {
       };
     }
 
-    let response: Response;
-    try {
-      response = await fetch(
-        `${API_BASE}/tag-word?req=${encodeURIComponent(normalized)}`,
-      );
-    } catch {
-      throw new Error(
-        "couldn't reach the dictionary — check your connection and try again",
-      );
-    }
+    const entries = await fetchJisho(normalized);
 
-    const res = await response.json().catch(() => ({}));
-
-    if (!response.ok) {
-      const detail =
-        typeof res.detail === "string"
-          ? res.detail
-          : "dictionary lookup failed — try again";
-      throw new Error(detail);
-    }
-
-    if (!res.data || res.data.length === 0) {
+    if (entries.length === 0) {
       throw new Error("couldn't find that word in the dictionary");
     }
 
-    for (const entry of res.data as {
-      japanese: { word?: string; reading: string }[];
-      senses: { english_definitions: string[] }[];
-    }[]) {
+    for (const entry of entries) {
       const readings = entry.japanese.map((j) => normalizeToHiragana(j.reading));
       if (!readings.includes(normalized)) continue;
 
-      const kanji =
-        entry.japanese.find((j) => j.word)?.word ?? null;
+      const kanji = entry.japanese.find((j) => j.word)?.word ?? null;
       const definitions = [
         ...new Set(
           entry.senses.flatMap((sense) => sense.english_definitions),
@@ -239,50 +216,23 @@ class VocabStore {
       throw new Error("you already used that word this round");
     }
 
-    let response: Response;
-    try {
-      response = await fetch(
-        `${API_BASE}/tag-word?req=${encodeURIComponent(tagWord)}`,
-      );
-    } catch {
-      throw new Error(
-        "couldn't reach the dictionary — check your connection and try again",
-      );
-    }
+    const entries = await fetchJisho(tagWord);
 
-    const res = await response.json().catch(() => ({}));
-
-    if (!response.ok) {
-      const detail =
-        typeof res.detail === "string"
-          ? res.detail
-          : "dictionary lookup failed — try again";
-      throw new Error(detail);
-    }
-
-    if (res.data && res.data.length > 0) {
+    if (entries.length > 0) {
       let wordFound = false;
       const validDefs: string[] = [];
 
-      res.data.forEach(
-        (entry: {
-          japanese: { reading: string }[];
-          senses: {
-            parts_of_speech: string[];
-            english_definitions: string[];
-          }[];
-        }) => {
-          const readings = entry.japanese.map((j) => j.reading as Hiragana);
-          if (readings.includes(tagWord)) {
-            wordFound = true;
-            entry.senses.forEach((sense) => {
-              if (sense.parts_of_speech.includes("Noun")) {
-                validDefs.push(...sense.english_definitions);
-              }
-            });
-          }
-        },
-      );
+      entries.forEach((entry) => {
+        const readings = entry.japanese.map((j) => j.reading as Hiragana);
+        if (readings.includes(tagWord)) {
+          wordFound = true;
+          entry.senses.forEach((sense) => {
+            if (sense.parts_of_speech.includes("Noun")) {
+              validDefs.push(...sense.english_definitions);
+            }
+          });
+        }
+      });
 
       if (!wordFound) {
         throw new Error("couldn't find that word in the dictionary");
