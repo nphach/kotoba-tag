@@ -5,6 +5,23 @@ import { getSettings } from "./settings.ts";
 import { vocabStore } from "./data-store.ts";
 import { GameContext, Hiragana, initialGameWord } from "./types.ts";
 
+function createFreshContext(): GameContext {
+  return {
+    score: 0,
+    multiplier: 5,
+    timer: getSettings().timerSeconds,
+    mysteryWord: initialGameWord,
+    tagWord: "" as Hiragana,
+    tagDefinitions: [],
+    wordHistory: [],
+    errorMessage: "",
+    wordsPlayed: 0,
+    correctDefinitions: 0,
+    endReason: null,
+    countdown: 0,
+  };
+}
+
 export const machine = setup({
   types: {
     context: {} as GameContext,
@@ -96,6 +113,8 @@ export const machine = setup({
     applySettings: assign({
       timer: () => getSettings().timerSeconds,
     }),
+
+    resetGameContext: assign(() => createFreshContext()),
   },
   delays: {
     ROUND_TIMER: ({ context }) => context.timer * 1000,
@@ -179,20 +198,7 @@ export const machine = setup({
   /** @xstate-layout N4IgpgJg5mDOIC5QAcA2BDAngSwHZQDpsJUwBiAZQBUBBAJSoG0AGAXURQHtZsAXbTrg4gAHogDsAVgBMBAGwBGaZPHNJc6QA4ALAoUAaEJkTbmATgIBmSwuabL08Y7UBfF4bRY8hGLwCymLC8YABOmGQQgmBEuABunADW0Z44+AS+AUGhmAh48QDG6PyCLKylwsjcfAJCSKKIZnLi8uJm2vZOCnLaNobGCNpOBJLa0krMauKaI+JuHhipPmD+gcFhZKEhnCEEnrwAZtsAtrsL3unLmWs5eZyFxbil5XWVPA-CYgiWms3icj9tZgKMwOSQ-PqIGTNBxaORmTSObTaMySOYgFLnFJ0TgAV1wEDIIiCRWi6H2awAFJYJhMAJRkDFpLG4-HPLhvGofRCWSQWMytTTmNrSZR6cQQhCaJQEAUihSaaYqBxoxmEZl4iC7EJwMC4FZZMK7dAhXgKAjEk2UACqACE-ABJJhsCpVd51T5yMFWME-SRqQVNCVKQYEeU8uziBSSJRKFVnJkLbEarU6vVXbJGk1mi28SgAaXtAAU2ejXZz3YhNHJmKHJCpdJZBj0zAYjIg9EirN8pOo5JY5Bo5HGvAmsEn8SnYLr9ddM6aCBAwPs8NVBABhAAWYHyCQiURi8SSBFioWw+0wABElyXXqvaqBPrYugQRQrX5HGtYg9JG6GbNoND+ZgpmkYdFlOMcWU1ZBtSnNNVgzZBjXnRdl1wO9N23XdNm2CCDmOY9T3PK99hvMtBC5BApjkAhTCcNQI3EfszCDYFZGsX1e37QcwMxRMoMnad00NJCTVkHNrTtR0yI5CiKwQJQvXEJwQXacxLCmcU2wU6RRgIKszGUVpbEMqVeNHTBx2g2ChIQkTkNkXh0CgAB1bYIEwnc91waJbiPE8QjPTAqGctyQggGS70ouFZAUKZkUjBRtD9MYg3UGtgImFQRmrcQAPMtV+OTGDUxnRCHIIJzXPczzsJCLYdj2Q4QhOAKgpC6rwsit0H3bb5LGGak9EM1SwS0-olGpfS4TDTQUQcDQCogyyBKOHFUH4NBsFCSrsB3bxCWJYICDJSk-TpBl40KyDkzWjbsC2nb+H2-BuvLXqFP7M0RR6HRmB5UwFQlQULA0CYQU6UZY3cdEruWqzdqOJ69oSA6iSc47TtCClbAu1V4YE-gkZ2Z7Ude50XnI+96klBQBupRs9C+sNJGB8x5GkcGNLGKHQJh-GMjszAADEtiODrvN8uJEmifZlnyDcwogUXOHF5y3rkj6f20YZkWYJprH-OtLFY59hvhdSpRbJbBYNEWxYlnDGowfCWoIOXeAVpWVbVqANepz5DMG3TqzUn9QQlfkzT+b55ThaMeT5+YR0IXUIAAcXQJGyDoABRah6CddhKdkgPEEcAbdHBn9JGpdRWe0pFmk5lQdHaVQ2lmfm4fyVW0GWcg84Lhh-coumLCRRpQ5Gf7qU0CUm5fSYIZREFPTcGHcE4Rd4BeK6XVLyjO1rkPmDD6xlG0CVqVkfWzCBKYQT0OsluIUgD6i+TPR1+xbGS5SwRNFbP0b4FguiOHsDyKQjgbaXCFh-HqNMBw60HE0MEgw-SBkblIUM-wAJghShpVE3cU4Ew1Ag96NM-SaAIBDOK5gRgOC6BKPskhaILXUv2AMmglrqgnCVOCZUwgUM1lQ9QtCNL0JRD0MYcggwTBoY2WuT8HDUnaLwoq-CbLwTtnOBQIiy4IFDhIyMHdGGyNYv9GUk8nAaEcH8YhydwJ8OsqVYSmA9HmiciaAx0UhhJSBF0RseVLAtlYvffS3YkpSmoRpDRN0tFuKFp41CK4Hi1V8V-GQJipHmOYdpOm0ofh5RkMxdu8SVrFW0UIjxoleDSEyR9YaNZPSej9JpXKJsCkMPYS2HkDgAJKCTrDUhLjBI6NnHU8S3jeCNJpkoIYdZRjIl0tIJ+rEETB2KdGGabQKkIwEbZXRUzKqhRqluHcczHw-hoa0uswEfidKDGorsDZAl0QUPs1a61NqoG2iEK57Y4o0X7Gsj8eVDJOAlE4WQMhWFRjWR2L5t0fkPT+cjF6UBAU6V0lYDQUd+QrKhdpHQsKraOBBFbf6yKJxE1CNi-FwxAlymDBS6FIphjSHhTIFsSUaWajpSTFG3gGXKSZXoFlqzWjAxsAQcwA4IWmE5vCWBNSfYdWxWKOV6hnCOBkMwLQ0ggx0VDECaMQJGbJTMEtNOmckbYq4dY0pExNLtBBNC4C8gFRmp+IMR+S1e5HH7sETVuhQw-jsNSNQjgfrAwHFYA1YJuJIg3i4IAA */
   id: "playing",
   initial: "idle",
-  context: {
-    score: 0,
-    multiplier: 5,
-    timer: getSettings().timerSeconds,
-    mysteryWord: initialGameWord,
-    tagWord: "" as Hiragana,
-    tagDefinitions: [],
-    wordHistory: [],
-    errorMessage: "",
-    wordsPlayed: 0,
-    correctDefinitions: 0,
-    endReason: null,
-    countdown: 0,
-  },
+  context: createFreshContext(),
   states: {
     idle: {
       on: {
@@ -426,40 +432,11 @@ export const machine = setup({
       on: {
         RETURN_HOME: {
           target: "idle",
-          actions: assign({
-            score: 0,
-            multiplier: 5,
-            timer: getSettings().timerSeconds,
-            mysteryWord: initialGameWord,
-            tagWord: "" as Hiragana,
-            tagDefinitions: [],
-            wordHistory: [],
-            errorMessage: "",
-            wordsPlayed: 0,
-            correctDefinitions: 0,
-            endReason: null,
-            countdown: 0,
-          }),
+          actions: "resetGameContext",
         },
         RESTART: {
           target: "prepareGame",
-          actions: [
-            assign({
-              score: 0,
-              multiplier: 5,
-              timer: getSettings().timerSeconds,
-              mysteryWord: initialGameWord,
-              tagWord: "" as Hiragana,
-              tagDefinitions: [],
-              wordHistory: [],
-              errorMessage: "",
-              wordsPlayed: 0,
-              correctDefinitions: 0,
-              endReason: null,
-              countdown: 0,
-            }),
-            "applySettings",
-          ],
+          actions: ["resetGameContext", "applySettings"],
         },
       },
     },
@@ -469,40 +446,11 @@ export const machine = setup({
       on: {
         RETURN_HOME: {
           target: "idle",
-          actions: assign({
-            score: 0,
-            multiplier: 5,
-            timer: getSettings().timerSeconds,
-            mysteryWord: initialGameWord,
-            tagWord: "" as Hiragana,
-            tagDefinitions: [],
-            wordHistory: [],
-            errorMessage: "",
-            wordsPlayed: 0,
-            correctDefinitions: 0,
-            endReason: null,
-            countdown: 0,
-          }),
+          actions: "resetGameContext",
         },
         RESTART: {
           target: "prepareGame",
-          actions: [
-            assign({
-              score: 0,
-              multiplier: 5,
-              timer: getSettings().timerSeconds,
-              mysteryWord: initialGameWord,
-              tagWord: "" as Hiragana,
-              tagDefinitions: [],
-              wordHistory: [],
-              errorMessage: "",
-              wordsPlayed: 0,
-              correctDefinitions: 0,
-              endReason: null,
-              countdown: 0,
-            }),
-            "applySettings",
-          ],
+          actions: ["resetGameContext", "applySettings"],
         },
       },
     },
