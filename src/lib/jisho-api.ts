@@ -1,4 +1,5 @@
 import { API_BASE } from "./api.ts";
+import { readApiErrorDetail } from "./errors.ts";
 
 const NETWORK_MESSAGE =
   "couldn't reach the dictionary — check your connection and try again";
@@ -22,13 +23,12 @@ export async function fetchJisho(keyword: string): Promise<JishoEntry[]> {
     throw new Error(NETWORK_MESSAGE);
   }
 
-  const res = await response.json().catch(() => ({}));
-
   if (!response.ok) {
-    const detail =
-      typeof res.detail === "string" ? res.detail : LOOKUP_FAILED_MESSAGE;
+    const detail = await readApiErrorDetail(response, LOOKUP_FAILED_MESSAGE);
     throw new Error(detail);
   }
+
+  const res = await response.json().catch(() => ({}));
 
   if (!res.data || res.data.length === 0) {
     return [];

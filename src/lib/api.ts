@@ -125,24 +125,20 @@ export async function postDefinition(
     throw new Error(NETWORK_MESSAGE);
   }
 
-  const body = await response.json().catch(() => ({}));
-
   if (response.status === 503) {
     markModelCold();
-    const message =
-      typeof body.detail === "string"
-        ? body.detail
-        : "the definition model is still starting up — try again in a moment";
+    const message = await readApiErrorDetail(
+      response,
+      "the definition model is still starting up — try again in a moment",
+    );
     throw new ModelLoadingError(message);
   }
 
   if (!response.ok) {
-    const message =
-      typeof body.detail === "string"
-        ? body.detail
-        : DEFINITION_CHECK_FAILED;
+    const message = await readApiErrorDetail(response, DEFINITION_CHECK_FAILED);
     throw new Error(message);
   }
 
+  const body = await response.json().catch(() => ({}));
   return body.predictions;
 }
