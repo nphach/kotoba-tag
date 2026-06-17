@@ -11,18 +11,14 @@ import {
   type GameSettings,
   getSettings,
   setSettings,
-  type JlptLevel,
-  type Theme,
-  type TimerSeconds,
 } from "./settings.ts";
 
 type SettingsContextValue = {
   settings: GameSettings;
-  setDifficulty: (difficulty: JlptLevel) => void;
-  setShowRomaji: (showRomaji: boolean) => void;
-  setTimerSeconds: (timerSeconds: TimerSeconds) => void;
-  setTheme: (theme: Theme) => void;
-  setFlipDesktopLayout: (flipDesktopLayout: boolean) => void;
+  updateSetting: <K extends keyof GameSettings>(
+    key: K,
+    value: GameSettings[K],
+  ) => void;
   resetSettings: () => void;
 };
 
@@ -39,15 +35,7 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
   const value = useMemo<SettingsContextValue>(
     () => ({
       settings,
-      setDifficulty: (difficulty) =>
-        commit({ ...settings, difficulty }),
-      setShowRomaji: (showRomaji) =>
-        commit({ ...settings, showRomaji }),
-      setTimerSeconds: (timerSeconds) =>
-        commit({ ...settings, timerSeconds }),
-      setTheme: (theme) => commit({ ...settings, theme }),
-      setFlipDesktopLayout: (flipDesktopLayout) =>
-        commit({ ...settings, flipDesktopLayout }),
+      updateSetting: (key, value) => commit({ ...settings, [key]: value }),
       resetSettings: () => commit({ ...DEFAULT_SETTINGS }),
     }),
     [commit, settings],
