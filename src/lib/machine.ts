@@ -1,6 +1,8 @@
 import { assign, fromPromise, setup } from "xstate";
 import { ensureModelReady } from "./api.ts";
-import { GameCompleteError, getErrorMessage } from "./errors.ts";
+import { GameCompleteError } from "./errors.ts";
+import { formatSystemError, playErrorToast, skippedToast, successToast } from "./feedback.ts";
+import { pointsEarned } from "./scoring.ts";
 import { getSettings } from "./settings.ts";
 import { vocabStore } from "./data-store.ts";
 import { GameContext, Hiragana, initialGameWord } from "./types.ts";
@@ -69,7 +71,7 @@ export const machine = setup({
     }),
 
     incrementScore: assign({
-      score: ({ context }) => context.score + 10 * context.multiplier,
+      score: ({ context }) => context.score + pointsEarned(context.multiplier),
     }),
 
     addScoreBonus: assign({
@@ -103,40 +105,28 @@ export const machine = setup({
     }),
 
     setErrorMessage: assign({
-      errorMessage: ({ event }) =>
-        getErrorMessage(event.error, "something went wrong — please try again"),
+      errorMessage: ({ event }) => formatSystemError(event.error),
     }),
 
     clearErrorMessage: assign({
       errorMessage: () => "",
     }),
 
+    clearFeedback: assign({
+      errorMessage: () => "",
+      toast: () => null,
+    }),
+
     setPlayErrorToast: assign({
-      toast: ({ event }) => ({
-        message: getErrorMessage(
-          event.error,
-          "something went wrong — please try again",
-        ),
-        variant: "error",
-      }),
+      toast: ({ event }) => playErrorToast(event.error),
     }),
 
     setSuccessToast: assign({
-      toast: ({ context }) => ({
-        message: `+${10 * context.multiplier} points`,
-        variant: "success",
-      }),
+      toast: ({ context }) => successToast(context.multiplier),
     }),
 
     setSkippedToast: assign({
-      toast: {
-        message: "skipped",
-        variant: "neutral",
-      },
-    }),
-
-    clearToast: assign({
-      toast: () => null,
+      toast: () => skippedToast,
     }),
 
     applySettings: assign({
@@ -233,7 +223,7 @@ export const machine = setup({
       on: {
         START: {
           target: "prepareGame",
-          actions: ["clearErrorMessage", "clearToast", "applySettings"],
+          actions: ["clearFeedback", "applySettings"],
         },
       },
     },
@@ -246,7 +236,7 @@ export const machine = setup({
             src: "warmupModel",
             onDone: {
               target: "countdown",
-              actions: ["clearErrorMessage", "clearToast"],
+              actions: "clearFeedback",
             },
             onError: {
               target: "#playing.idle",
@@ -286,8 +276,7 @@ export const machine = setup({
           actions: [
             "updateMysteryWord",
             "incrementWordsPlayed",
-            "clearErrorMessage",
-            "clearToast",
+            "clearFeedback",
           ],
         },
         onError: [
@@ -441,8 +430,7 @@ export const machine = setup({
             "incrementWordsPlayed",
             assign({ multiplier: 5 }),
             "applySettings",
-            "clearErrorMessage",
-            "clearToast",
+            "clearFeedback",
           ],
         },
         onError: [
