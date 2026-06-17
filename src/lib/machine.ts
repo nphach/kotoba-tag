@@ -5,7 +5,7 @@ import { formatSystemError, playErrorToast, skippedToast, successToast } from ".
 import { pointsEarned } from "./scoring.ts";
 import { getSettings } from "./settings.ts";
 import { vocabStore } from "./data-store.ts";
-import { GameContext, Hiragana, initialGameWord } from "./types.ts";
+import { GameContext, GameToast, Hiragana, initialGameWord } from "./types.ts";
 
 function createFreshContext(): GameContext {
   return {
@@ -117,16 +117,8 @@ export const machine = setup({
       toast: () => null,
     }),
 
-    setPlayErrorToast: assign({
-      toast: ({ event }) => playErrorToast(event.error),
-    }),
-
-    setSuccessToast: assign({
-      toast: ({ context }) => successToast(context.multiplier),
-    }),
-
-    setSkippedToast: assign({
-      toast: () => skippedToast,
+    setToast: assign({
+      toast: (_, params: GameToast) => params,
     }),
 
     applySettings: assign({
@@ -315,7 +307,7 @@ export const machine = setup({
                     },
                     SKIP: {
                       target: "#playing.playRound.presentMystery.part2.start",
-                      actions: ["addMystery", "setSkippedToast"],
+                      actions: ["addMystery", { type: "setToast", params: skippedToast }],
                     },
                   },
                 },
@@ -333,13 +325,19 @@ export const machine = setup({
                         "addMystery",
                         "incrementScore",
                         "incrementCorrectDefinitions",
-                        "setSuccessToast",
+                        {
+                          type: "setToast",
+                          params: ({ context }) => successToast(context.multiplier),
+                        },
                         "clearErrorMessage",
                       ],
                     },
                     onError: {
                       target: "start",
-                      actions: "setPlayErrorToast",
+                      actions: {
+                        type: "setToast",
+                        params: ({ event }) => playErrorToast(event.error),
+                      },
                     },
                   },
                 },
@@ -368,13 +366,19 @@ export const machine = setup({
                         "incrementScore",
                         "updateTagWord",
                         "addTagWord",
-                        "setSuccessToast",
+                        {
+                          type: "setToast",
+                          params: ({ context }) => successToast(context.multiplier),
+                        },
                         "clearErrorMessage",
                       ],
                     },
                     onError: {
                       target: "start",
-                      actions: "setPlayErrorToast",
+                      actions: {
+                        type: "setToast",
+                        params: ({ event }) => playErrorToast(event.error),
+                      },
                     },
                     src: "verifyTagWord",
                   },
