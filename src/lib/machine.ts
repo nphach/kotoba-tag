@@ -15,6 +15,7 @@ function createFreshContext(): GameContext {
     tagDefinitions: [],
     wordHistory: [],
     errorMessage: "",
+    toast: null,
     wordsPlayed: 0,
     correctDefinitions: 0,
     endReason: null,
@@ -108,6 +109,34 @@ export const machine = setup({
 
     clearErrorMessage: assign({
       errorMessage: () => "",
+    }),
+
+    setPlayErrorToast: assign({
+      toast: ({ event }) => ({
+        message: getErrorMessage(
+          event.error,
+          "something went wrong — please try again",
+        ),
+        variant: "error",
+      }),
+    }),
+
+    setSuccessToast: assign({
+      toast: ({ context }) => ({
+        message: `+${10 * context.multiplier} points`,
+        variant: "success",
+      }),
+    }),
+
+    setSkippedToast: assign({
+      toast: {
+        message: "skipped",
+        variant: "neutral",
+      },
+    }),
+
+    clearToast: assign({
+      toast: () => null,
     }),
 
     applySettings: assign({
@@ -204,7 +233,7 @@ export const machine = setup({
       on: {
         START: {
           target: "prepareGame",
-          actions: ["clearErrorMessage", "applySettings"],
+          actions: ["clearErrorMessage", "clearToast", "applySettings"],
         },
       },
     },
@@ -217,7 +246,7 @@ export const machine = setup({
             src: "warmupModel",
             onDone: {
               target: "countdown",
-              actions: "clearErrorMessage",
+              actions: ["clearErrorMessage", "clearToast"],
             },
             onError: {
               target: "#playing.idle",
@@ -258,6 +287,7 @@ export const machine = setup({
             "updateMysteryWord",
             "incrementWordsPlayed",
             "clearErrorMessage",
+            "clearToast",
           ],
         },
         onError: [
@@ -296,7 +326,7 @@ export const machine = setup({
                     },
                     SKIP: {
                       target: "#playing.playRound.presentMystery.part2.start",
-                      actions: "addMystery",
+                      actions: ["addMystery", "setSkippedToast"],
                     },
                   },
                 },
@@ -314,12 +344,13 @@ export const machine = setup({
                         "addMystery",
                         "incrementScore",
                         "incrementCorrectDefinitions",
+                        "setSuccessToast",
                         "clearErrorMessage",
                       ],
                     },
                     onError: {
                       target: "start",
-                      actions: "setErrorMessage",
+                      actions: "setPlayErrorToast",
                     },
                   },
                 },
@@ -348,12 +379,13 @@ export const machine = setup({
                         "incrementScore",
                         "updateTagWord",
                         "addTagWord",
+                        "setSuccessToast",
                         "clearErrorMessage",
                       ],
                     },
                     onError: {
                       target: "start",
-                      actions: "setErrorMessage",
+                      actions: "setPlayErrorToast",
                     },
                     src: "verifyTagWord",
                   },
@@ -410,6 +442,7 @@ export const machine = setup({
             assign({ multiplier: 5 }),
             "applySettings",
             "clearErrorMessage",
+            "clearToast",
           ],
         },
         onError: [

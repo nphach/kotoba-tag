@@ -28,6 +28,13 @@ export const initialGameWord: GameWord = {
 
 export type EndReason = "timeout" | "error" | null;
 
+export type GameToastVariant = "error" | "success" | "neutral";
+
+export type GameToast = {
+  message: string;
+  variant: GameToastVariant;
+};
+
 export type GameContext = {
   score: number;
   multiplier: number;
@@ -37,6 +44,7 @@ export type GameContext = {
   tagDefinitions: string[];
   wordHistory: WordHistoryEntry[];
   errorMessage: string;
+  toast: GameToast | null;
   wordsPlayed: number;
   correctDefinitions: number;
   endReason: EndReason;

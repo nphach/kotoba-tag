@@ -6,7 +6,7 @@ import { prefetchModel } from "@/lib/api.ts";
 import { vocabStore } from "@/lib/data-store.ts";
 import { useGame } from "@/lib/game-context.tsx";
 import { useSettings } from "@/lib/settings-context.tsx";
-import { Hiragana, WordDetails, WordHistoryEntry } from "@/lib/types.ts";
+import { Hiragana, GameToast, WordDetails, WordHistoryEntry } from "@/lib/types.ts";
 import {
   countWordsPlayed,
   formatDefinitionPreview,
@@ -300,14 +300,14 @@ function HudStat({
   return (
     <div
       className={cn(
-        "rounded-lg border bg-card shadow-sm",
+        "min-w-0 rounded-lg border bg-card shadow-sm",
         compact ? "px-2 py-2 text-center" : "px-4 py-3 text-left",
         urgent && timerUrgentBoxClass,
       )}
     >
       <p
         className={cn(
-          "uppercase tracking-wide text-muted-foreground",
+          "truncate uppercase tracking-wide text-muted-foreground",
           compact ? "text-[10px]" : "text-xs",
         )}
       >
@@ -428,7 +428,7 @@ function LastTagWordCard({
   const definitions = hasTagWord ? tagDefinitions.join(", ") : null;
 
   return (
-    <Card className="flex h-36 w-full min-w-0 max-w-full shrink-0 flex-col overflow-hidden">
+    <Card className="flex h-40 w-full min-w-0 max-w-full shrink-0 flex-col overflow-hidden sm:h-44 lg:h-48">
       <CardHeader className="shrink-0 border-b bg-muted/50 py-2.5 text-center">
         <CardTitle className="text-sm">last tag word</CardTitle>
       </CardHeader>
@@ -477,10 +477,34 @@ function ErrorBanner({
   className?: string;
 }) {
   return (
+    <GameToastBanner
+      message={message}
+      variant="error"
+      className={className}
+    />
+  );
+}
+
+function GameToastBanner({
+  message,
+  variant,
+  className,
+}: {
+  message: string;
+  variant: GameToast["variant"];
+  className?: string;
+}) {
+  return (
     <div
       role="alert"
       className={cn(
-        "rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-center text-sm leading-snug text-red-700 dark:border-red-400/30 dark:bg-red-500/10 dark:text-red-400",
+        "rounded-lg border px-3 py-2 text-center text-sm leading-snug",
+        variant === "error" &&
+          "border-red-200 bg-red-50 text-red-700 dark:border-red-400/30 dark:bg-red-500/10 dark:text-red-400",
+        variant === "success" &&
+          "border-green-200 bg-green-50 text-green-800 dark:border-green-400/30 dark:bg-green-500/10 dark:text-green-400",
+        variant === "neutral" &&
+          "border-border bg-muted text-muted-foreground",
         className,
       )}
     >
@@ -489,14 +513,14 @@ function ErrorBanner({
   );
 }
 
-function MysteryWordErrorToast({ message }: { message: string }) {
+function MysteryWordToast({ toast }: { toast: GameToast }) {
   return (
     <div
       role="alert"
-      aria-live="assertive"
+      aria-live={toast.variant === "error" ? "assertive" : "polite"}
       className="absolute inset-x-4 bottom-4 z-10 animate-in fade-in slide-in-from-bottom-2 duration-200"
     >
-      <ErrorBanner message={message} className="shadow-md" />
+      <GameToastBanner message={toast.message} variant={toast.variant} className="shadow-md" />
     </div>
   );
 }
@@ -513,8 +537,8 @@ function MysteryWordDisplay({
   showRomaji: boolean;
 }) {
   return (
-    <div className="flex h-full min-h-0 flex-1 flex-col items-center justify-center px-4 text-center sm:px-6">
-      <div className="flex w-full flex-col items-center gap-1">
+    <div className="flex h-full min-h-0 flex-1 flex-col px-4 text-center sm:px-6">
+      <div className="flex min-h-0 flex-1 flex-col items-center justify-center gap-1">
         <div className="flex h-12 w-full items-center justify-center sm:h-14 lg:h-[4.5rem]">
           {mysteryWord.kanji ? (
             <span className="text-4xl font-extrabold leading-none sm:text-5xl lg:text-6xl">
@@ -545,18 +569,15 @@ function MysteryWordDisplay({
           <RomajiReading kana={mysteryWord.kana} />
         </div>
       </div>
-      <div
-        className={cn(
-          "mt-1.5 w-full min-h-[2rem] max-h-[4.5rem] lg:mt-2 lg:max-h-[7rem]",
-          !showDefinitions && "invisible",
-        )}
-      >
-        <FadedOverflowText
-          text={showDefinitions ? definitions : "\u00a0"}
-          className="h-full min-h-0"
-          textClassName="text-sm"
-        />
-      </div>
+      {showDefinitions && (
+        <div className="mt-1.5 w-full min-h-[2rem] max-h-[4.5rem] shrink-0 lg:mt-2 lg:max-h-[7rem]">
+          <FadedOverflowText
+            text={definitions}
+            className="h-full min-h-0"
+            textClassName="text-sm"
+          />
+        </div>
+      )}
     </div>
   );
 }
@@ -640,11 +661,11 @@ function EndGameLayout({
   const { handleWordClick, wordDetailDialog } = useWordDetailsDialog();
 
   return (
-    <main className="flex min-h-[calc(100dvh-4rem)] w-full min-w-0 max-w-full flex-col overflow-x-hidden overflow-y-auto px-2 py-6 sm:px-4 lg:h-[calc(100dvh-2rem)] lg:min-h-0 lg:overflow-y-auto lg:px-8">
-      <div className="mx-auto flex w-full min-h-0 min-w-0 max-w-5xl flex-1 flex-col gap-6 xl:max-w-6xl">
+    <main className="flex min-h-[calc(100dvh-4rem)] w-full min-w-0 max-w-full flex-col overflow-x-hidden overflow-y-auto px-2 py-6 sm:px-4 lg:h-[calc(100dvh-2rem)] lg:min-h-0 lg:justify-center lg:overflow-y-auto lg:px-8">
+      <div className="mx-auto flex w-full min-h-0 min-w-0 max-w-5xl flex-col gap-6 lg:h-[min(44rem,calc(100dvh-6rem))] lg:max-h-[calc(100dvh-4rem)] xl:max-w-6xl">
         <div
           className={cn(
-            "grid min-h-0 min-w-0 max-w-full flex-1 gap-6 lg:items-stretch",
+            "grid min-h-[28rem] min-w-0 max-w-full flex-1 gap-6 lg:min-h-0 lg:max-h-[44rem] lg:items-stretch",
             flipDesktopLayout
               ? "lg:grid-cols-[minmax(18rem,0.95fr)_minmax(0,1.05fr)]"
               : "lg:grid-cols-[minmax(0,1.05fr)_minmax(18rem,0.95fr)]",
@@ -660,13 +681,13 @@ function EndGameLayout({
               <CardHeader className="shrink-0 border-b bg-muted/50 pb-4">
                 <CardTitle className="text-3xl font-kosugi">{title}</CardTitle>
               </CardHeader>
-              <CardContent className="flex min-w-0 flex-1 flex-col justify-center space-y-4 overflow-hidden pt-6">
+              <CardContent className="flex min-h-0 min-w-0 flex-1 flex-col justify-center space-y-4 overflow-hidden pt-6">
                 {children}
               </CardContent>
+              <div className="flex w-full min-w-0 max-w-full shrink-0 flex-col gap-2 border-t px-6 py-4 sm:flex-row sm:flex-wrap sm:items-center sm:justify-center">
+                {actions}
+              </div>
             </Card>
-            <div className="flex w-full min-w-0 max-w-full shrink-0 flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center sm:justify-center">
-              {actions}
-            </div>
           </div>
 
           <WordHistoryPanel
@@ -676,7 +697,7 @@ function EndGameLayout({
             showArrow
             onWordClick={handleWordClick}
             className={cn(
-              "min-h-[12rem] min-w-0 w-full max-w-full lg:h-full lg:min-h-0",
+              "min-h-[12rem] min-w-0 w-full max-w-full lg:h-full lg:min-h-0 lg:flex-1",
               flipDesktopLayout && "lg:order-1",
             )}
           />
@@ -696,7 +717,7 @@ function GamePage() {
   const { handleWordClick, wordDetailDialog } = useWordDetailsDialog();
   const defInputRef = useRef<HTMLInputElement>(null);
   const tagInputRef = useRef<HTMLInputElement>(null);
-  const [errorToast, setErrorToast] = useState<string | null>(null);
+  const [visibleToast, setVisibleToast] = useState<GameToast | null>(null);
 
   const {
     mysteryWord,
@@ -707,6 +728,7 @@ function GamePage() {
     tagWord,
     tagDefinitions,
     errorMessage,
+    toast,
     wordsPlayed,
     correctDefinitions,
     endReason,
@@ -760,15 +782,13 @@ function GamePage() {
   }, [inDefPhase, inTagPhase]);
 
   useEffect(() => {
-    if (!errorMessage) {
-      setErrorToast(null);
-      return;
-    }
+    if (!toast) return;
 
-    setErrorToast(errorMessage);
-    const timeoutId = window.setTimeout(() => setErrorToast(null), 3000);
+    setVisibleToast(toast);
+    const duration = toast.variant === "error" ? 3000 : 1500;
+    const timeoutId = window.setTimeout(() => setVisibleToast(null), duration);
     return () => window.clearTimeout(timeoutId);
-  }, [errorMessage]);
+  }, [toast]);
 
   if (state.matches("idle")) {
     return (
@@ -851,8 +871,8 @@ function GamePage() {
   }
 
   return (
-    <main className="flex min-h-[calc(100dvh-4rem)] w-full min-w-0 max-w-full flex-col overflow-x-hidden overflow-y-auto px-2 py-4 sm:px-4 sm:py-6 lg:h-[calc(100dvh-2rem)] lg:min-h-0 lg:overflow-y-auto lg:px-8">
-      <div className="mx-auto flex w-full min-h-0 min-w-0 max-w-5xl flex-1 flex-col gap-5 text-left lg:gap-6 xl:max-w-6xl">
+    <main className="flex min-h-[calc(100dvh-4rem)] w-full min-w-0 max-w-full flex-col overflow-x-hidden overflow-y-auto px-2 py-4 sm:px-4 sm:py-6 lg:h-[calc(100dvh-2rem)] lg:min-h-0 lg:justify-center lg:overflow-y-auto lg:px-8">
+      <div className="mx-auto flex w-full min-h-0 min-w-0 max-w-5xl flex-col gap-5 text-left lg:max-h-[calc(100dvh-4rem)] lg:gap-6 xl:max-w-6xl">
         <div className="shrink-0 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <div className="space-y-1">
             <SiteTitle />
@@ -873,11 +893,14 @@ function GamePage() {
               compact
             />
           </div>
+          <div className="hidden shrink-0 lg:block">
+            <GameHud score={score} multiplier={multiplier} timer={timer} />
+          </div>
         </div>
 
         <div
           className={cn(
-            "grid min-h-0 min-w-0 max-w-full flex-1 gap-5 lg:items-stretch lg:gap-6",
+            "grid min-h-0 min-w-0 max-w-full flex-1 gap-5 lg:max-h-[44rem] lg:items-stretch lg:gap-6",
             settings.flipDesktopLayout
               ? "lg:grid-cols-[minmax(18rem,0.8fr)_minmax(0,1.2fr)]"
               : "lg:grid-cols-[minmax(0,1.2fr)_minmax(18rem,0.8fr)]",
@@ -898,7 +921,7 @@ function GamePage() {
               />
             </div>
 
-            <Card className="flex h-[14rem] w-full min-w-0 max-w-full flex-col overflow-hidden sm:h-[15rem] lg:h-auto lg:min-h-0 lg:flex-1">
+            <Card className="flex h-[14rem] min-h-0 w-full min-w-0 max-w-full flex-col overflow-hidden sm:h-[15rem] lg:min-h-[14rem] lg:max-h-[22rem] lg:flex-1">
               <CardHeader className="shrink-0 border-b bg-muted/50 px-4 py-2.5 text-center lg:px-6 lg:py-4">
                 <CardTitle className="text-lg lg:text-xl">mystery word</CardTitle>
               </CardHeader>
@@ -909,7 +932,7 @@ function GamePage() {
                   showDefinitions={inTagPhase}
                   showRomaji={settings.showRomaji}
                 />
-                {errorToast && <MysteryWordErrorToast message={errorToast} />}
+                {visibleToast && <MysteryWordToast toast={visibleToast} />}
               </CardContent>
             </Card>
 
@@ -967,21 +990,17 @@ function GamePage() {
 
           <aside
             className={cn(
-              "flex h-full min-h-0 min-w-0 w-full max-w-full flex-col gap-5 overflow-hidden",
+              "flex h-full min-h-0 min-w-0 w-full max-w-full flex-col overflow-hidden",
               settings.flipDesktopLayout && "lg:order-1",
             )}
           >
-            <div className="hidden shrink-0 lg:block">
-              <GameHud score={score} multiplier={multiplier} timer={timer} />
-            </div>
-
             <WordHistoryPanel
               wordHistory={wordHistory}
               sidebar
               clickable
               showArrow
               onWordClick={handleWordClick}
-              className="min-h-[10rem] lg:min-h-0 lg:flex-1"
+              className="min-h-[10rem] lg:h-full lg:min-h-0 lg:flex-1"
             />
           </aside>
         </div>

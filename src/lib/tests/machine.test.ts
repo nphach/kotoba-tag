@@ -155,6 +155,10 @@ describe("game machine", () => {
       { kana: "ねこ", definitions: ["cat"] },
     ]);
     expect(context.errorMessage).toBe("");
+    expect(context.toast).toEqual({
+      message: "+50 points",
+      variant: "success",
+    });
   });
 
   it("keeps the player on the definition phase after a wrong answer", async () => {
@@ -172,9 +176,11 @@ describe("game machine", () => {
     expect(context.score).toBe(0);
     expect(context.correctDefinitions).toBe(0);
     expect(context.wordHistory).toEqual([]);
-    expect(context.errorMessage).toBe(
-      "that definition doesn't match — try again",
-    );
+    expect(context.errorMessage).toBe("");
+    expect(context.toast).toEqual({
+      message: "that definition doesn't match — try again",
+      variant: "error",
+    });
   });
 
   it("adds the mystery word to history when skipping the definition", async () => {
@@ -192,6 +198,10 @@ describe("game machine", () => {
     expect(context.wordHistory).toEqual([
       { kana: "ねこ", definitions: ["cat"] },
     ]);
+    expect(context.toast).toEqual({
+      message: "skipped",
+      variant: "neutral",
+    });
   });
 
   it("chains a valid tag word into the next mystery word and resets the multiplier", async () => {
