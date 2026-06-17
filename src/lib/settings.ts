@@ -11,6 +11,7 @@ export type GameSettings = {
   showRomaji: boolean;
   timerSeconds: TimerSeconds;
   theme: Theme;
+  flipDesktopLayout: boolean;
 };
 
 export const DEFAULT_SETTINGS: GameSettings = {
@@ -18,6 +19,7 @@ export const DEFAULT_SETTINGS: GameSettings = {
   showRomaji: false,
   timerSeconds: 30,
   theme: "light",
+  flipDesktopLayout: false,
 };
 
 const STORAGE_KEY = "kotoba-tag-settings";
@@ -74,6 +76,10 @@ export function loadSettings(): GameSettings {
         ? parsed.timerSeconds
         : DEFAULT_SETTINGS.timerSeconds,
       theme: isTheme(parsed.theme) ? parsed.theme : DEFAULT_SETTINGS.theme,
+      flipDesktopLayout:
+        typeof parsed.flipDesktopLayout === "boolean"
+          ? parsed.flipDesktopLayout
+          : DEFAULT_SETTINGS.flipDesktopLayout,
     };
   } catch {
     return { ...DEFAULT_SETTINGS };

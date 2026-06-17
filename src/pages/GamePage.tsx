@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import { SiteBranding, SiteFooter, SiteTitle } from "@/components/site-chrome.tsx";
 import { prefetchModel } from "@/lib/api.ts";
 import { vocabStore } from "@/lib/data-store.ts";
-import { machine } from "@/lib/machine.ts";
+import { useGame } from "@/lib/game-context.tsx";
 import { useSettings } from "@/lib/settings-context.tsx";
 import { Hiragana, WordDetails, WordHistoryEntry } from "@/lib/types.ts";
 import {
@@ -17,7 +17,6 @@ import {
   isTimerUrgent,
 } from "@/lib/game-display.ts";
 import { cn } from "@/lib/utils";
-import { useMachine } from "@xstate/react";
 import { ChevronRight } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { flushSync } from "react-dom";
@@ -580,6 +579,9 @@ function EndGameActions({
       <Button variant="outline" asChild>
         <Link to="/rules">rules</Link>
       </Button>
+      <Button variant="outline" asChild>
+        <Link to="/settings">settings</Link>
+      </Button>
     </>
   );
 }
@@ -627,19 +629,33 @@ function EndGameLayout({
   children,
   actions,
   wordHistory,
+  flipDesktopLayout,
 }: {
   title: string;
   children: React.ReactNode;
   actions: React.ReactNode;
   wordHistory: WordHistoryEntry[];
+  flipDesktopLayout: boolean;
 }) {
   const { handleWordClick, wordDetailDialog } = useWordDetailsDialog();
 
   return (
     <main className="flex min-h-[calc(100dvh-4rem)] w-full min-w-0 max-w-full flex-col overflow-x-hidden overflow-y-auto px-2 py-6 sm:px-4 lg:h-[calc(100dvh-2rem)] lg:min-h-0 lg:overflow-y-auto lg:px-8">
       <div className="mx-auto flex w-full min-h-0 min-w-0 max-w-5xl flex-1 flex-col gap-6 xl:max-w-6xl">
-        <div className="grid min-h-0 min-w-0 max-w-full flex-1 gap-6 lg:grid-cols-[minmax(0,1.05fr)_minmax(18rem,0.95fr)] lg:items-stretch">
-          <div className="flex h-full min-h-0 min-w-0 w-full max-w-full flex-col gap-5 overflow-hidden text-left">
+        <div
+          className={cn(
+            "grid min-h-0 min-w-0 max-w-full flex-1 gap-6 lg:items-stretch",
+            flipDesktopLayout
+              ? "lg:grid-cols-[minmax(18rem,0.95fr)_minmax(0,1.05fr)]"
+              : "lg:grid-cols-[minmax(0,1.05fr)_minmax(18rem,0.95fr)]",
+          )}
+        >
+          <div
+            className={cn(
+              "flex h-full min-h-0 min-w-0 w-full max-w-full flex-col gap-5 overflow-hidden text-left",
+              flipDesktopLayout && "lg:order-2",
+            )}
+          >
             <Card className="flex min-h-0 min-w-0 w-full max-w-full flex-1 flex-col overflow-hidden">
               <CardHeader className="shrink-0 border-b bg-muted/50 pb-4">
                 <CardTitle className="text-3xl font-kosugi">{title}</CardTitle>
@@ -659,7 +675,10 @@ function EndGameLayout({
             clickable
             showArrow
             onWordClick={handleWordClick}
-            className="min-h-[12rem] min-w-0 w-full max-w-full lg:h-full lg:min-h-0"
+            className={cn(
+              "min-h-[12rem] min-w-0 w-full max-w-full lg:h-full lg:min-h-0",
+              flipDesktopLayout && "lg:order-1",
+            )}
           />
         </div>
 
@@ -672,7 +691,7 @@ function EndGameLayout({
 }
 
 function GamePage() {
-  const [state, send] = useMachine(machine);
+  const [state, send] = useGame();
   const { settings } = useSettings();
   const { handleWordClick, wordDetailDialog } = useWordDetailsDialog();
   const defInputRef = useRef<HTMLInputElement>(null);
@@ -781,6 +800,7 @@ function GamePage() {
       <EndGameLayout
         title="nice!"
         wordHistory={wordHistory}
+        flipDesktopLayout={settings.flipDesktopLayout}
         actions={
           <EndGameActions
             onRestart={() => send({ type: "RESTART" })}
@@ -808,6 +828,7 @@ function GamePage() {
       <EndGameLayout
         title="game over!"
         wordHistory={wordHistory}
+        flipDesktopLayout={settings.flipDesktopLayout}
         actions={
           <EndGameActions
             onRestart={() => send({ type: "RESTART" })}
@@ -854,8 +875,20 @@ function GamePage() {
           </div>
         </div>
 
-        <div className="grid min-h-0 min-w-0 max-w-full flex-1 gap-5 lg:grid-cols-[minmax(0,1.2fr)_minmax(18rem,0.8fr)] lg:items-stretch lg:gap-6">
-          <div className="flex h-full min-h-0 min-w-0 w-full max-w-full flex-col gap-5 overflow-hidden lg:px-1 lg:pb-1">
+        <div
+          className={cn(
+            "grid min-h-0 min-w-0 max-w-full flex-1 gap-5 lg:items-stretch lg:gap-6",
+            settings.flipDesktopLayout
+              ? "lg:grid-cols-[minmax(18rem,0.8fr)_minmax(0,1.2fr)]"
+              : "lg:grid-cols-[minmax(0,1.2fr)_minmax(18rem,0.8fr)]",
+          )}
+        >
+          <div
+            className={cn(
+              "flex h-full min-h-0 min-w-0 w-full max-w-full flex-col gap-5 overflow-hidden lg:px-1 lg:pb-1",
+              settings.flipDesktopLayout && "lg:order-2",
+            )}
+          >
             <div className="sm:hidden">
               <GameHud
                 score={score}
@@ -932,7 +965,12 @@ function GamePage() {
             />
           </div>
 
-          <aside className="flex h-full min-h-0 min-w-0 w-full max-w-full flex-col gap-5 overflow-hidden">
+          <aside
+            className={cn(
+              "flex h-full min-h-0 min-w-0 w-full max-w-full flex-col gap-5 overflow-hidden",
+              settings.flipDesktopLayout && "lg:order-1",
+            )}
+          >
             <div className="hidden shrink-0 lg:block">
               <GameHud score={score} multiplier={multiplier} timer={timer} />
             </div>

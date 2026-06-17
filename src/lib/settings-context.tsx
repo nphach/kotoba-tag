@@ -22,6 +22,7 @@ type SettingsContextValue = {
   setShowRomaji: (showRomaji: boolean) => void;
   setTimerSeconds: (timerSeconds: TimerSeconds) => void;
   setTheme: (theme: Theme) => void;
+  setFlipDesktopLayout: (flipDesktopLayout: boolean) => void;
   resetSettings: () => void;
 };
 
@@ -45,6 +46,8 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
       setTimerSeconds: (timerSeconds) =>
         commit({ ...settings, timerSeconds }),
       setTheme: (theme) => commit({ ...settings, theme }),
+      setFlipDesktopLayout: (flipDesktopLayout) =>
+        commit({ ...settings, flipDesktopLayout }),
       resetSettings: () => commit({ ...DEFAULT_SETTINGS }),
     }),
     [commit, settings],

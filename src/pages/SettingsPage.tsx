@@ -104,6 +104,7 @@ function SettingsPage() {
     setShowRomaji,
     setTimerSeconds,
     setTheme,
+    setFlipDesktopLayout,
     resetSettings,
   } = useSettings();
 
@@ -165,6 +166,17 @@ function SettingsPage() {
                   setTheme(checked ? "dark" : "light")
                 }
                 ariaLabel="toggle dark mode"
+              />
+            </SettingRow>
+
+            <SettingRow
+              label="flip layout"
+              description="move word history to the left on desktop"
+            >
+              <LabeledSwitch
+                checked={settings.flipDesktopLayout}
+                onCheckedChange={setFlipDesktopLayout}
+                ariaLabel="toggle flipped desktop layout"
               />
             </SettingRow>
 
