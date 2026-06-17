@@ -37,7 +37,11 @@ function createTestMachine(
         overrides.fetchWordFromTag ?? (async () => nextWord),
       ),
       verifyDef: fromPromise(
-        async ({ input }: { input: { definition: string } }) => {
+        async ({
+          input,
+        }: {
+          input: { mysteryWord: GameWord; definition: string };
+        }) => {
           if (overrides.verifyDef) {
             return overrides.verifyDef(input.definition);
           }
