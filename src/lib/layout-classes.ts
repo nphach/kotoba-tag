@@ -1,4 +1,6 @@
 export const layoutClasses = {
+  simpleScreenMain:
+    "flex min-h-[calc(100dvh-4rem)] w-full items-center justify-center overflow-y-auto py-4 sm:px-4 sm:py-6 lg:px-8",
   gameMain:
     "flex min-h-[calc(100dvh-4rem)] w-full min-w-0 max-w-full flex-col overflow-x-hidden overflow-y-auto px-2 py-4 sm:px-4 sm:py-6 lg:h-[calc(100dvh-2rem)] lg:min-h-0 lg:justify-center lg:overflow-y-auto lg:px-8",
   gameMainEnd:
@@ -51,7 +53,10 @@ export function desktopMainColumnClass(
     .join(" ");
 }
 
-export function desktopSidebarClass(flipDesktopLayout: boolean, extra?: string) {
+export function desktopSidebarClass(
+  flipDesktopLayout: boolean,
+  extra?: string,
+) {
   return [
     "flex h-full min-h-0 min-w-0 w-full max-w-full flex-col overflow-hidden",
     flipDesktopLayout && "lg:order-1",
@@ -61,6 +66,9 @@ export function desktopSidebarClass(flipDesktopLayout: boolean, extra?: string) 
     .join(" ");
 }
 
-export function desktopWordHistoryClass(flipDesktopLayout: boolean, extra?: string) {
+export function desktopWordHistoryClass(
+  flipDesktopLayout: boolean,
+  extra?: string,
+) {
   return [extra, flipDesktopLayout && "lg:order-1"].filter(Boolean).join(" ");
 }

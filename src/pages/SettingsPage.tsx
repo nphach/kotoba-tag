@@ -1,17 +1,13 @@
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   LabeledSwitch,
   SettingRow,
   ToggleButtons,
 } from "@/components/settings-controls.tsx";
 import { SiteBranding, SiteFooter } from "@/components/site-chrome.tsx";
-import {
-  JLPT_LEVELS,
-  levelsUpTo,
-  TIMER_OPTIONS,
-} from "@/lib/settings.ts";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useSettings } from "@/lib/settings-context.tsx";
+import { JLPT_LEVELS, levelsUpTo, TIMER_OPTIONS } from "@/lib/settings.ts";
 import { Link } from "react-router-dom";
 
 function SettingsPage() {
@@ -56,10 +52,7 @@ function SettingsPage() {
               />
             </SettingRow>
 
-            <SettingRow
-              label="timer"
-              description="seconds per mystery word"
-            >
+            <SettingRow label="timer" description="seconds per mystery word">
               <ToggleButtons
                 value={settings.timerSeconds}
                 options={TIMER_OPTIONS}

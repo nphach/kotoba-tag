@@ -69,10 +69,8 @@
   body {
     @apply bg-background text-foreground;
     margin: 0;
-    display: flex;
-    place-items: center;
     min-width: 320px;
-    min-height: 100vh;
+    min-height: 100dvh;
     font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
     font-synthesis: none;
     text-rendering: optimizeLegibility;
