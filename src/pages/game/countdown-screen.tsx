@@ -14,8 +14,8 @@ export function CountdownScreen({ countdown }: { countdown: number }) {
           className={cn(
             "font-kosugi font-bold tabular-nums leading-none",
             countdown === 0
-              ? "text-6xl text-green-600"
-              : "text-8xl text-purple-600",
+              ? "text-6xl text-phase-go"
+              : "text-8xl text-phase-def",
           )}
           aria-live="polite"
         >

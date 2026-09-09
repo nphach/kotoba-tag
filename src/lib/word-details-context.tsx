@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton.tsx";
 import { vocabStore } from "@/lib/data-store.ts";
 import type { WordDetails } from "@/lib/types.ts";
 import { cn } from "@/lib/utils";
@@ -7,6 +8,8 @@ import {
   createContext,
   useCallback,
   useContext,
+  useEffect,
+  useRef,
   useState,
   type ReactNode,
 } from "react";
@@ -21,6 +24,21 @@ type WordDetailsContextValue = {
 
 const WordDetailsContext = createContext<WordDetailsContextValue | null>(null);
 
+function WordDetailSkeleton() {
+  return (
+    <div className="space-y-4" aria-hidden>
+      <Skeleton className="h-10 w-24" />
+      <Skeleton className="h-8 w-32" />
+      <Skeleton className="h-5 w-20" />
+      <div className="space-y-2">
+        <Skeleton className="h-3 w-16" />
+        <Skeleton className="h-4 w-full" />
+        <Skeleton className="h-4 w-3/4" />
+      </div>
+    </div>
+  );
+}
+
 function WordDetailDialog({
   kana,
   details,
@@ -34,33 +52,71 @@ function WordDetailDialog({
   error: string | null;
   onClose: () => void;
 }) {
+  const panelRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!kana) return;
+
+    const panel = panelRef.current;
+    if (!panel) return;
+
+    const focusable = panel.querySelectorAll<HTMLElement>(
+      'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])',
+    );
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+
+    first?.focus();
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        event.preventDefault();
+        onClose();
+        return;
+      }
+
+      if (event.key !== "Tab" || focusable.length === 0) return;
+
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last?.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first?.focus();
+      }
+    };
+
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, [kana, onClose]);
+
   if (!kana) return null;
 
   return (
-    <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4"
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="word-detail-title"
-    >
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       <button
         type="button"
         className="absolute inset-0 bg-black/50"
-        aria-label="close"
+        aria-label="close dialog"
         onClick={onClose}
       />
-      <Card className="relative z-10 w-full max-w-md">
+      <Card
+        ref={panelRef}
+        className="relative z-10 w-full max-w-md"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="word-detail-title"
+        aria-busy={loading}
+      >
         <CardHeader className="border-b pb-4">
           <CardTitle id="word-detail-title" className="text-xl">
             word details
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4 pt-6">
-          {loading && (
-            <p className="text-sm text-muted-foreground">loading...</p>
-          )}
+          {loading && <WordDetailSkeleton />}
           {error && !loading && (
-            <p className="text-sm text-red-600">{error}</p>
+            <p className="text-sm text-destructive">{error}</p>
           )}
           {details && !loading && (
             <>
@@ -104,14 +160,19 @@ export function WordDetailsProvider({ children }: { children: ReactNode }) {
   const [wordDetails, setWordDetails] = useState<WordDetails | null>(null);
   const [detailsLoading, setDetailsLoading] = useState(false);
   const [detailsError, setDetailsError] = useState<string | null>(null);
+  const triggerRef = useRef<HTMLElement | null>(null);
 
   const handleCloseDetails = useCallback(() => {
+    const trigger = triggerRef.current;
+    triggerRef.current = null;
     setSelectedWord(null);
     setWordDetails(null);
     setDetailsError(null);
+    queueMicrotask(() => trigger?.focus());
   }, []);
 
   const handleWordClick = useCallback(async (word: string) => {
+    triggerRef.current = document.activeElement as HTMLElement | null;
     setSelectedWord(word);
     setWordDetails(null);
     setDetailsError(null);

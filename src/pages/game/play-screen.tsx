@@ -89,7 +89,7 @@ export function PlayScreen() {
           <p
             className={cn(
               "text-sm font-medium",
-              inDefPhase ? "text-purple-600" : "text-blue-600",
+              inDefPhase ? "text-phase-def" : "text-phase-tag",
             )}
           >
             {getPhaseLabel(inDefPhase)}
@@ -143,29 +143,41 @@ export function PlayScreen() {
               className="w-full max-w-full min-w-0 shrink-0 space-y-4 px-0.5"
             >
               {inDefPhase && (
-                <Input
-                  ref={defInputRef}
-                  name="d"
-                  placeholder="enter definition..."
-                  className="w-full max-w-full min-w-0 border-purple-500 text-lg focus-visible:ring-inset lg:text-xl"
-                />
+                <>
+                  <label htmlFor="definition-input" className="sr-only">
+                    English definition
+                  </label>
+                  <Input
+                    ref={defInputRef}
+                    id="definition-input"
+                    name="d"
+                    placeholder="enter definition..."
+                    className="w-full max-w-full min-w-0 border-phase-def-border text-lg focus-visible:ring-inset lg:text-xl"
+                  />
+                </>
               )}
 
               {inTagPhase && (
-                <Input
-                  ref={tagInputRef}
-                  name="t"
-                  placeholder={
-                    settings.showRomaji
-                      ? "enter tag word (romaji ok)..."
-                      : "enter tag word..."
-                  }
-                  className="w-full max-w-full min-w-0 border-blue-500 text-lg focus-visible:ring-inset lg:text-xl"
-                />
+                <>
+                  <label htmlFor="tag-input" className="sr-only">
+                    Japanese tag word
+                  </label>
+                  <Input
+                    ref={tagInputRef}
+                    id="tag-input"
+                    name="t"
+                    placeholder={
+                      settings.showRomaji
+                        ? "enter tag word (romaji ok)..."
+                        : "enter tag word..."
+                    }
+                    className="w-full max-w-full min-w-0 border-phase-tag-border text-lg focus-visible:ring-inset lg:text-xl"
+                  />
+                </>
               )}
 
               <div className="flex w-full min-w-0 gap-2">
-                <Button type="submit" className="min-w-0 flex-1">
+                <Button type="submit" size="lg" className="min-w-0 flex-1">
                   submit
                 </Button>
 

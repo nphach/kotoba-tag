@@ -37,7 +37,7 @@ function WordHistoryRow({
   const itemClassName = cn(
     "group flex min-w-0 items-center gap-2 rounded-md border border-border bg-muted/60 px-3 py-2 text-left",
     clickable &&
-      "cursor-pointer transition-colors hover:border-purple-300 hover:bg-muted",
+      "cursor-pointer transition-colors hover:border-phase-def-border hover:bg-muted",
   );
   const content = (
     <>
@@ -60,6 +60,7 @@ function WordHistoryRow({
       <button
         type="button"
         onClick={() => onWordClick?.(entry.kana)}
+        aria-label={`view details for ${entry.kana}`}
         className={cn("w-full min-w-0 max-w-full", itemClassName)}
       >
         {content}

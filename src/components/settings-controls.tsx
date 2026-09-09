@@ -79,6 +79,7 @@ export function ToggleButtons<T extends string | number>({
           type="button"
           size="sm"
           variant={value === option ? "default" : "outline"}
+          aria-pressed={value === option}
           onClick={() => onChange(option)}
         >
           {format(option)}

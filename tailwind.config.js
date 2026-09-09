@@ -43,6 +43,13 @@ export default {
 				border: 'hsl(var(--border))',
 				input: 'hsl(var(--input))',
 				ring: 'hsl(var(--ring))',
+				phase: {
+					def: 'hsl(var(--phase-def))',
+					tag: 'hsl(var(--phase-tag))',
+					go: 'hsl(var(--phase-go))',
+					'def-border': 'hsl(var(--phase-def-border))',
+					'tag-border': 'hsl(var(--phase-tag-border))',
+				},
 				chart: {
 					'1': 'hsl(var(--chart-1))',
 					'2': 'hsl(var(--chart-2))',
