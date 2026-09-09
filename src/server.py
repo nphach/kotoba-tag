@@ -15,9 +15,24 @@ load_dotenv(ROOT_DIR / ".env")
 
 logger = logging.getLogger(__name__)
 
-HF_SIMILARITY_URL = os.environ.get(
-    "HF_SIMILARITY_URL"
-)
+HF_SIMILARITY_URL = os.environ.get("HF_SIMILARITY_URL")
+
+
+def validate_config() -> None:
+    missing = [
+        name
+        for name, value in (
+            ("HUGGINGFACE_TOKEN", os.environ.get("HUGGINGFACE_TOKEN")),
+            ("HF_SIMILARITY_URL", HF_SIMILARITY_URL),
+        )
+        if not value
+    ]
+    if missing:
+        joined = ", ".join(missing)
+        raise RuntimeError(
+            f"Missing required environment variables: {joined}. "
+            "Copy .env.example to .env and set them before starting the server."
+        )
 
 HF_PERMISSION_HINT = (
     "the definition model isn't available right now — please try again later"
@@ -37,10 +52,7 @@ PRODUCTION_CORS_ORIGINS = [
     "https://kotoba-tag-app.onrender.com",
 ]
 
-LOCAL_DEV_CORS_ORIGINS = [
-    "http://localhost:5173",
-    "http://127.0.0.1:5173",
-]
+LOCAL_DEV_ORIGIN_REGEX = r"https?://(localhost|127\.0\.0\.1)(:\d+)?$"
 
 
 def allow_localhost_cors() -> bool:
@@ -52,11 +64,13 @@ def allow_localhost_cors() -> bool:
     return not os.environ.get("RENDER")
 
 
-def cors_origins() -> list[str]:
-    origins = list(PRODUCTION_CORS_ORIGINS)
+def cors_middleware_kwargs() -> dict:
     if allow_localhost_cors():
-        origins = LOCAL_DEV_CORS_ORIGINS + origins
-    return origins
+        return {
+            "allow_origins": PRODUCTION_CORS_ORIGINS,
+            "allow_origin_regex": LOCAL_DEV_ORIGIN_REGEX,
+        }
+    return {"allow_origins": PRODUCTION_CORS_ORIGINS}
 
 
 class DefinitionRequest(BaseModel):
@@ -135,6 +149,7 @@ async def warmup_huggingface() -> None:
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    validate_config()
     if os.environ.get("SKIP_HF_WARMUP", "").lower() not in {"1", "true", "yes"}:
         asyncio.create_task(warmup_huggingface())
     yield
@@ -144,7 +159,7 @@ app = FastAPI(lifespan=lifespan)
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=cors_origins(),
+    **cors_middleware_kwargs(),
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

@@ -5,11 +5,11 @@ import {
 } from "./errors.ts";
 
 const PRODUCTION_API_BASE = "https://kotoba-tag-server.onrender.com";
-const LOCAL_API_BASE = "http://127.0.0.1:8000";
 
+// In dev, use same-origin requests proxied by Vite to :8000 (avoids CORS issues
+// when Vite picks a non-default port like 5175).
 export const API_BASE =
-  import.meta.env.VITE_API_URL ??
-  (import.meta.env.DEV ? LOCAL_API_BASE : PRODUCTION_API_BASE);
+  import.meta.env.VITE_API_URL ?? (import.meta.env.DEV ? "" : PRODUCTION_API_BASE);
 
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
@@ -19,6 +19,16 @@ const NETWORK_MESSAGE =
   "couldn't reach the server — check your connection and try again";
 const DEFINITION_CHECK_FAILED =
   "couldn't check your definition — please try again";
+
+function normalizeNetworkError(error: unknown): Error {
+  if (error instanceof Error && error.message === "Failed to fetch") {
+    return new Error(NETWORK_MESSAGE);
+  }
+  if (error instanceof Error) {
+    return error;
+  }
+  return new Error(NETWORK_MESSAGE);
+}
 
 let modelReadyPromise: Promise<void> | null = null;
 let modelIsReady = false;
@@ -89,8 +99,7 @@ async function warmupWithRetry(
         throw error;
       }
 
-      lastError =
-        error instanceof Error ? error : new Error(NETWORK_MESSAGE);
+      lastError = normalizeNetworkError(error);
 
       if (attempt < maxAttempts - 1) {
         await sleep(delayMs);
@@ -103,7 +112,7 @@ async function warmupWithRetry(
     throw new Error(WARMUP_TIMEOUT_MESSAGE);
   }
 
-  throw new Error(lastError?.message || NETWORK_MESSAGE);
+  throw normalizeNetworkError(lastError);
 }
 
 export async function postDefinition(

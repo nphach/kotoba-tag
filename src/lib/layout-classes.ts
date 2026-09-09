@@ -2,18 +2,17 @@ export const layoutClasses = {
   simpleScreenMain:
     "flex min-h-[calc(100dvh-4rem)] w-full items-center justify-center overflow-y-auto py-4 sm:px-4 sm:py-6 lg:px-8",
   gameMain:
-    "flex min-h-[calc(100dvh-4rem)] w-full min-w-0 max-w-full flex-col overflow-x-hidden overflow-y-auto px-2 py-4 sm:px-4 sm:py-6 lg:h-[calc(100dvh-2rem)] lg:min-h-0 lg:justify-center lg:overflow-y-auto lg:px-8",
+    "w-full min-w-0 max-w-full overflow-x-hidden px-2 py-4 pb-10 sm:px-4 sm:py-6 sm:pb-12 lg:px-8",
   gameMainEnd:
-    "flex min-h-[calc(100dvh-4rem)] w-full min-w-0 max-w-full flex-col overflow-x-hidden overflow-y-auto px-2 py-6 sm:px-4 lg:h-[calc(100dvh-2rem)] lg:min-h-0 lg:justify-center lg:overflow-y-auto lg:px-8",
+    "w-full min-w-0 max-w-full overflow-x-hidden px-2 py-6 pb-10 sm:px-4 sm:pb-12 lg:px-8",
   gameContainer:
-    "mx-auto flex w-full min-h-0 min-w-0 max-w-5xl flex-col gap-5 text-left lg:max-h-[calc(100dvh-4rem)] lg:gap-6 xl:max-w-6xl",
+    "mx-auto flex w-full min-w-0 max-w-5xl flex-col gap-5 text-left lg:gap-6 xl:max-w-6xl",
   gameContainerEnd:
-    "mx-auto flex w-full min-h-0 min-w-0 max-w-5xl flex-col gap-6 lg:h-[min(44rem,calc(100dvh-6rem))] lg:max-h-[calc(100dvh-4rem)] xl:max-w-6xl",
-  desktopGridMaxHeight: "lg:max-h-[44rem]",
+    "mx-auto flex w-full min-w-0 max-w-5xl flex-col gap-6 xl:max-w-6xl",
   mysteryWordCard:
-    "flex h-[14rem] min-h-0 w-full min-w-0 max-w-full flex-col overflow-hidden sm:h-[15rem] lg:min-h-[14rem] lg:max-h-[22rem] lg:flex-1",
+    "flex min-h-[14rem] w-full min-w-0 max-w-full flex-col overflow-hidden sm:min-h-[15rem] lg:min-h-[14rem]",
   lastTagWordCard:
-    "flex h-40 w-full min-w-0 max-w-full shrink-0 flex-col overflow-hidden sm:h-44 lg:h-48",
+    "flex min-h-40 w-full min-w-0 max-w-full flex-col overflow-hidden sm:min-h-44 lg:min-h-48",
 } as const;
 
 export type DesktopGridVariant = "play" | "end";
@@ -32,8 +31,8 @@ export function desktopGridClass(
 
   const base =
     variant === "play"
-      ? `grid min-h-0 min-w-0 max-w-full flex-1 gap-5 lg:items-stretch lg:gap-6 ${layoutClasses.desktopGridMaxHeight}`
-      : `grid min-h-[28rem] min-w-0 max-w-full flex-1 gap-6 lg:min-h-0 lg:items-stretch ${layoutClasses.desktopGridMaxHeight}`;
+      ? "grid w-full min-w-0 max-w-full gap-5 lg:items-start lg:gap-6"
+      : "grid w-full min-w-0 max-w-full gap-6 lg:items-start";
 
   return [base, variant === "play" ? playCols : endCols, extra]
     .filter(Boolean)
@@ -45,7 +44,7 @@ export function desktopMainColumnClass(
   extra?: string,
 ) {
   return [
-    "flex h-full min-h-0 min-w-0 w-full max-w-full flex-col gap-5 overflow-hidden",
+    "flex w-full min-w-0 max-w-full flex-col gap-5",
     flipDesktopLayout && "lg:order-2",
     extra,
   ]
@@ -58,7 +57,8 @@ export function desktopSidebarClass(
   extra?: string,
 ) {
   return [
-    "flex h-full min-h-0 min-w-0 w-full max-w-full flex-col overflow-hidden",
+    "flex w-full min-w-0 max-w-full flex-col",
+    "lg:sticky lg:top-6 lg:max-h-[calc(100dvh-8rem)] lg:self-start",
     flipDesktopLayout && "lg:order-1",
     extra,
   ]

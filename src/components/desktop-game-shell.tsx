@@ -32,7 +32,7 @@ export function DesktopGameShell({
     <main className={mainClass}>
       <div className={containerClass}>
         {children}
-        {footer ?? <SiteFooter className="shrink-0" />}
+        {footer ?? <SiteFooter className="mt-6 shrink-0 sm:mt-8" />}
       </div>
     </main>
   );

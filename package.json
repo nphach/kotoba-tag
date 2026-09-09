@@ -5,6 +5,9 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "dev:server": "bash scripts/run-server.sh",
+    "dev:all": "concurrently -n web,api -c blue,green \"npm run dev\" \"npm run dev:server\"",
+    "setup": "bash scripts/setup-dev.sh",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
@@ -38,6 +41,7 @@
     "@types/react-dom": "^18.3.0",
     "@vitejs/plugin-react": "^4.3.2",
     "autoprefixer": "^10.4.20",
+    "concurrently": "^9.1.2",
     "drizzle-kit": "^0.26.2",
     "eslint": "^9.11.1",
     "eslint-plugin-react-hooks": "^5.1.0-rc.0",

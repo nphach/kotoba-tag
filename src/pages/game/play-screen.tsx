@@ -209,7 +209,7 @@ export function PlayScreen() {
               clickable
               showArrow
               onWordClick={handleWordClick}
-              className="min-h-[10rem] lg:h-full lg:min-h-0 lg:flex-1"
+              className="min-h-[10rem] lg:min-h-[12rem]"
             />
           </DesktopWordHistoryAside>
         }

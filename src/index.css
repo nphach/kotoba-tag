@@ -76,11 +76,16 @@
     @apply border-border;
   }
 
+  html {
+    overflow-y: auto;
+  }
+
   body {
     @apply bg-background text-foreground;
     margin: 0;
     min-width: 320px;
     min-height: 100dvh;
+    overflow-y: auto;
     font-family: "IBM Plex Sans", system-ui, sans-serif;
     font-synthesis: none;
     text-rendering: optimizeLegibility;

@@ -2,12 +2,89 @@
 ### **Kotoba Tag!** - *shiritori* for Japanese language learning
 Based off of *shiritori* is Kotoba Tag, where a player will need to quickly translate Japanese vocabulary and keep the game going with their own Japanese words. Race the clock, sharpen your vocab skills and aim for a high score!
 
+- [Local Development](#local-development)
+- [Deployment](#deployment)
 - [To Do](#to-do)
 - [Rules](#rules)
 - [About](#about)
 - [Features](#features)
 - [Potential Problems/ Topics to Explore](#potential-problems-topics-to-explore)
 - [Resources](#more-resources)
+
+### Local Development
+
+Kotoba Tag runs as two processes: a **Vite/React frontend** and a **FastAPI backend** ([`src/server.py`](src/server.py)). The word bank is bundled JSON — no database is required to play.
+
+#### Prerequisites
+
+- Node.js 18+
+- Python 3.10+
+- A [HuggingFace access token](https://huggingface.co/settings/tokens) with permission to call [`nphach/jp-parallel-gloss`](https://huggingface.co/nphach/jp-parallel-gloss)
+
+#### One-time setup
+
+```bash
+npm run setup
+```
+
+This creates a Python virtual environment, installs dependencies, and copies [`.env.example`](.env.example) to `.env` if needed.
+
+Edit `.env` and set your `HUGGINGFACE_TOKEN`. The other required variable (`HF_SIMILARITY_URL`) has a sensible default.
+
+#### Run locally
+
+Start both the frontend and API together:
+
+```bash
+npm run dev:all
+```
+
+Or run them in separate terminals:
+
+```bash
+npm run dev          # frontend → http://localhost:5173
+npm run dev:server   # API      → http://127.0.0.1:8000
+```
+
+In dev mode the frontend sends API requests to the same origin; Vite proxies them to `http://127.0.0.1:8000` ([`vite.config.ts`](vite.config.ts)). This avoids CORS issues when Vite picks a non-default port (e.g. 5175). The first game start may take a moment while the HuggingFace model warms up.
+
+Verify the API is running:
+
+```bash
+curl http://127.0.0.1:8000/health
+```
+
+#### npm scripts
+
+| Script | Description |
+|--------|-------------|
+| `npm run setup` | One-time local dev setup (venv, deps, `.env`) |
+| `npm run dev:all` | Frontend + API concurrently |
+| `npm run dev` | Vite dev server only |
+| `npm run dev:server` | FastAPI dev server only |
+| `npm run build` | Production frontend build |
+| `npm test` | Run Vitest suite |
+
+### Deployment
+
+Production deployment is defined in [`render.yaml`](render.yaml) as a Render Blueprint with two services:
+
+| Service | Type | Description |
+|---------|------|-------------|
+| `kotoba-tag-server` | Python web | FastAPI backend (`requirements.txt`) |
+| `kotoba-tag-app` | Static site | Vite build output (`dist/`) |
+
+#### Deploy to Render
+
+1. Push this repo to GitHub.
+2. In the [Render Dashboard](https://dashboard.render.com/), create a **Blueprint** from `render.yaml`.
+3. Set **`HUGGINGFACE_TOKEN`** on the `kotoba-tag-server` service (marked `sync: false` in the blueprint).
+4. Confirm **`HF_SIMILARITY_URL`** is set (defaults can be added in the Render dashboard if not inherited).
+5. Deploy. The static site build sets `VITE_API_URL` to the server URL automatically.
+
+The API server uses [`requirements.txt`](requirements.txt) (FastAPI + httpx proxy). [`server-requirements.txt`](server-requirements.txt) is for the ML training pipeline only — not needed at runtime.
+
+CORS for production origins is configured in [`src/server.py`](src/server.py). Localhost is allowed automatically when not running on Render.
 
 ### To Do
 - scrape Japanese-to-Japanese definitions (Japanese WordNet?)

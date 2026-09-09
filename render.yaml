@@ -1,8 +1,30 @@
 services:
+  # FastAPI backend — proxies definition checks to HuggingFace and tag lookups to Jisho
   - type: web
     name: kotoba-tag-server
     runtime: python
     plan: free
     autoDeploy: true
-    buildCommand: pip install -r server-requirements.txt
+    buildCommand: pip install -r requirements.txt
     startCommand: uvicorn src.server:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: HUGGINGFACE_TOKEN
+        sync: false
+      - key: HF_SIMILARITY_URL
+        sync: false
+
+  # Vite/React frontend — static site with client-side routing
+  - type: web
+    name: kotoba-tag-app
+    runtime: static
+    plan: free
+    autoDeploy: true
+    buildCommand: npm install && npm run build
+    staticPublishPath: dist
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
+    envVars:
+      - key: VITE_API_URL
+        value: https://kotoba-tag-server.onrender.com
