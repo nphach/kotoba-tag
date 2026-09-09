@@ -121,7 +121,10 @@
     {
         "def_id": 14,
         "vocab_id": 8,
-        "def": [],
+        "def": [
+            "style",
+            "writing style"
+        ],
         "def_lang": "EN"
     },
     {
@@ -359,7 +362,8 @@
         "def_id": 40,
         "vocab_id": 28,
         "def": [
-            "this person"
+            "this person",
+            "this person (usu. indicating someone in one's in group)"
         ],
         "def_lang": "EN"
     },
@@ -801,7 +805,9 @@
             "the present time",
             "just now",
             "soon",
-            "immediately"
+            "immediately",
+            "more",
+            "one more"
         ],
         "def_lang": "EN"
     },
@@ -816,7 +822,10 @@
     {
         "def_id": 90,
         "vocab_id": 61,
-        "def": [],
+        "def": [
+            "light",
+            "electric light"
+        ],
         "def_lang": "EN"
     },
     {
@@ -1248,7 +1257,10 @@
     {
         "def_id": 138,
         "vocab_id": 93,
-        "def": [],
+        "def": [
+            "park",
+            "public park"
+        ],
         "def_lang": "EN"
     },
     {
@@ -1267,7 +1279,8 @@
             "foregoing",
             "forgoing",
             "above",
-            "afore mentioned"
+            "afore-mentioned",
+            "afore mentioned (esp. in vertical Japanese writing)"
         ],
         "def_lang": "EN"
     },
@@ -1317,7 +1330,9 @@
         "def_id": 146,
         "vocab_id": 99,
         "def": [
-            "physician"
+            "physician",
+            "doctor",
+            "medical doctor"
         ],
         "def_lang": "EN"
     },
@@ -1640,7 +1655,8 @@
         "def": [
             "width",
             "breadth",
-            "side to side"
+            "side-to-side",
+            "side to side (as opposed to front to back)"
         ],
         "def_lang": "EN"
     },
@@ -2249,7 +2265,8 @@
         "def_id": 249,
         "vocab_id": 176,
         "def": [
-            "Western style clothes"
+            "Western-style clothes",
+            "Western style clothes (cf traditional Japanese clothes)"
         ],
         "def_lang": "EN"
     },
@@ -2612,7 +2629,8 @@
         "def_id": 292,
         "vocab_id": 207,
         "def": [
-            "door"
+            "door",
+            "door (esp. Japanese style)"
         ],
         "def_lang": "EN"
     },
@@ -2710,7 +2728,9 @@
         "vocab_id": 213,
         "def": [
             "overseas student",
-            "exchange student"
+            "exchange student",
+            "foreign exchange student",
+            "transfer student"
         ],
         "def_lang": "EN"
     },
@@ -2964,7 +2984,9 @@
         "def": [
             "female lover",
             "girlfriend",
-            "mistress"
+            "mistress",
+            "woman",
+            "someone's woman"
         ],
         "def_lang": "EN"
     },
@@ -2982,7 +3004,9 @@
         "def": [
             "ago",
             "previously",
-            "before"
+            "before",
+            "to (the hour)",
+            "minutes to (the hour)"
         ],
         "def_lang": "EN"
     },
@@ -3203,7 +3227,9 @@
         "vocab_id": 248,
         "def": [
             "medicine",
-            "pharmaceuticals"
+            "pharmaceuticals",
+            "drugs",
+            "legal drugs"
         ],
         "def_lang": "EN"
     },
@@ -3235,9 +3261,7 @@
         "def_id": 359,
         "vocab_id": 250,
         "def": [
-            "ten thousand",
-            "10000",
-            "10,000"
+            "myriad"
         ],
         "def_lang": "EN"
     },
@@ -3447,7 +3471,10 @@
     {
         "def_id": 383,
         "vocab_id": 268,
-        "def": [],
+        "def": [
+            "milk",
+            "cow's milk"
+        ],
         "def_lang": "EN"
     },
     {
@@ -3812,7 +3839,8 @@
         "def_id": 423,
         "vocab_id": 299,
         "def": [
-            "red containing colour"
+            "red-containing colour",
+            "red containing colour (e.g. brown, pink, orange)"
         ],
         "def_lang": "EN"
     },
@@ -4119,7 +4147,8 @@
         "def_id": 458,
         "vocab_id": 324,
         "def": [
-            "restaurant"
+            "restaurant",
+            "restaurant (esp. Western style)"
         ],
         "def_lang": "EN"
     },
@@ -4152,7 +4181,8 @@
         "def_id": 462,
         "vocab_id": 328,
         "def": [
-            "door"
+            "door",
+            "door (Western style)"
         ],
         "def_lang": "EN"
     },
@@ -4574,7 +4604,10 @@
     {
         "def_id": 511,
         "vocab_id": 362,
-        "def": [],
+        "def": [
+            "pool",
+            "swimming pool"
+        ],
         "def_lang": "EN"
     },
     {
@@ -4876,7 +4909,10 @@
     {
         "def_id": 546,
         "vocab_id": 386,
-        "def": [],
+        "def": [
+            "young lady",
+            "vocative young lady"
+        ],
         "def_lang": "EN"
     },
     {
@@ -4958,7 +4994,9 @@
         "def_id": 556,
         "vocab_id": 394,
         "def": [
-            "toffee"
+            "toffee",
+            "candy",
+            "hard candy"
         ],
         "def_lang": "EN"
     },
@@ -4983,7 +5021,9 @@
         "def_id": 559,
         "vocab_id": 396,
         "def": [
-            "stove"
+            "stove",
+            "heater",
+            "room heater"
         ],
         "def_lang": "EN"
     },
@@ -5237,7 +5277,10 @@
     {
         "def_id": 588,
         "vocab_id": 418,
-        "def": [],
+        "def": [
+            "vase",
+            "flower vase"
+        ],
         "def_lang": "EN"
     },
     {
@@ -5264,7 +5307,9 @@
         "def": [
             "buddy",
             "fella",
-            "laddie"
+            "laddie",
+            "young man",
+            "vocative young man"
         ],
         "def_lang": "EN"
     },
@@ -5281,8 +5326,8 @@
         "def_id": 593,
         "vocab_id": 422,
         "def": [
-            "radio cassette",
-            "tape recorder"
+            "tape recorder",
+            "radio cassette"
         ],
         "def_lang": "EN"
     },
@@ -5430,7 +5475,8 @@
         "def_id": 610,
         "vocab_id": 434,
         "def": [
-            "Bunka era"
+            "Bunka era",
+            "Bunka era (1804.2.11 1818.4.22)"
         ],
         "def_lang": "EN"
     },
@@ -5854,7 +5900,10 @@
     {
         "def_id": 653,
         "vocab_id": 467,
-        "def": [],
+        "def": [
+            "industry",
+            "manufacturing industry"
+        ],
         "def_lang": "EN"
     },
     {
@@ -6125,7 +6174,8 @@
         "vocab_id": 489,
         "def": [
             "star",
-            "any light emitting"
+            "any light-emitting",
+            "any light emitting (or reflecting) heavenly body (except for the sun and the moon)"
         ],
         "def_lang": "EN"
     },
@@ -6999,7 +7049,7 @@
         "vocab_id": 550,
         "def": [
             "futon",
-            "quilted Japanese style mattress laid out on the floor"
+            "futon (quilted Japanese style mattress laid out on the floor)"
         ],
         "def_lang": "EN"
     },
@@ -7007,7 +7057,6 @@
         "def_id": 776,
         "vocab_id": 550,
         "def": [
-            "round cushion",
             "round cushion used for Zen meditation"
         ],
         "def_lang": "EN"
@@ -7036,7 +7085,9 @@
         "def_id": 779,
         "vocab_id": 553,
         "def": [
-            "novel"
+            "novel",
+            "story",
+            "short story"
         ],
         "def_lang": "EN"
     },
@@ -7051,7 +7102,10 @@
     {
         "def_id": 781,
         "vocab_id": 555,
-        "def": [],
+        "def": [
+            "daughter",
+            "my daughter"
+        ],
         "def_lang": "EN"
     },
     {
@@ -8047,7 +8101,10 @@
     {
         "def_id": 888,
         "vocab_id": 631,
-        "def": [],
+        "def": [
+            "ring",
+            "finger ring"
+        ],
         "def_lang": "EN"
     },
     {
@@ -8314,7 +8371,10 @@
     {
         "def_id": 917,
         "vocab_id": 652,
-        "def": [],
+        "def": [
+            "rice",
+            "husked grains of rice"
+        ],
         "def_lang": "EN"
     },
     {
@@ -8359,7 +8419,6 @@
         "vocab_id": 654,
         "def": [
             "penmanship",
-            "handwriting",
             "hand writing"
         ],
         "def_lang": "EN"
@@ -8375,7 +8434,10 @@
     {
         "def_id": 924,
         "vocab_id": 656,
-        "def": [],
+        "def": [
+            "heating",
+            "indoor heating"
+        ],
         "def_lang": "EN"
     },
     {
@@ -8699,7 +8761,10 @@
     {
         "def_id": 959,
         "vocab_id": 683,
-        "def": [],
+        "def": [
+            "acquaintance",
+            "an acquaintance"
+        ],
         "def_lang": "EN"
     },
     {
@@ -8998,7 +9063,9 @@
         "def": [
             "monarch",
             "ruler",
-            "sovereign"
+            "sovereign",
+            "master",
+            "one's master"
         ],
         "def_lang": "EN"
     },
@@ -9084,7 +9151,10 @@
     {
         "def_id": 1000,
         "vocab_id": 716,
-        "def": [],
+        "def": [
+            "wife",
+            "my wife"
+        ],
         "def_lang": "EN"
     },
     {
@@ -9287,7 +9357,8 @@
         "def_id": 1023,
         "vocab_id": 733,
         "def": [
-            "red silk cotton tree"
+            "red silk-cotton tree",
+            "red silk cotton tree (Bombax ceiba)"
         ],
         "def_lang": "EN"
     },
@@ -9648,7 +9719,10 @@
     {
         "def_id": 1064,
         "vocab_id": 765,
-        "def": [],
+        "def": [
+            "register",
+            "cash register"
+        ],
         "def_lang": "EN"
     },
     {
@@ -9825,7 +9899,9 @@
         "vocab_id": 783,
         "def": [
             "registered nurse",
-            "RN"
+            "RN",
+            "nurse",
+            "hospital nurse"
         ],
         "def_lang": "EN"
     },
@@ -10460,7 +10536,9 @@
         "vocab_id": 838,
         "def": [
             "action",
-            "activity"
+            "activity",
+            "operation",
+            "military etc. operation"
         ],
         "def_lang": "EN"
     },
@@ -10786,7 +10864,9 @@
         "def_id": 1180,
         "vocab_id": 864,
         "def": [
-            "electronics"
+            "electronics",
+            "electronic",
+            "esp. as a prefix electronic"
         ],
         "def_lang": "EN"
     },
@@ -10824,7 +10904,10 @@
     {
         "def_id": 1184,
         "vocab_id": 868,
-        "def": [],
+        "def": [
+            "life (i.e. conception to death)",
+            "human life (i.e. conception to death)"
+        ],
         "def_lang": "EN"
     },
     {
@@ -11001,13 +11084,19 @@
     {
         "def_id": 1203,
         "vocab_id": 883,
-        "def": [],
+        "def": [
+            "market",
+            "town market"
+        ],
         "def_lang": "EN"
     },
     {
         "def_id": 1204,
         "vocab_id": 883,
-        "def": [],
+        "def": [
+            "marketplace",
+            "the marketplace"
+        ],
         "def_lang": "EN"
     },
     {
@@ -12112,7 +12201,9 @@
         "def_id": 1314,
         "vocab_id": 964,
         "def": [
-            "regular"
+            "regular",
+            "true",
+            "logical true"
         ],
         "def_lang": "EN"
     },
@@ -12426,7 +12517,8 @@
         "def_id": 1345,
         "vocab_id": 987,
         "def": [
-            "Eikyuu era"
+            "Eikyuu era",
+            "Eikyuu era (1113.7.13 1118.4.3)"
         ],
         "def_lang": "EN"
     },
@@ -12951,6 +13043,10 @@
         "def": [
             "step",
             "stair",
+            "steps",
+            "flight of steps",
+            "stitches",
+            "row of stitches",
             "columns"
         ],
         "def_lang": "EN"
@@ -13414,7 +13510,9 @@
         "vocab_id": 1061,
         "def": [
             "shop floor",
-            "factory floor"
+            "factory floor",
+            "site",
+            "on site"
         ],
         "def_lang": "EN"
     },
@@ -13772,7 +13870,9 @@
             "continuation",
             "second series",
             "succession",
-            "spell"
+            "spell",
+            "continuation (in time and space)",
+            "also suffix continuation (in time and space)"
         ],
         "def_lang": "EN"
     },
@@ -14533,7 +14633,10 @@
     {
         "def_id": 1562,
         "vocab_id": 1149,
-        "def": [],
+        "def": [
+            "patient",
+            "a patient"
+        ],
         "def_lang": "EN"
     },
     {
@@ -14752,7 +14855,8 @@
         "def_id": 1584,
         "vocab_id": 1166,
         "def": [
-            "bujian"
+            "bujian",
+            "bujian (spade shaped bronze coin of ancient China)"
         ],
         "def_lang": "EN"
     },
@@ -14810,7 +14914,8 @@
         "def_id": 1590,
         "vocab_id": 1171,
         "def": [
-            "Bummei era"
+            "Bummei era",
+            "Bummei era (1469.4.28 1487.7.20)"
         ],
         "def_lang": "EN"
     },
@@ -14944,7 +15049,9 @@
         "def_id": 1603,
         "vocab_id": 1181,
         "def": [
-            "the arts"
+            "the arts",
+            "art",
+            "fine art"
         ],
         "def_lang": "EN"
     },
@@ -15981,7 +16088,9 @@
         "def_id": 1709,
         "vocab_id": 1259,
         "def": [
-            "status"
+            "status",
+            "position",
+            "social position"
         ],
         "def_lang": "EN"
     },
@@ -16292,7 +16401,8 @@
         "vocab_id": 1281,
         "def": [
             "canvassing",
-            "selling"
+            "selling",
+            "selling (e.g. door to door)"
         ],
         "def_lang": "EN"
     },
@@ -16610,7 +16720,9 @@
         "vocab_id": 1309,
         "def": [
             "injury",
-            "harm"
+            "harm",
+            "damage",
+            "suffering damage"
         ],
         "def_lang": "EN"
     },
@@ -17141,7 +17253,10 @@
     {
         "def_id": 1832,
         "vocab_id": 1354,
-        "def": [],
+        "def": [
+            "love",
+            "romantic love"
+        ],
         "def_lang": "EN"
     },
     {
@@ -17480,7 +17595,9 @@
         "def_id": 1866,
         "vocab_id": 1380,
         "def": [
-            "procedure"
+            "procedure",
+            "operation",
+            "surgical operation"
         ],
         "def_lang": "EN"
     },
@@ -17691,7 +17808,8 @@
         "def_id": 1887,
         "vocab_id": 1397,
         "def": [
-            "highest"
+            "highest",
+            "highest (of a three tier ranking system)"
         ],
         "def_lang": "EN"
     },
@@ -17882,7 +18000,9 @@
         "vocab_id": 1414,
         "def": [
             "situation",
-            "circumstances"
+            "circumstances",
+            "state of affairs",
+            "present state of affairs"
         ],
         "def_lang": "EN"
     },
@@ -18084,7 +18204,9 @@
         "def_id": 1928,
         "vocab_id": 1429,
         "def": [
-            "statement"
+            "statement",
+            "instruction",
+            "software instruction"
         ],
         "def_lang": "EN"
     },
@@ -18775,7 +18897,10 @@
     {
         "def_id": 2000,
         "vocab_id": 1485,
-        "def": [],
+        "def": [
+            "detective",
+            "police detective"
+        ],
         "def_lang": "EN"
     },
     {
@@ -19183,7 +19308,9 @@
         "def": [
             "hut",
             "cabin",
-            "shed"
+            "shed",
+            "pen",
+            "animal pen"
         ],
         "def_lang": "EN"
     },
@@ -19368,7 +19495,9 @@
             "fork",
             "offshoot",
             "division",
-            "section"
+            "section",
+            "branch",
+            "lateral branch"
         ],
         "def_lang": "EN"
     },
@@ -19474,7 +19603,8 @@
         "def_id": 2073,
         "vocab_id": 1542,
         "def": [
-            "lowest"
+            "lowest",
+            "lowest (of a three tier ranking system)"
         ],
         "def_lang": "EN"
     },
@@ -19856,7 +19986,9 @@
         "def_id": 2113,
         "vocab_id": 1577,
         "def": [
-            "katana"
+            "katana",
+            "sword",
+            "single-edged sword"
         ],
         "def_lang": "EN"
     },
@@ -20147,7 +20279,9 @@
         "vocab_id": 1598,
         "def": [
             "curriculum",
-            "course"
+            "course",
+            "subject",
+            "school subject"
         ],
         "def_lang": "EN"
     },
@@ -20314,7 +20448,8 @@
         "def_id": 2162,
         "vocab_id": 1611,
         "def": [
-            "down train"
+            "down-train",
+            "down train (going away from Tokyo)"
         ],
         "def_lang": "EN"
     },
@@ -20350,7 +20485,8 @@
         "def_id": 2166,
         "vocab_id": 1613,
         "def": [
-            "one quarter of a ryou"
+            "one-quarter of a ryou",
+            "one quarter of a ryou (obsolete unit of currency)"
         ],
         "def_lang": "EN"
     },
@@ -21068,7 +21204,10 @@
     {
         "def_id": 2243,
         "vocab_id": 1665,
-        "def": [],
+        "def": [
+            "daughter-in-law",
+            "one's daughter-in-law"
+        ],
         "def_lang": "EN"
     },
     {
@@ -21158,7 +21297,9 @@
         "vocab_id": 1672,
         "def": [
             "discipline",
-            "branch of learning"
+            "branch of learning",
+            "science",
+            "a science"
         ],
         "def_lang": "EN"
     },
@@ -21285,7 +21426,9 @@
         "vocab_id": 1682,
         "def": [
             "belief",
-            "creed"
+            "creed",
+            "faith",
+            "religious faith"
         ],
         "def_lang": "EN"
     },
@@ -21581,7 +21724,10 @@
     {
         "def_id": 2298,
         "vocab_id": 1708,
-        "def": [],
+        "def": [
+            "turn",
+            "one's turn"
+        ],
         "def_lang": "EN"
     },
     {
@@ -22147,7 +22293,12 @@
     {
         "def_id": 2358,
         "vocab_id": 1754,
-        "def": [],
+        "def": [
+            "superb",
+            "something superb",
+            "excellent",
+            "something excellent"
+        ],
         "def_lang": "EN"
     },
     {
@@ -22503,7 +22654,9 @@
         "vocab_id": 1787,
         "def": [
             "word",
-            "vocabulary"
+            "vocabulary",
+            "single-character word",
+            "usually single-character word"
         ],
         "def_lang": "EN"
     },
@@ -22593,7 +22746,9 @@
         "vocab_id": 1794,
         "def": [
             "prospect",
-            "expectation"
+            "expectation",
+            "hopes",
+            "one's hopes"
         ],
         "def_lang": "EN"
     },
@@ -22992,7 +23147,9 @@
             "suddenly",
             "accident",
             "fortuity",
-            "by coincidence"
+            "by coincidence",
+            "chance",
+            "by chance"
         ],
         "def_lang": "EN"
     },
@@ -23035,7 +23192,8 @@
         "def_id": 2453,
         "vocab_id": 1832,
         "def": [
-            "rainy season"
+            "rainy season",
+            "rainy season (in Japan from early June to mid July)"
         ],
         "def_lang": "EN"
     },
@@ -23204,7 +23362,9 @@
         "def": [
             "mud",
             "slush",
-            "mire"
+            "mire",
+            "dirt",
+            "wet dirt"
         ],
         "def_lang": "EN"
     },
@@ -23390,7 +23550,9 @@
         "def": [
             "neighborhood",
             "vicinity",
-            "nearby"
+            "nearby",
+            "neighbourhood",
+            "in the neighbourhood"
         ],
         "def_lang": "EN"
     },
@@ -24110,7 +24272,10 @@
     {
         "def_id": 2567,
         "vocab_id": 1917,
-        "def": [],
+        "def": [
+            "towel",
+            "hand towel"
+        ],
         "def_lang": "EN"
     },
     {
@@ -24369,7 +24534,10 @@
     {
         "def_id": 2596,
         "vocab_id": 1936,
-        "def": [],
+        "def": [
+            "schedule",
+            "railway schedule"
+        ],
         "def_lang": "EN"
     },
     {
@@ -24400,7 +24568,9 @@
         "def": [
             "around",
             "about",
-            "toward"
+            "toward",
+            "time",
+            "approximate time"
         ],
         "def_lang": "EN"
     },
@@ -24498,7 +24668,9 @@
             "subject",
             "theme",
             "material",
-            "matter"
+            "matter",
+            "copy",
+            "news copy"
         ],
         "def_lang": "EN"
     },
@@ -24664,7 +24836,9 @@
         "def_id": 2627,
         "vocab_id": 1956,
         "def": [
-            "channels, official or otherwise"
+            "channels, official or otherwise",
+            "connections",
+            "business connections"
         ],
         "def_lang": "EN"
     },
@@ -25222,7 +25396,9 @@
         "vocab_id": 2000,
         "def": [
             "pitiful",
-            "unfortunate"
+            "unfortunate",
+            "pity",
+            "a pity"
         ],
         "def_lang": "EN"
     },
@@ -25410,7 +25586,10 @@
     {
         "def_id": 2707,
         "vocab_id": 2018,
-        "def": [],
+        "def": [
+            "soup",
+            "Western soup"
+        ],
         "def_lang": "EN"
     },
     {
@@ -25547,7 +25726,8 @@
         "vocab_id": 2031,
         "def": [
             "racket",
-            "paddle"
+            "paddle",
+            "paddle (in table tennis)"
         ],
         "def_lang": "EN"
     },
@@ -25572,7 +25752,9 @@
         "vocab_id": 2033,
         "def": [
             "fodder",
-            "pet food"
+            "pet food",
+            "feed",
+            "animal feed"
         ],
         "def_lang": "EN"
     },
@@ -25837,7 +26019,8 @@
         "def_id": 2754,
         "vocab_id": 2053,
         "def": [
-            "soft drink"
+            "soft drink",
+            "soft drink (any (sweet) non alcoholic beverage, carbonated or uncarbonated)"
         ],
         "def_lang": "EN"
     },
@@ -26065,7 +26248,9 @@
         "def_id": 2777,
         "vocab_id": 2068,
         "def": [
-            "bring it on!"
+            "bring it on!",
+            "just fine!",
+            "that's just fine!"
         ],
         "def_lang": "EN"
     },
@@ -26170,7 +26355,8 @@
         "def": [
             "obedient",
             "good",
-            "well behaved"
+            "well-behaved",
+            "well behaved (of kids, animals, etc)"
         ],
         "def_lang": "EN"
     },
@@ -26770,7 +26956,9 @@
         "def": [
             "only",
             "merely",
-            "small quantity"
+            "small quantity",
+            "little",
+            "a little"
         ],
         "def_lang": "EN"
     },
@@ -26941,7 +27129,9 @@
             "discount",
             "reduction",
             "rebate",
-            "tenths reduced"
+            "tenths reduced",
+            "tenths discounted",
+            "after a number tenths discounted"
         ],
         "def_lang": "EN"
     },
@@ -26972,7 +27162,8 @@
         "def_id": 2872,
         "vocab_id": 2142,
         "def": [
-            "Enchou era"
+            "Enchou era",
+            "Enchou era (923.4.11 931.4.26)"
         ],
         "def_lang": "EN"
     },
@@ -27038,7 +27229,13 @@
         "def": [
             "interchange",
             "interaction",
-            "intercourse"
+            "intercourse",
+            "exchange",
+            "cultural exchange",
+            "mingling",
+            "inter- mingling",
+            "networking",
+            "social, etc. networking"
         ],
         "def_lang": "EN"
     },
@@ -27312,7 +27509,10 @@
     {
         "def_id": 2908,
         "vocab_id": 2167,
-        "def": [],
+        "def": [
+            "peripheral",
+            "computer peripheral"
+        ],
         "def_lang": "EN"
     },
     {
@@ -27382,7 +27582,8 @@
         "vocab_id": 2173,
         "def": [
             "Kansai",
-            "south western half of Japan"
+            "south-western half of Japan",
+            "south western half of Japan (during the feudal era)"
         ],
         "def_lang": "EN"
     },
@@ -27411,7 +27612,9 @@
             "photographing",
             "filming",
             "shooting",
-            "photography"
+            "photography",
+            "recording",
+            "video recording"
         ],
         "def_lang": "EN"
     },
@@ -27656,7 +27859,8 @@
         "def": [
             "construction work",
             "construction",
-            "work"
+            "work",
+            "work (related to construction, e.g. painting, concrete pouring, etc.)"
         ],
         "def_lang": "EN"
     },
@@ -27750,7 +27954,8 @@
         "def_id": 2952,
         "vocab_id": 2200,
         "def": [
-            "koto"
+            "koto",
+            "koto (13 stringed Japanese zither)"
         ],
         "def_lang": "EN"
     },
@@ -28060,7 +28265,8 @@
         "vocab_id": 2224,
         "def": [
             "whole",
-            "full length"
+            "full-length",
+            "full length (e.g. portrait)"
         ],
         "def_lang": "EN"
     },
@@ -28156,7 +28362,9 @@
         "def_id": 2991,
         "vocab_id": 2231,
         "def": [
-            "entry"
+            "entry",
+            "item",
+            "data item"
         ],
         "def_lang": "EN"
     },
@@ -28165,7 +28373,8 @@
         "vocab_id": 2232,
         "def": [
             "weekday",
-            "ordinary days"
+            "ordinary days",
+            "ordinary days (i.e. non holiday)"
         ],
         "def_lang": "EN"
     },
@@ -28191,7 +28400,9 @@
         "vocab_id": 2234,
         "def": [
             "procedure",
-            "formalities"
+            "formalities",
+            "process",
+            "legal process"
         ],
         "def_lang": "EN"
     },
@@ -28314,7 +28525,9 @@
             "subdivision",
             "compartment",
             "classification",
-            "sorting"
+            "sorting",
+            "lane",
+            "traffic lane"
         ],
         "def_lang": "EN"
     },
@@ -28630,7 +28843,8 @@
         "vocab_id": 2268,
         "def": [
             "induction course",
-            "training"
+            "training",
+            "training (esp. in service)"
         ],
         "def_lang": "EN"
     },
@@ -28703,7 +28917,9 @@
             "contents",
             "interior",
             "substance",
-            "filling"
+            "filling",
+            "blade",
+            "sword blade"
         ],
         "def_lang": "EN"
     },
@@ -28824,7 +29040,9 @@
         "vocab_id": 2285,
         "def": [
             "notebook",
-            "memo pad"
+            "memo pad",
+            "diary",
+            "pocket diary"
         ],
         "def_lang": "EN"
     },
@@ -29253,7 +29471,9 @@
             "plaza",
             "piazza",
             "forum",
-            "open space"
+            "open space",
+            "square",
+            "public square"
         ],
         "def_lang": "EN"
     },
@@ -29291,7 +29511,9 @@
             "true strength",
             "merit",
             "efficiency",
-            "competency"
+            "competency",
+            "ability",
+            "real ability"
         ],
         "def_lang": "EN"
     },
@@ -29562,6 +29784,7 @@
         "def": [
             "thereafter",
             "since",
+            "since (verb) (after  te form of verb)",
             "after"
         ],
         "def_lang": "EN"
@@ -29754,7 +29977,8 @@
         "def_id": 3156,
         "vocab_id": 2360,
         "def": [
-            "middle"
+            "middle",
+            "middle (of a three tier ranking system)"
         ],
         "def_lang": "EN"
     },
@@ -29865,7 +30089,9 @@
             "universal",
             "wholly",
             "general",
-            "as a whole"
+            "as a whole",
+            "whole",
+            "the whole"
         ],
         "def_lang": "EN"
     },
@@ -30249,7 +30475,9 @@
         "def_id": 3209,
         "vocab_id": 2405,
         "def": [
-            "crackdown"
+            "crackdown",
+            "raid",
+            "police raid"
         ],
         "def_lang": "EN"
     },
@@ -30382,7 +30610,9 @@
             "contents",
             "interior",
             "substance",
-            "filling"
+            "filling",
+            "blade",
+            "sword blade"
         ],
         "def_lang": "EN"
     },
@@ -31026,7 +31256,8 @@
         "def_id": 3290,
         "vocab_id": 2473,
         "def": [
-            "up train"
+            "up-train",
+            "up train (e.g. going to Tokyo)"
         ],
         "def_lang": "EN"
     },
@@ -31260,7 +31491,9 @@
         "vocab_id": 2493,
         "def": [
             "front cover",
-            "binding"
+            "binding",
+            "cover",
+            "book cover"
         ],
         "def_lang": "EN"
     },
@@ -31580,7 +31813,9 @@
         "def_id": 3350,
         "vocab_id": 2521,
         "def": [
-            "abreast"
+            "abreast",
+            "side-by-side",
+            "going side-by-side"
         ],
         "def_lang": "EN"
     },
@@ -31929,7 +32164,10 @@
     {
         "def_id": 3388,
         "vocab_id": 2553,
-        "def": [],
+        "def": [
+            "recording",
+            "audio recording"
+        ],
         "def_lang": "EN"
     },
     {
@@ -32104,7 +32342,10 @@
     {
         "def_id": 3407,
         "vocab_id": 2568,
-        "def": [],
+        "def": [
+            "in school",
+            "enrolled in school"
+        ],
         "def_lang": "EN"
     },
     {
@@ -32268,7 +32509,8 @@
         "def_id": 3425,
         "vocab_id": 2584,
         "def": [
-            "low lying part of a city"
+            "low-lying part of a city",
+            "low lying part of a city (usu. containing shops, factories, etc.)"
         ],
         "def_lang": "EN"
     },
@@ -32276,7 +32518,8 @@
         "def_id": 3426,
         "vocab_id": 2584,
         "def": [
-            "Shitamachi"
+            "Shitamachi",
+            "Shitamachi (low lying area of eastern Tokyo near Tokyo Bay, incl. Asakusa, Shitaya, Kanda, Fukugawa, Honjo, Nihonbashi, Kyobashi and surrounds)"
         ],
         "def_lang": "EN"
     },
@@ -32608,7 +32851,10 @@
     {
         "def_id": 3460,
         "vocab_id": 2614,
-        "def": [],
+        "def": [
+            "basin",
+            "river basin"
+        ],
         "def_lang": "EN"
     },
     {
@@ -32792,7 +33038,8 @@
             "practice",
             "practising",
             "drill",
-            "training"
+            "training",
+            "training (esp. practical and hands on)"
         ],
         "def_lang": "EN"
     },
@@ -33006,7 +33253,8 @@
         "vocab_id": 2649,
         "def": [
             "author",
-            "writer"
+            "writer",
+            "writer (often in self reference)"
         ],
         "def_lang": "EN"
     },
@@ -33260,7 +33508,10 @@
     {
         "def_id": 3529,
         "vocab_id": 2671,
-        "def": [],
+        "def": [
+            "class",
+            "school class"
+        ],
         "def_lang": "EN"
     },
     {
@@ -33678,7 +33929,10 @@
     {
         "def_id": 3575,
         "vocab_id": 2707,
-        "def": [],
+        "def": [
+            "life",
+            "human life"
+        ],
         "def_lang": "EN"
     },
     {
@@ -33850,7 +34104,9 @@
         "def_id": 3594,
         "vocab_id": 2724,
         "def": [
-            "copying"
+            "copying",
+            "notes",
+            "taking notes"
         ],
         "def_lang": "EN"
     },
@@ -34107,7 +34363,8 @@
         "vocab_id": 2748,
         "def": [
             "Kanto",
-            "north eastern half of Japan"
+            "north-eastern half of Japan",
+            "north eastern half of Japan (during the feudal era)"
         ],
         "def_lang": "EN"
     },
@@ -34152,7 +34409,10 @@
     {
         "def_id": 3626,
         "vocab_id": 2753,
-        "def": [],
+        "def": [
+            "wheel",
+            "car wheel"
+        ],
         "def_lang": "EN"
     },
     {
@@ -34693,7 +34953,8 @@
         "def_id": 3687,
         "vocab_id": 2804,
         "def": [
-            "English Japanese"
+            "English-Japanese",
+            "English Japanese (e.g. dictionary)"
         ],
         "def_lang": "EN"
     },
@@ -35154,7 +35415,10 @@
     {
         "def_id": 3738,
         "vocab_id": 2846,
-        "def": [],
+        "def": [
+            "receiver",
+            "telephone receiver"
+        ],
         "def_lang": "EN"
     },
     {
@@ -35259,7 +35523,9 @@
         "def_id": 3749,
         "vocab_id": 2855,
         "def": [
-            "spirit level"
+            "spirit level",
+            "level",
+            "surveyor's level"
         ],
         "def_lang": "EN"
     },
@@ -35337,7 +35603,9 @@
         "def": [
             "company director",
             "top management",
-            "high executive"
+            "high executive",
+            "heavy responsibilities",
+            "person with heavy responsibilities"
         ],
         "def_lang": "EN"
     },
@@ -35345,7 +35613,8 @@
         "def_id": 3759,
         "vocab_id": 2862,
         "def": [
-            "one way"
+            "one-way",
+            "one way (trip)"
         ],
         "def_lang": "EN"
     },
@@ -35497,7 +35766,8 @@
         "def_id": 3776,
         "vocab_id": 2874,
         "def": [
-            "district"
+            "district",
+            "district (of 2 20 50 home neighbourhoods or townships, in the ritsuryo period)"
         ],
         "def_lang": "EN"
     },
@@ -36239,7 +36509,9 @@
         "vocab_id": 2938,
         "def": [
             "ridge",
-            "difficult part"
+            "difficult part",
+            "pass",
+            "mountain pass"
         ],
         "def_lang": "EN"
     },
@@ -36315,7 +36587,10 @@
     {
         "def_id": 3866,
         "vocab_id": 2947,
-        "def": [],
+        "def": [
+            "conductor",
+            "train conductor"
+        ],
         "def_lang": "EN"
     },
     {
@@ -36502,7 +36777,9 @@
             "marrow",
             "stuffing",
             "pith",
-            "staple"
+            "staple",
+            "lead",
+            "pencil lead"
         ],
         "def_lang": "EN"
     },
@@ -36556,7 +36833,8 @@
             "apartment house",
             "apartment",
             "flat",
-            "condominium"
+            "condominium",
+            "condominium (often mid rise or high rise concrete)"
         ],
         "def_lang": "EN"
     },
@@ -37042,6 +37320,7 @@
         "vocab_id": 3009,
         "def": [
             "turn",
+            "turn (in set type proofing)",
             "upside down character"
         ],
         "def_lang": "EN"
@@ -37066,7 +37345,10 @@
     {
         "def_id": 3948,
         "vocab_id": 3011,
-        "def": [],
+        "def": [
+            "crossing over",
+            "genetic crossing over"
+        ],
         "def_lang": "EN"
     },
     {
@@ -37866,7 +38148,8 @@
         "vocab_id": 3082,
         "def": [
             "adjective",
-            "i adjective"
+            "i-adjective",
+            "i adjective (in Japanese)"
         ],
         "def_lang": "EN"
     },
@@ -38207,7 +38490,10 @@
     {
         "def_id": 4074,
         "vocab_id": 3111,
-        "def": [],
+        "def": [
+            "ruler",
+            "measuring ruler"
+        ],
         "def_lang": "EN"
     },
     {
@@ -38486,6 +38772,8 @@
         "vocab_id": 3136,
         "def": [
             "the basics",
+            "general",
+            "in general",
             "broad"
         ],
         "def_lang": "EN"
@@ -38553,7 +38841,9 @@
             "some",
             "any",
             "of some kind",
-            "of some sort"
+            "of some sort",
+            "little",
+            "a little"
         ],
         "def_lang": "EN"
     },
@@ -38663,7 +38953,9 @@
         "def_id": 4125,
         "vocab_id": 3152,
         "def": [
-            "casket"
+            "casket",
+            "coffin",
+            "euph. for coffin"
         ],
         "def_lang": "EN"
     },
@@ -38829,7 +39121,8 @@
         "def": [
             "afternoon refreshment",
             "afternoon tea",
-            "mid afternoon"
+            "mid-afternoon",
+            "mid afternoon (around 3 o'clock) snack"
         ],
         "def_lang": "EN"
     },
@@ -39333,7 +39626,10 @@
     {
         "def_id": 4199,
         "vocab_id": 3212,
-        "def": [],
+        "def": [
+            "evening shower (rain)",
+            "sudden evening shower (rain)"
+        ],
         "def_lang": "EN"
     },
     {
@@ -39809,7 +40105,9 @@
         "def_id": 4253,
         "vocab_id": 3259,
         "def": [
-            "stewardess"
+            "stewardess",
+            "flight attendant",
+            "female flight attendant"
         ],
         "def_lang": "EN"
     },
@@ -40435,7 +40733,9 @@
         "vocab_id": 3319,
         "def": [
             "breather",
-            "break"
+            "break",
+            "rest",
+            "short rest"
         ],
         "def_lang": "EN"
     },
@@ -40634,7 +40934,12 @@
     {
         "def_id": 4345,
         "vocab_id": 3339,
-        "def": [],
+        "def": [
+            "name",
+            "addressee's name",
+            "name and address",
+            "recipient's name and address"
+        ],
         "def_lang": "EN"
     },
     {
@@ -40837,7 +41142,10 @@
     {
         "def_id": 4368,
         "vocab_id": 3358,
-        "def": [],
+        "def": [
+            "towel",
+            "hand towel"
+        ],
         "def_lang": "EN"
     },
     {
@@ -41036,8 +41344,9 @@
         "def": [
             "adjectival noun",
             "nominal adjective",
-            "quasi adjective",
-            "na adjective"
+            "na-adjective",
+            "na adjective (adj na)",
+            "quasi adjective"
         ],
         "def_lang": "EN"
     },
@@ -41135,7 +41444,8 @@
         "def_id": 4400,
         "vocab_id": 3387,
         "def": [
-            "x mark"
+            "x-mark",
+            "x mark (used to indicate an incorrect answer in a test, etc.)"
         ],
         "def_lang": "EN"
     },
@@ -41338,7 +41648,10 @@
     {
         "def_id": 4419,
         "vocab_id": 3402,
-        "def": [],
+        "def": [
+            "specification",
+            "technical specification"
+        ],
         "def_lang": "EN"
     },
     {
@@ -41470,7 +41783,9 @@
             "task",
             "action",
             "function",
-            "operational"
+            "operational",
+            "operations",
+            "business operations"
         ],
         "def_lang": "EN"
     },
@@ -41492,7 +41807,9 @@
             "discount",
             "reduction",
             "rebate",
-            "tenths reduced"
+            "tenths reduced",
+            "tenths discounted",
+            "after a number tenths discounted"
         ],
         "def_lang": "EN"
     },
@@ -41706,13 +42023,21 @@
     {
         "def_id": 4454,
         "vocab_id": 3428,
-        "def": [],
+        "def": [
+            "whereabouts",
+            "somebody's whereabouts",
+            "movements",
+            "somebody's movements"
+        ],
         "def_lang": "EN"
     },
     {
         "def_id": 4455,
         "vocab_id": 3429,
-        "def": [],
+        "def": [
+            "quality",
+            "material quality"
+        ],
         "def_lang": "EN"
     },
     {
@@ -41946,7 +42271,10 @@
     {
         "def_id": 4481,
         "vocab_id": 3446,
-        "def": [],
+        "def": [
+            "comment",
+            "blog comment"
+        ],
         "def_lang": "EN"
     },
     {
@@ -42130,7 +42458,10 @@
     {
         "def_id": 4500,
         "vocab_id": 3459,
-        "def": [],
+        "def": [
+            "engineer",
+            "army engineer"
+        ],
         "def_lang": "EN"
     },
     {
@@ -42812,7 +43143,8 @@
         "def_id": 4569,
         "vocab_id": 3508,
         "def": [
-            "appearance"
+            "appearance",
+            "appearance (i.e. attire, make up)"
         ],
         "def_lang": "EN"
     },
@@ -43020,7 +43352,9 @@
             "childbirth",
             "delivery",
             "parturition",
-            "confinement"
+            "confinement",
+            "birth",
+            "giving birth"
         ],
         "def_lang": "EN"
     },
@@ -43537,7 +43871,8 @@
         "def_id": 4642,
         "vocab_id": 3566,
         "def": [
-            "modern humans"
+            "modern humans",
+            "modern humans (from Cro Magnon man onwards)"
         ],
         "def_lang": "EN"
     },
@@ -43725,8 +44060,8 @@
         "vocab_id": 3578,
         "def": [
             "too",
-            "over ",
-            "over"
+            "over-",
+            "over  (e.g. eating)"
         ],
         "def_lang": "EN"
     },
@@ -43803,7 +44138,8 @@
         "vocab_id": 3583,
         "def": [
             "approx. 140 cm wide for Western clothing)",
-            "full width cloth"
+            "full-width cloth",
+            "full width cloth (approx. 72 cm wide for traditional Japanese clothing"
         ],
         "def_lang": "EN"
     },
@@ -45643,7 +45979,9 @@
         "def": [
             "regulation",
             "control",
-            "restriction"
+            "restriction",
+            "policing",
+            "traffic policing"
         ],
         "def_lang": "EN"
     },
@@ -45707,7 +46045,10 @@
     {
         "def_id": 4864,
         "vocab_id": 3736,
-        "def": [],
+        "def": [
+            "fare",
+            "passenger fare"
+        ],
         "def_lang": "EN"
     },
     {
@@ -46232,7 +46573,9 @@
             "growing worse",
             "aggravation",
             "degeneration",
-            "corruption"
+            "corruption",
+            "deterioration",
+            "suffer deterioration"
         ],
         "def_lang": "EN"
     },
@@ -46481,7 +46824,9 @@
         "def_id": 4944,
         "vocab_id": 3800,
         "def": [
-            "nursing"
+            "nursing",
+            "nurse",
+            "army nurse"
         ],
         "def_lang": "EN"
     },
@@ -46556,7 +46901,9 @@
         "def_id": 4952,
         "vocab_id": 3808,
         "def": [
-            "political power"
+            "political power",
+            "administration",
+            "political administration"
         ],
         "def_lang": "EN"
     },
@@ -46703,7 +47050,10 @@
     {
         "def_id": 4966,
         "vocab_id": 3820,
-        "def": [],
+        "def": [
+            "secretary",
+            "private secretary"
+        ],
         "def_lang": "EN"
     },
     {
@@ -46887,6 +47237,8 @@
         "vocab_id": 3835,
         "def": [
             "reversal",
+            "change",
+            "sudden change",
             "turn around",
             "coming from behind"
         ],
@@ -47171,7 +47523,10 @@
     {
         "def_id": 5014,
         "vocab_id": 3858,
-        "def": [],
+        "def": [
+            "crash",
+            "application crash"
+        ],
         "def_lang": "EN"
     },
     {
@@ -47256,7 +47611,9 @@
         "def_id": 5022,
         "vocab_id": 3865,
         "def": [
-            "deficit"
+            "deficit",
+            "the red",
+            "being in or going into the red"
         ],
         "def_lang": "EN"
     },
@@ -47400,7 +47757,8 @@
             "orchard",
             "park",
             "plantation",
-            "garden"
+            "garden",
+            "garden (esp. man made)"
         ],
         "def_lang": "EN"
     },
@@ -47529,7 +47887,9 @@
             "leaders",
             "leadership",
             "top brass",
-            "upper echelons"
+            "upper echelons",
+            "staff",
+            "executive staff"
         ],
         "def_lang": "EN"
     },
@@ -47643,7 +48003,9 @@
         "vocab_id": 3901,
         "def": [
             "shared sentiment",
-            "like mindedness"
+            "like mindedness",
+            "same mind",
+            "being of the same mind"
         ],
         "def_lang": "EN"
     },
@@ -47711,7 +48073,11 @@
         "def": [
             "brouhaha",
             "scandal",
-            "controversy"
+            "controversy",
+            "uproar",
+            "media uproar",
+            "outcry",
+            "public outcry"
         ],
         "def_lang": "EN"
     },
@@ -47896,7 +48262,9 @@
         "vocab_id": 3922,
         "def": [
             "authority",
-            "influence"
+            "influence",
+            "power",
+            "political power"
         ],
         "def_lang": "EN"
     },
@@ -48617,8 +48985,7 @@
         "def_id": 5163,
         "vocab_id": 3983,
         "def": [
-            "ten thousand people",
-            "10000 people"
+            "ten thousand people"
         ],
         "def_lang": "EN"
     },
@@ -48842,7 +49209,9 @@
         "def_id": 5186,
         "vocab_id": 4004,
         "def": [
-            "cabinet"
+            "cabinet",
+            "ministry",
+            "government ministry"
         ],
         "def_lang": "EN"
     },
@@ -49619,8 +49988,8 @@
         "def_id": 5266,
         "vocab_id": 4069,
         "def": [
-            "pre ",
-            "pre"
+            "pre-",
+            "pre  (e.g. \"premodern\")"
         ],
         "def_lang": "EN"
     },
@@ -49809,7 +50178,9 @@
         "def": [
             "lapse of memory",
             "forgetting for a moment something one knows well",
-            "brain fart"
+            "brain fart",
+            "slipping one's mind",
+            "something slipping one's mind"
         ],
         "def_lang": "EN"
     },
@@ -50225,7 +50596,9 @@
         "def_id": 5331,
         "vocab_id": 4118,
         "def": [
-            "remainder"
+            "remainder",
+            "balance",
+            "bank balance"
         ],
         "def_lang": "EN"
     },
@@ -50285,7 +50658,10 @@
     {
         "def_id": 5338,
         "vocab_id": 4124,
-        "def": [],
+        "def": [
+            "form",
+            "taxonomical form"
+        ],
         "def_lang": "EN"
     },
     {
@@ -50454,7 +50830,8 @@
         "def_id": 5356,
         "vocab_id": 4139,
         "def": [
-            "front"
+            "front",
+            "front (aspect, weather, war front, etc.)"
         ],
         "def_lang": "EN"
     },
@@ -50512,7 +50889,8 @@
             "last stage",
             "end stage",
             "closing years",
-            "end of life"
+            "end-of-life",
+            "end of life (care, decision making, etc.)"
         ],
         "def_lang": "EN"
     },
@@ -50708,7 +51086,10 @@
     {
         "def_id": 5383,
         "vocab_id": 4158,
-        "def": [],
+        "def": [
+            "paddy field",
+            "water-filled paddy field"
+        ],
         "def_lang": "EN"
     },
     {
@@ -50755,7 +51136,9 @@
         "vocab_id": 4163,
         "def": [
             "expression of views",
-            "discussion"
+            "discussion",
+            "speech",
+            "one's speech"
         ],
         "def_lang": "EN"
     },
@@ -50765,7 +51148,9 @@
         "def": [
             "insolvency",
             "commercial failure",
-            "failed business"
+            "failed business",
+            "bankruptcy",
+            "corporate bankruptcy"
         ],
         "def_lang": "EN"
     },
@@ -51054,7 +51439,8 @@
         "def_id": 5419,
         "vocab_id": 4187,
         "def": [
-            "eighth sign of Chinese zodiac"
+            "eighth sign of Chinese zodiac",
+            "eighth sign of Chinese zodiac (The Ram, 1pm 3pm, south southwest, June)"
         ],
         "def_lang": "EN"
     },
@@ -51101,7 +51487,8 @@
         "def_id": 5424,
         "vocab_id": 4190,
         "def": [
-            "alcohol with liquor added"
+            "alcohol with liquor added",
+            "alcohol with liquor added (esp. wine based shochu highball, also beer with whiskey)"
         ],
         "def_lang": "EN"
     },
@@ -51293,7 +51680,9 @@
         "def_id": 5445,
         "vocab_id": 4209,
         "def": [
-            "abreast"
+            "abreast",
+            "side-by-side",
+            "going side-by-side"
         ],
         "def_lang": "EN"
     },
@@ -52465,7 +52854,9 @@
         "vocab_id": 4307,
         "def": [
             "rank",
-            "grade"
+            "grade",
+            "class",
+            "social class"
         ],
         "def_lang": "EN"
     },
@@ -52674,7 +53065,9 @@
         "vocab_id": 4325,
         "def": [
             "reason",
-            "reasoning power"
+            "reasoning power",
+            "sense",
+            "one's sense"
         ],
         "def_lang": "EN"
     },
@@ -52808,7 +53201,8 @@
             "pottery",
             "ceramics",
             "crockery",
-            "porcelain"
+            "porcelain",
+            "porcelain (esp. soft paste porcelain)"
         ],
         "def_lang": "EN"
     },
@@ -53206,7 +53600,8 @@
         "vocab_id": 4374,
         "def": [
             "interview",
-            "meeting"
+            "meeting",
+            "meeting (face to face)"
         ],
         "def_lang": "EN"
     },
@@ -53745,7 +54140,8 @@
         "def_id": 5699,
         "vocab_id": 4422,
         "def": [
-            "this person"
+            "this person",
+            "this person (usu. indicating someone in one's in group)"
         ],
         "def_lang": "EN"
     },
@@ -54530,7 +54926,13 @@
         "vocab_id": 4490,
         "def": [
             "backbone",
-            "base"
+            "base",
+            "trunk",
+            "tree trunk",
+            "shaft",
+            "arrow shaft",
+            "handle",
+            "tool handle"
         ],
         "def_lang": "EN"
     },
@@ -55818,7 +56220,9 @@
         "def_id": 5912,
         "vocab_id": 4604,
         "def": [
-            "end"
+            "end",
+            "stop",
+            "place to stop"
         ],
         "def_lang": "EN"
     },
@@ -56075,7 +56479,9 @@
         "def_id": 5940,
         "vocab_id": 4627,
         "def": [
-            "dual income"
+            "dual income",
+            "both working",
+            "husband and wife both working"
         ],
         "def_lang": "EN"
     },
@@ -56974,7 +57380,9 @@
         "def_id": 6034,
         "vocab_id": 4705,
         "def": [
-            "moving to a different location to start a new job"
+            "moving to a different location to start a new job",
+            "new appointment",
+            "proceeding to new appointment"
         ],
         "def_lang": "EN"
     },
@@ -57429,7 +57837,11 @@
             "help",
             "aid",
             "relief",
-            "providence"
+            "providence",
+            "salvation",
+            "religious salvation",
+            "grace",
+            "Christian grace"
         ],
         "def_lang": "EN"
     },
@@ -58058,7 +58470,10 @@
     {
         "def_id": 6150,
         "vocab_id": 4801,
-        "def": [],
+        "def": [
+            "sale",
+            "bargain sale"
+        ],
         "def_lang": "EN"
     },
     {
@@ -58524,7 +58939,10 @@
     {
         "def_id": 6200,
         "vocab_id": 4843,
-        "def": [],
+        "def": [
+            "monitor",
+            "computer monitor"
+        ],
         "def_lang": "EN"
     },
     {
@@ -58762,7 +59180,9 @@
             "bridge building",
             "mediation",
             "intermediary",
-            "go between"
+            "go between",
+            "good offices (of someone)",
+            "through the good offices (of someone)"
         ],
         "def_lang": "EN"
     },
@@ -58904,7 +59324,10 @@
     {
         "def_id": 6241,
         "vocab_id": 4878,
-        "def": [],
+        "def": [
+            "parting",
+            "the sorrow of parting"
+        ],
         "def_lang": "EN"
     },
     {
@@ -59313,7 +59736,8 @@
         "def_id": 6284,
         "vocab_id": 4913,
         "def": [
-            "living room"
+            "living room",
+            "living room (Japanese style)"
         ],
         "def_lang": "EN"
     },
@@ -59322,7 +59746,9 @@
         "vocab_id": 4914,
         "def": [
             "curse",
-            "retribution"
+            "retribution",
+            "punishment",
+            "divine punishment"
         ],
         "def_lang": "EN"
     },
@@ -59394,7 +59820,9 @@
             "teahouse",
             "tearoom",
             "coffee lounge",
-            "coffee shop"
+            "coffee shop",
+            "cafe",
+            "rather formal cafe"
         ],
         "def_lang": "EN"
     },
@@ -59422,7 +59850,10 @@
     {
         "def_id": 6296,
         "vocab_id": 4923,
-        "def": [],
+        "def": [
+            "appearance",
+            "outward appearance"
+        ],
         "def_lang": "EN"
     },
     {
@@ -59430,7 +59861,9 @@
         "vocab_id": 4923,
         "def": [
             "form",
-            "style"
+            "style",
+            "format (e.g. of an essay)",
+            "proper format (e.g. of an essay)"
         ],
         "def_lang": "EN"
     },
@@ -60021,7 +60454,9 @@
         "def_id": 6359,
         "vocab_id": 4980,
         "def": [
-            "development"
+            "development",
+            "growth",
+            "physical growth"
         ],
         "def_lang": "EN"
     },
@@ -60220,7 +60655,9 @@
         "def": [
             "childbirth",
             "delivery",
-            "confinement"
+            "confinement",
+            "birth",
+            "giving birth"
         ],
         "def_lang": "EN"
     },
@@ -60533,7 +60970,10 @@
     {
         "def_id": 6413,
         "vocab_id": 5024,
-        "def": [],
+        "def": [
+            "species",
+            "biological species"
+        ],
         "def_lang": "EN"
     },
     {
@@ -60729,7 +61169,9 @@
         "vocab_id": 5041,
         "def": [
             "resonance",
-            "sympathetic"
+            "sympathetic",
+            "sympathy",
+            "being in sympathy"
         ],
         "def_lang": "EN"
     },
@@ -61073,7 +61515,9 @@
             "mess",
             "spoiled",
             "spoilt",
-            "ruin"
+            "ruin",
+            "nothing",
+            "come to nothing"
         ],
         "def_lang": "EN"
     },
@@ -61186,7 +61630,10 @@
     {
         "def_id": 6484,
         "vocab_id": 5081,
-        "def": [],
+        "def": [
+            "education of laity",
+            "in Christianity education of laity"
+        ],
         "def_lang": "EN"
     },
     {
@@ -61691,7 +62138,10 @@
     {
         "def_id": 6538,
         "vocab_id": 5125,
-        "def": [],
+        "def": [
+            "petal",
+            "flower petal"
+        ],
         "def_lang": "EN"
     },
     {
@@ -61961,7 +62411,8 @@
         "vocab_id": 5146,
         "def": [
             "plastron",
-            "touching the plastron"
+            "touching the plastron",
+            "touching the plastron (kimari te in kendo)"
         ],
         "def_lang": "EN"
     },
@@ -62329,13 +62780,19 @@
     {
         "def_id": 6607,
         "vocab_id": 5179,
-        "def": [],
+        "def": [
+            "hangar",
+            "aircraft hangar"
+        ],
         "def_lang": "EN"
     },
     {
         "def_id": 6608,
         "vocab_id": 5179,
-        "def": [],
+        "def": [
+            "hanger",
+            "coat hanger"
+        ],
         "def_lang": "EN"
     },
     {
@@ -63123,7 +63580,10 @@
     {
         "def_id": 6695,
         "vocab_id": 5249,
-        "def": [],
+        "def": [
+            "bulb",
+            "plant bulb"
+        ],
         "def_lang": "EN"
     },
     {
@@ -63174,7 +63634,10 @@
     {
         "def_id": 6701,
         "vocab_id": 5255,
-        "def": [],
+        "def": [
+            "date",
+            "the date"
+        ],
         "def_lang": "EN"
     },
     {
@@ -63200,7 +63663,8 @@
         "def_id": 6704,
         "vocab_id": 5258,
         "def": [
-            "pot"
+            "pot",
+            "pot (esp. teapot, coffee pot)"
         ],
         "def_lang": "EN"
     },
@@ -63342,7 +63806,9 @@
             "features",
             "face",
             "countenance",
-            "expression"
+            "expression",
+            "looks",
+            "outward looks"
         ],
         "def_lang": "EN"
     },
@@ -63395,7 +63861,8 @@
         "def": [
             "china",
             "chinaware",
-            "porcelain"
+            "porcelain",
+            "porcelain (esp. hard paste porcelain)"
         ],
         "def_lang": "EN"
     },
@@ -63951,7 +64418,8 @@
         "def_id": 6785,
         "vocab_id": 5318,
         "def": [
-            "formal"
+            "formal",
+            "formal (or archaic) written style based on Heian period Japanese"
         ],
         "def_lang": "EN"
     },
@@ -64045,7 +64513,10 @@
     {
         "def_id": 6796,
         "vocab_id": 5325,
-        "def": [],
+        "def": [
+            "case",
+            "watch case"
+        ],
         "def_lang": "EN"
     },
     {
@@ -64418,7 +64889,12 @@
     {
         "def_id": 6838,
         "vocab_id": 5359,
-        "def": [],
+        "def": [
+            "various things",
+            "doing various things",
+            "this and that",
+            "doing this and that"
+        ],
         "def_lang": "EN"
     },
     {
@@ -65021,7 +65497,10 @@
     {
         "def_id": 6903,
         "vocab_id": 5413,
-        "def": [],
+        "def": [
+            "collar",
+            "animal collar"
+        ],
         "def_lang": "EN"
     },
     {
@@ -65221,7 +65700,10 @@
     {
         "def_id": 6925,
         "vocab_id": 5428,
-        "def": [],
+        "def": [
+            "jumper",
+            "ski jumper"
+        ],
         "def_lang": "EN"
     },
     {
@@ -65379,7 +65861,11 @@
             "shirttail",
             "cut edge of a hairdo",
             "fringe",
-            "foot of mountain"
+            "foot of mountain",
+            "cuff",
+            "trouser cuff",
+            "hem",
+            "skirt hem"
         ],
         "def_lang": "EN"
     },
@@ -65397,7 +65883,8 @@
         "def": [
             "afternoon refreshment",
             "afternoon tea",
-            "mid afternoon"
+            "mid-afternoon",
+            "mid afternoon (around 3 o'clock) snack"
         ],
         "def_lang": "EN"
     },
@@ -65826,7 +66313,9 @@
         "def_id": 6991,
         "vocab_id": 5481,
         "def": [
-            "feeling relieved"
+            "feeling relieved",
+            "relief",
+            "sigh of relief"
         ],
         "def_lang": "EN"
     },
@@ -65888,6 +66377,8 @@
         "def": [
             "conceit",
             "pride",
+            "self-respect",
+            "spirit of self-respect",
             "self importance"
         ],
         "def_lang": "EN"
@@ -65959,7 +66450,10 @@
     {
         "def_id": 7006,
         "vocab_id": 5493,
-        "def": [],
+        "def": [
+            "compass",
+            "mariner's compass"
+        ],
         "def_lang": "EN"
     },
     {
@@ -66164,7 +66658,11 @@
         "def_id": 7029,
         "vocab_id": 5512,
         "def": [
-            "whimsical"
+            "whimsical",
+            "curiosity",
+            "idle curiosity",
+            "strange tastes",
+            "having strange tastes"
         ],
         "def_lang": "EN"
     },
@@ -66427,7 +66925,10 @@
     {
         "def_id": 7059,
         "vocab_id": 5536,
-        "def": [],
+        "def": [
+            "negative",
+            "photographic negative"
+        ],
         "def_lang": "EN"
     },
     {
@@ -66514,7 +67015,9 @@
         "def_id": 7069,
         "vocab_id": 5544,
         "def": [
-            "serviette"
+            "serviette",
+            "napkin",
+            "table napkin"
         ],
         "def_lang": "EN"
     },
@@ -66737,7 +67240,8 @@
         "def_id": 7093,
         "vocab_id": 5562,
         "def": [
-            "drive in"
+            "drive-in",
+            "drive in (bank, cinema, etc.)"
         ],
         "def_lang": "EN"
     },
@@ -67314,7 +67818,9 @@
         "def_id": 7155,
         "vocab_id": 5613,
         "def": [
-            "nursing"
+            "nursing",
+            "care",
+            "protective care"
         ],
         "def_lang": "EN"
     },
@@ -67935,7 +68441,9 @@
         "def_id": 7222,
         "vocab_id": 5670,
         "def": [
-            "midway"
+            "midway",
+            "middle",
+            "about middle"
         ],
         "def_lang": "EN"
     },
@@ -68760,7 +69268,9 @@
             "declaration",
             "hearsay",
             "rumour",
-            "rumor"
+            "rumor",
+            "message",
+            "oral message"
         ],
         "def_lang": "EN"
     },
@@ -68795,7 +69305,9 @@
         "def_id": 7315,
         "vocab_id": 5747,
         "def": [
-            "working together"
+            "working together",
+            "earning a living together",
+            "husband and wife earning a living together"
         ],
         "def_lang": "EN"
     },
@@ -68878,7 +69390,10 @@
     {
         "def_id": 7324,
         "vocab_id": 5754,
-        "def": [],
+        "def": [
+            "son-in-law",
+            "one's son-in-law"
+        ],
         "def_lang": "EN"
     },
     {
@@ -69041,7 +69556,8 @@
         "vocab_id": 5768,
         "def": [
             "bonfire",
-            "open air fire"
+            "open-air fire",
+            "open air fire (e.g. for garden refuse)"
         ],
         "def_lang": "EN"
     },
@@ -69075,7 +69591,9 @@
         "def_id": 7345,
         "vocab_id": 5771,
         "def": [
-            "sprint"
+            "sprint",
+            "race",
+            "foot race"
         ],
         "def_lang": "EN"
     },
@@ -69553,7 +70071,10 @@
     {
         "def_id": 7397,
         "vocab_id": 5814,
-        "def": [],
+        "def": [
+            "lightning",
+            "flash of lightning"
+        ],
         "def_lang": "EN"
     },
     {
@@ -69676,7 +70197,10 @@
     {
         "def_id": 7411,
         "vocab_id": 5825,
-        "def": [],
+        "def": [
+            "old man",
+            "noh old man"
+        ],
         "def_lang": "EN"
     },
     {
@@ -69731,7 +70255,8 @@
         "def_id": 7417,
         "vocab_id": 5831,
         "def": [
-            "fourth sign of Chinese zodiac"
+            "fourth sign of Chinese zodiac",
+            "fourth sign of Chinese zodiac (The Hare, 5am 7am, east, February)"
         ],
         "def_lang": "EN"
     },
